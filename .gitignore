@@ -1,0 +1,8 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local pick database (personal data, stays on your machine)
+football_picks.db
