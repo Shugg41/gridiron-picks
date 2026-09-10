@@ -4,5 +4,5 @@ __pycache__/
 .venv/
 venv/
 
-# Local pick database (personal data, stays on your machine)
-football_picks.db
+# Note: football_picks.db is intentionally COMMITTED — the app pushes it to
+# this repo on every save so picks survive Streamlit Cloud restarts.

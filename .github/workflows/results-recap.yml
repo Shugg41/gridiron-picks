@@ -1,0 +1,21 @@
+# How'd the week go: grades this week's picks against ESPN finals and
+# pushes the record via ntfy. Runs Saturday night (most games final) and
+# Sunday morning (late West Coast finishes). Silent if nothing has finished.
+name: Results recap
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"    # Saturday 11:00 PM ET
+    - cron: "0 13 * * 0"   # Sunday 9:00 AM ET
+  workflow_dispatch: {}
+
+jobs:
+  recap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send weekly record
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python scripts/notify.py recap

@@ -1,42 +1,56 @@
-# 🏈 Gridiron Picks — weekly college football pick helper
+# 🏈 Gridiron Picks
 
-A companion Streamlit app for a weekly pick 'em league. It pulls the full FBS
-slate from ESPN's free scoreboard API (no API key needed) and helps you decide,
-record, and grade your picks each week.
+Personal helper for a weekly college football pick 'em league that runs on
+Splash Sports. Pulls live FBS games, lines, and analytics from ESPN's free
+APIs (no key needed), tracks the manager's weekly pool, helps decide picks,
+and grades the results.
 
-## Run it
+Live app: https://gridiron-picks.streamlit.app
+
+## Weekly routine
+
+1. **Import the pool** — screenshot the Splash board, send the images to
+   Claude, paste the game list it returns into *My Pool → Import*. (Or type
+   matchups yourself, one per line, or tap ➕ on the Game board tab.)
+2. **⭐ Fill with favorites** — one tap picks the Vegas favorite everywhere.
+3. **Adjust on vibes** — flip individual games. Badges help: 🔒 safe,
+   ⚠️ toss-up, 🛣 road favorite, 🎲 you're on the dog. Each pool game has a
+   📊 Breakdown with ESPN's matchup predictor, recent form, and injuries.
+4. **Enter in Splash** — copy the numbered *Splash entry list*, enter the
+   picks in Splash, hit *Mark all as entered*.
+5. Picks **lock Saturday noon ET** (or kickoff if earlier); after games go
+   final, *Grade completed games* scores the week and the Season tab keeps
+   the running record.
+
+## Automation (GitHub Actions)
+
+- **keep-awake.yml** — visits the app every 2h so Streamlit Cloud never
+  puts it to sleep.
+- **pick-reminder.yml** — Saturday ~9 AM ET ntfy push if pool games are
+  unpicked or not yet entered in Splash. Silent when everything's done.
+- **results-recap.yml** — Saturday night + Sunday morning ntfy push with the
+  week's record.
+
+Notifications need an `NTFY_TOPIC` repo Actions secret (Settings → Secrets
+and variables → Actions) matching the topic subscribed to in the
+[ntfy](https://ntfy.sh) app.
+
+## Persistence
+
+`football_picks.db` (SQLite) is committed to this repo: the app pulls it on
+server boot and pushes it back after every save, so picks survive Streamlit
+Cloud's ephemeral filesystem. Configure in the Streamlit app's Secrets:
+
+```toml
+GITHUB_TOKEN = "github_pat_…"   # fine-grained PAT, Contents read/write on this repo
+GITHUB_REPO  = "Shugg41/gridiron-picks"
+```
+
+Without secrets the app still works, local-only.
+
+## Run locally
 
 ```bash
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
-
-## What it does
-
-**Game board** — every FBS game for the week with:
-- AP rank, overall record, kickoff time (ET), TV network, neutral-site flag
-- The Vegas line (favorite ★ and spread) and over/under from ESPN
-- Implied win probability from the moneyline (the % next to each team)
-- Sort by kickoff, biggest spread (easiest calls first), or closest spread
-  (the true toss-ups); filter to Top-25 or search for a team
-
-**Making picks** — tap a team's button under its game card. Picks are saved to
-a local SQLite file (`football_picks.db`). The sidebar sets your league style:
-- **Straight up** or **against the spread** (the line is snapshotted at the
-  moment you pick, so later line moves don't change your grading)
-- Optional **confidence points** if your league ranks picks
-
-**Grading** — once games go final, hit *Grade completed games* on the My Picks
-tab. ATS grading uses your snapshotted line and handles pushes.
-
-**Season tab** — running record, win %, and week-by-week results.
-
-## Notes
-
-- Week/season auto-detect from ESPN's "current week"; toggle it off in the
-  sidebar to browse any week (e.g. to look ahead or back-fill).
-- Lines usually appear a few days before kickoff; early-week games may show
-  "no line yet".
-- `football_picks.db` lives next to the app. On Streamlit Community Cloud the
-  filesystem is ephemeral — run locally (or back the file up) if you want your
-  season history to survive restarts.
