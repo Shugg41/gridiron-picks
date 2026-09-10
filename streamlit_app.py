@@ -190,29 +190,46 @@ def get_conn():
             PRIMARY KEY (season, week, event_id)
         )
     """)
-    try:
-        conn.execute("ALTER TABLE picks ADD COLUMN entered_in_splash INTEGER DEFAULT 0")
-    except sqlite3.OperationalError:
-        pass  # column already exists
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS tiebreaker (
+            season INTEGER NOT NULL,
+            week   INTEGER NOT NULL,
+            value  INTEGER,
+            PRIMARY KEY (season, week)
+        )
+    """)
+    for stmt in ("ALTER TABLE picks ADD COLUMN entered_in_splash INTEGER DEFAULT 0",
+                 "ALTER TABLE picks ADD COLUMN league TEXT",
+                 "ALTER TABLE slate ADD COLUMN league TEXT"):
+        try:
+            conn.execute(stmt)
+        except sqlite3.OperationalError:
+            pass  # column already exists
     return conn
 
 # ─────────────────────────────────────────────
 # ESPN API
 # ─────────────────────────────────────────────
-BASE = "https://site.api.espn.com/apis/site/v2/sports/football/college-football"
+BASE = "https://site.api.espn.com/apis/site/v2/sports/football"
+LEAGUE_PATH = {"CFB": "college-football", "NFL": "nfl"}
 
 @st.cache_data(ttl=300, show_spinner="Fetching games from ESPN…")
-def fetch_scoreboard(year=None, week=None, seasontype=2):
-    params = {"groups": "80", "limit": "400"}   # groups=80 → all of FBS
+def fetch_scoreboard(league="CFB", year=None, week=None, seasontype=2, dates=None):
+    params = {"limit": "400"}
+    if league == "CFB":
+        params["groups"] = "80"   # groups=80 → all of FBS
     if year and week:
         params.update({"dates": str(year), "seasontype": str(seasontype), "week": str(week)})
-    r = requests.get(f"{BASE}/scoreboard", params=params, timeout=15)
+    elif dates:
+        params["dates"] = dates   # YYYYMMDD-YYYYMMDD range (used for NFL history)
+    r = requests.get(f"{BASE}/{LEAGUE_PATH[league]}/scoreboard", params=params, timeout=15)
     r.raise_for_status()
     return r.json()
 
 @st.cache_data(ttl=3600, show_spinner="Loading game breakdown…")
-def fetch_summary(event_id):
-    r = requests.get(f"{BASE}/summary", params={"event": event_id}, timeout=15)
+def fetch_summary(event_id, league="CFB"):
+    r = requests.get(f"{BASE}/{LEAGUE_PATH[league]}/summary",
+                     params={"event": event_id}, timeout=15)
     r.raise_for_status()
     return r.json()
 
@@ -226,11 +243,12 @@ def implied_prob(moneyline):
         return None
     return (-ml) / (-ml + 100) if ml < 0 else 100 / (ml + 100)
 
-def parse_game(event):
+def parse_game(event, league="CFB"):
     """Flatten one ESPN scoreboard event into a plain dict. Defensive: missing
     fields (odds don't exist for every game) come back as None."""
     comp = (event.get("competitions") or [{}])[0]
     g = {
+        "league": league,
         "event_id": str(event.get("id", "")),
         "name": event.get("shortName") or event.get("name", ""),
         "date": event.get("date", ""),
@@ -420,17 +438,18 @@ def upsert_pick(conn, season, week, g, side, opp, pick_type):
     conn.execute("""
         INSERT INTO picks (season, week, event_id, matchup, kickoff,
             pick_abbr, pick_name, opp_abbr, opp_name, pick_type,
-            fav_abbr, line, created_at, entered_in_splash)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0)
+            fav_abbr, line, created_at, entered_in_splash, league)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?)
         ON CONFLICT(season, week, event_id) DO UPDATE SET
             pick_abbr=excluded.pick_abbr, pick_name=excluded.pick_name,
             opp_abbr=excluded.opp_abbr, opp_name=excluded.opp_name,
             pick_type=excluded.pick_type, fav_abbr=excluded.fav_abbr,
             line=excluded.line, result=NULL, final_score=NULL,
-            entered_in_splash=0
+            entered_in_splash=0, league=excluded.league
     """, (season, week, g["event_id"], g["name"], g["date"],
           side["abbr"], side["name"], opp["abbr"], opp["name"], pick_type,
-          g["fav_abbr"], g["line"], datetime.now().isoformat(timespec="seconds")))
+          g["fav_abbr"], g["line"], datetime.now().isoformat(timespec="seconds"),
+          g.get("league", "CFB")))
 
 def favorite_side(g):
     """(favorite side, underdog side) from the line, falling back to
@@ -475,7 +494,7 @@ def game_tags(g, my_pick_abbr):
 def render_breakdown(g):
     """On-demand analytics from ESPN's game summary endpoint."""
     try:
-        s = fetch_summary(g["event_id"])
+        s = fetch_summary(g["event_id"], g.get("league", "CFB"))
     except requests.RequestException as e:
         st.caption(f"Couldn't load breakdown: {e}")
         return
@@ -542,7 +561,7 @@ with st.sidebar:
 # FETCH & PARSE
 # ─────────────────────────────────────────────
 try:
-    data = fetch_scoreboard() if use_current else fetch_scoreboard(int(season), int(week))
+    data = fetch_scoreboard("CFB") if use_current else fetch_scoreboard("CFB", int(season), int(week))
 except requests.RequestException as e:
     st.error(f"Couldn't reach ESPN: {e}")
     st.stop()
@@ -552,7 +571,24 @@ api_season = ((data.get("season") or {}).get("year")) or ((data.get("leagues") o
 cur_season = int(api_season) if use_current and api_season else int(season)
 cur_week = int(api_week) if use_current and api_week else int(week)
 
-games = [parse_game(e) for e in data.get("events") or []]
+games = [parse_game(e, "CFB") for e in data.get("events") or []]
+
+# NFL runs on its own week numbers, so for the current pool just take its
+# current week; when browsing history, fetch by the CFB week's date span
+# (padded through Monday night) instead of guessing a week offset.
+try:
+    if use_current:
+        nfl_data = fetch_scoreboard("NFL")
+    else:
+        kicks = sorted(k for k in (parse_kick(g["date"]) for g in games) if k)
+        nfl_data = {"events": []}
+        if kicks:
+            span = f"{kicks[0]:%Y%m%d}-{kicks[-1] + timedelta(days=2):%Y%m%d}"
+            nfl_data = fetch_scoreboard("NFL", dates=span)
+    games += [parse_game(e, "NFL") for e in nfl_data.get("events") or []]
+except requests.RequestException:
+    st.caption("⚠️ NFL games unavailable right now — showing college only.")
+
 games = [g for g in games if g["home"] and g["away"]]
 games_by_id = {g["event_id"]: g for g in games}
 
@@ -602,7 +638,7 @@ def render_card(g, key_prefix, in_pool):
 
     st.markdown(f"""
 <div class='game-card'>
-  <div class='game-meta'>{status}{tv}{where}{lock_txt}</div>
+  <div class='game-meta'>{g['league']} · {status}{tv}{where}{lock_txt}</div>
   <div class='team-line'>{team_html(away, fav is away, g['away_ml_prob'])}</div>
   <div class='team-line'>at {team_html(home, fav is home, g['home_ml_prob'])}{game_tags(g, my_pick)}</div>
   <div class='odds-line'>{odds_txt}{pick_txt}</div>
@@ -629,9 +665,9 @@ def render_card(g, key_prefix, in_pool):
                 in_slate = g["event_id"] in slate_ids
                 if st.button("✔ In pool" if in_slate else "➕ Pool",
                              key=f"{key_prefix}_pool_{g['event_id']}", disabled=in_slate):
-                    conn.execute("INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at) VALUES (?,?,?,?,?)",
+                    conn.execute("INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at, league) VALUES (?,?,?,?,?,?)",
                                  (cur_season, cur_week, g["event_id"], g["name"],
-                                  datetime.now().isoformat(timespec="seconds")))
+                                  datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB")))
                     save(conn)
                     st.rerun()
     if in_pool and not g["completed"]:
@@ -656,9 +692,9 @@ with tab_pool:
             added = 0
             for _line, g in matched:
                 cur = conn.execute(
-                    "INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at) VALUES (?,?,?,?,?)",
+                    "INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at, league) VALUES (?,?,?,?,?,?)",
                     (cur_season, cur_week, g["event_id"], g["name"],
-                     datetime.now().isoformat(timespec="seconds")))
+                     datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB")))
                 added += cur.rowcount
             if added:
                 save(conn)
@@ -701,13 +737,27 @@ with tab_pool:
 
         picked_games = [g for g in slate_games if g["event_id"] in picks_by_id]
         if picked_games:
+            tb_row = conn.execute("SELECT value FROM tiebreaker WHERE season=? AND week=?",
+                                  (cur_season, cur_week)).fetchone()
+            tb_saved = tb_row[0] if tb_row else None
             with st.expander("📋 Splash entry list"):
                 lines = []
                 for i, g in enumerate(picked_games, 1):
                     r = picks_by_id[g["event_id"]]
                     mark = "" if r.get("entered_in_splash") else "   ← not entered"
                     lines.append(f"{i:2d}. {r['pick_name']} over {r['opp_name']}{mark}")
+                if tb_saved is not None:
+                    lines.append(f"Tiebreaker (combined total score): {tb_saved}")
                 st.code("\n".join(lines), language=None)
+                tc1, tc2 = st.columns([2, 1])
+                tb_new = tc1.number_input("Tiebreaker: combined total score", 0, 200,
+                                          int(tb_saved) if tb_saved is not None else 44)
+                if tc2.button("Save tiebreaker"):
+                    conn.execute("INSERT INTO tiebreaker (season, week, value) VALUES (?,?,?) "
+                                 "ON CONFLICT(season, week) DO UPDATE SET value=excluded.value",
+                                 (cur_season, cur_week, int(tb_new)))
+                    save(conn)
+                    st.rerun()
                 if unentered and st.button("✅ Mark all as entered in Splash"):
                     conn.execute("UPDATE picks SET entered_in_splash=1 WHERE season=? AND week=?",
                                  (cur_season, cur_week))
@@ -724,7 +774,9 @@ with tab_pool:
 # TAB 2 — GAME BOARD (full FBS slate)
 # ─────────────────────────────────────────────
 with tab_board:
-    c1, c2, c3 = st.columns([2, 2, 3])
+    c0, c1, c2, c3 = st.columns([1.2, 2, 2, 3])
+    with c0:
+        league_filter = st.selectbox("League", ["All", "CFB", "NFL"])
     with c1:
         sort_by = st.selectbox("Sort", ["Kickoff", "Biggest spread", "Closest spread"])
     with c2:
@@ -733,6 +785,8 @@ with tab_board:
         search = st.text_input("Find a team", placeholder="e.g. Michigan")
 
     shown = games
+    if league_filter != "All":
+        shown = [g for g in shown if g["league"] == league_filter]
     if only_ranked:
         shown = [g for g in shown if g["home"]["rank"] or g["away"]["rank"]]
     if search.strip():

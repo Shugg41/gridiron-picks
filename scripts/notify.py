@@ -18,8 +18,7 @@ import urllib.parse
 import urllib.request
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "football_picks.db")
-SCOREBOARD = ("https://site.api.espn.com/apis/site/v2/sports/football/"
-              "college-football/scoreboard?groups=80&limit=400")
+BASE = "https://site.api.espn.com/apis/site/v2/sports/football"
 
 
 def send(title, message, tags="football"):
@@ -35,10 +34,14 @@ def send(title, message, tags="football"):
         print(f"ntfy: {r.status}")
 
 
-def fetch_scoreboard(year=None, week=None):
-    url = SCOREBOARD
-    if year and week:
-        url += f"&dates={year}&seasontype=2&week={week}"
+def fetch_scoreboard(league="college-football", year=None, week=None):
+    url = f"{BASE}/{league}/scoreboard?limit=400"
+    if league == "college-football":
+        url += "&groups=80"
+        if year and week:
+            url += f"&dates={year}&seasontype=2&week={week}"
+    # NFL uses its own week numbers, so always take its current week — the
+    # recap crons run while the pool week is still NFL's current week.
     with urllib.request.urlopen(url, timeout=20) as r:
         return json.load(r)
 
@@ -84,14 +87,16 @@ def recap(conn):
         (season, week)).fetchall()
     if not picks:
         return
-    try:
-        data = fetch_scoreboard(season, week)
-    except Exception as e:
-        print(f"ESPN fetch failed: {e}")
-        return
+    events = []
+    for league in ("college-football", "nfl"):
+        try:
+            data = fetch_scoreboard(league, season, week)
+            events += data.get("events") or []
+        except Exception as e:
+            print(f"ESPN {league} fetch failed: {e}")
 
     finals = {}
-    for ev in data.get("events") or []:
+    for ev in events:
         if not (ev.get("status") or {}).get("type", {}).get("completed"):
             continue
         comp = (ev.get("competitions") or [{}])[0]

@@ -1,12 +1,16 @@
 # How'd the week go: grades this week's picks against ESPN finals and
-# pushes the record via ntfy. Runs Saturday night (most games final) and
-# Sunday morning (late West Coast finishes). Silent if nothing has finished.
+# pushes the record via ntfy. Runs Saturday night (most CFB final), Sunday
+# morning (late West Coast finishes), Monday morning (Sunday NFL slate),
+# and Tuesday morning (final record after Monday Night Football). Silent
+# until at least one pool game has finished.
 name: Results recap
 
 on:
   schedule:
     - cron: "0 3 * * 0"    # Saturday 11:00 PM ET
     - cron: "0 13 * * 0"   # Sunday 9:00 AM ET
+    - cron: "0 13 * * 1"   # Monday 9:00 AM ET
+    - cron: "0 13 * * 2"   # Tuesday 9:00 AM ET (final, after MNF)
   workflow_dispatch: {}
 
 jobs:
