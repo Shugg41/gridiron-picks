@@ -920,23 +920,32 @@ else:
                 if rec_side:
                     sub = f"Suggested: {rec_side['name']} · {sub}"
 
+        # The chip names the alternative — "worth flipping" alone doesn't
+        # say flip to WHAT, which is the only thing you need to know here.
         chips = ""
-        if flip:
-            chips += "<span class='chip chip-flip'>🔄 worth flipping</span>"
-            # Only computed for flip candidates — 2 cached API calls each,
-            # not worth firing for all 32 games on every rerun.
+        alt = other if r is not None else (favorite_side(g)[1] or g["away"])
+        if flip and alt:
+            chips += f"<span class='chip chip-flip'>🔄 flip to {alt['name']}</span>"
+            # Two cached API calls per game — worth it for the handful of
+            # flip candidates, not for all 32 on every rerun.
             try:
                 fpi_side, fpi_gap = market_vs_model(g)
             except Exception:
                 fpi_side = fpi_gap = None
             if fpi_side is not None and fpi_gap and fpi_gap >= EDGE_MIN:
                 chips += (f"<span class='chip chip-edge'>📈 FPI likes "
-                          f"{fpi_side['abbr']}</span>")
+                          f"{fpi_side['name']}</span>")
         if r is not None and rec_side and pick_abbr != rec_side["abbr"] and not flip:
             chips += "<span class='chip chip-risk'>⚠️ risky change</span>"
         when = "Final" if g["completed"] else kickoff_local(g["date"])
         if locked and not g["completed"]:
             when += " · 🔒 locked"
+
+        # A flip candidate should explain itself without being tapped.
+        if flip and not g["completed"]:
+            dp = dog_prob(g)
+            if dp is not None and alt:
+                sub += f" · {alt['name']} {dp:.0%} to win"
 
         st.markdown(f"""
 <div class='pick-card'>
@@ -946,39 +955,40 @@ else:
 
         if g["completed"]:
             continue
-        cols = st.columns([3, 1.4, 1.4] if flip else [3, 1.4])
         can_change = (not locked) or edit_locked
-        if r is not None:
-            if cols[0].button(f"Switch to {other['name']}", key=f"sw_{eid}",
-                              disabled=not can_change, width="stretch"):
-                upsert_pick(conn, cur_season, cur_week, g, other, picked, PICK_TYPE)
-                save(conn)
-                st.rerun()
-        else:
-            b1, b2 = cols[0].columns(2)
-            for col, side in ((b1, g["away"]), (b2, g["home"])):
-                if col.button(side["abbr"], key=f"pk_{eid}_{side['abbr']}",
-                              disabled=not can_change, width="stretch"):
-                    opp = g["home"] if side is g["away"] else g["away"]
-                    upsert_pick(conn, cur_season, cur_week, g, side, opp, PICK_TYPE)
+
+        def switch_button(container, key_suffix=""):
+            """Change this pick. Visible on flip candidates; tucked inside
+            Details everywhere else — the app already decided those."""
+            if r is not None:
+                if container.button(f"Switch to {other['name']}",
+                                    key=f"sw_{eid}{key_suffix}",
+                                    disabled=not can_change, width="stretch"):
+                    upsert_pick(conn, cur_season, cur_week, g, other, picked, PICK_TYPE)
                     save(conn)
                     st.rerun()
-        skey = f"stats_{eid}"
-        if cols[1].button("Stats", key=f"sb_{eid}", width="stretch"):
-            st.session_state[skey] = not st.session_state.get(skey, False)
+            else:
+                b1, b2 = container.columns(2)
+                for col, side in ((b1, g["away"]), (b2, g["home"])):
+                    if col.button(side["abbr"], key=f"pk_{eid}_{side['abbr']}{key_suffix}",
+                                  disabled=not can_change, width="stretch"):
+                        opp = g["home"] if side is g["away"] else g["away"]
+                        upsert_pick(conn, cur_season, cur_week, g, side, opp, PICK_TYPE)
+                        save(conn)
+                        st.rerun()
+
         if flip:
-            wkey = f"why_{eid}"
-            if cols[2].button("Why flip?", key=f"wb_{eid}", width="stretch"):
-                st.session_state[wkey] = not st.session_state.get(wkey, False)
-            if st.session_state.get(wkey):
+            switch_button(st.container())
+        with st.expander("Details"):
+            if not flip:
+                switch_button(st.container(), "_d")
+            if flip:
                 try:
                     summary = fetch_summary(eid, g.get("league", "CFB"))
                 except requests.RequestException:
                     summary = None
-                lines = why_text(g, summary) + fpi_lines(g)
-                st.markdown("\n".join(f"- {ln}" for ln in lines) if lines
-                            else "- Not much to go on here beyond the line.")
-        if st.session_state.get(skey):
+                for ln in why_text(g, summary):
+                    st.markdown(f"- {ln}")
             render_stats(g)
 
     # ── Copy into Splash ──
