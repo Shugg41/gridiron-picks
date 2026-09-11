@@ -33,7 +33,7 @@ jobs:
           import re, sys, time
           from playwright.sync_api import sync_playwright
 
-          URL = "https://gridiron-picks.streamlit.app/"
+          URL = "https://shuggs-picks.streamlit.app/"
 
           def dump(page, label):
               print(f"--- {label} ---")

@@ -5,7 +5,7 @@ Splash Sports. Pulls live FBS games, lines, and analytics from ESPN's free
 APIs (no key needed), tracks the manager's weekly pool, helps decide picks,
 and grades the results.
 
-Live app: https://gridiron-picks.streamlit.app
+Live app: https://shuggs-picks.streamlit.app
 
 ## Weekly routine
 
