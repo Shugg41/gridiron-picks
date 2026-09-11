@@ -501,6 +501,13 @@ def team_html(side, is_fav, prob):
     pct = f" · {prob:.0%}" if prob else ""
     return f"{rank}{side['name']}{fav}{rec}<span class='rec'>{pct}</span>"
 
+LEVERAGE_DOG_P = 0.45   # dog win prob at which a contrarian flip is "cheap"
+
+def dog_prob(g):
+    """The underdog's fair win probability, or None."""
+    hp, ap = fair_probs(g)
+    return min(hp, ap) if hp is not None else None
+
 def game_tags(g, my_pick_abbr):
     tags = []
     fav, dog = favorite_side(g)
@@ -512,6 +519,9 @@ def game_tags(g, my_pick_abbr):
             tags.append("<span class='tag tag-safe'>🔒 safe</span>")
         elif fav_prob < 0.60:
             tags.append("<span class='tag tag-toss'>⚠️ toss-up</span>")
+    dp = dog_prob(g)
+    if dp is not None and dp >= LEVERAGE_DOG_P and not g["completed"]:
+        tags.append("<span class='tag tag-toss'>💎 leverage</span>")
     if fav and fav is g["away"] and not g["neutral_site"]:
         tags.append("<span class='tag tag-road'>🛣 road fav</span>")
     if my_pick_abbr and dog and my_pick_abbr == dog["abbr"]:
@@ -786,9 +796,11 @@ with tab_pool:
 
         # ── Edge board: every pool game ranked from gimme to coin flip ──
         with st.expander("🧠 Edge board — where this week is won"):
-            st.caption("Sorted from safest to true coin flips. The bottom rows "
-                       "decide the pool — spend your thinking there. 🎲 marks "
-                       "where your pick disagrees with the model.")
+            st.caption("Sorted from safest to true coin flips. **Season prize:** "
+                       "take the model side everywhere. **Weekly prize:** flip "
+                       "2–3 💎 games to the dog — near-free separation from the "
+                       "chalk crowd. Never flip a game that isn't 💎: a 🚨 pick "
+                       "burns real expected wins.")
             rows = []
             for g in slate_games:
                 side, p = recommend(g)
@@ -796,14 +808,18 @@ with tab_pool:
                     continue
                 r = picks_by_id.get(g["event_id"])
                 mine = r["pick_abbr"] if r is not None else "—"
-                flag = ""
-                if p is not None and p < 0.60:
-                    flag = "⚠️ toss-up"
+                dp = dog_prob(g)
+                leverage = dp is not None and dp >= LEVERAGE_DOG_P
+                flags = []
+                if leverage:
+                    flags.append("💎 leverage")
+                elif p is not None and p < 0.60:
+                    flags.append("⚠️ toss-up")
                 if r is not None and mine != side["abbr"]:
-                    flag = ("🎲 against model " + flag).strip()
+                    flags.insert(0, "🎲 dog taken" if leverage or dp is None else "🚨 costly")
                 rows.append({"Game": g["name"], "Model pick": side["abbr"],
                              "Win %": f"{p:.0%}" if p is not None else "?",
-                             "My pick": mine, "": flag,
+                             "My pick": mine, "": " ".join(flags),
                              "_p": p if p is not None else 0.5})
             if rows:
                 edge_df = pd.DataFrame(rows).sort_values("_p", ascending=False).drop(columns="_p")

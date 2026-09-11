@@ -14,8 +14,12 @@ Live app: https://shuggs-picks.streamlit.app
    matchups yourself, one per line, or tap ➕ on the Game board tab.)
 2. **⭐ Fill with favorites** — one tap picks the Vegas favorite everywhere.
 3. **Adjust on vibes** — flip individual games. Badges help: 🔒 safe,
-   ⚠️ toss-up, 🛣 road favorite, 🎲 you're on the dog. Each pool game has a
-   📊 Breakdown with ESPN's matchup predictor, recent form, and injuries.
+   ⚠️ toss-up, 💎 leverage (dog ≥ 45% — the approved contrarian spots),
+   🛣 road favorite, 🎲 you're on the dog. The 🧠 Edge board ranks the week
+   from gimme to coin flip: for the season prize stay with the model
+   everywhere; for the weekly prize flip 2–3 💎 games to the dog. Each pool
+   game has a 📊 Breakdown with ESPN's matchup predictor, recent form, and
+   injuries.
 4. **Enter in Splash** — copy the numbered *Splash entry list*, enter the
    picks in Splash, hit *Mark all as entered*.
 5. Picks **lock Saturday noon ET** (or kickoff if earlier); after games go
