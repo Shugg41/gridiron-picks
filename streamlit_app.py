@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import base64
 import difflib
+import math
 import os
 import re
 from datetime import datetime, timedelta, timezone
@@ -464,6 +465,32 @@ def favorite_side(g):
         return (g["home"], g["away"]) if hp > ap else (g["away"], g["home"])
     return None, None
 
+def fair_probs(g):
+    """Best available true win probabilities (home, away).
+
+    Raw moneyline-implied probabilities include the book's vig (they sum to
+    ~104-105%), so normalize them to a fair 100%. With no moneyline, derive
+    from the spread: margins are roughly normal with sd ≈ 13.2 (NFL) or
+    ≈ 16.5 (CFB), so P(favorite wins) = Φ(line/sd)."""
+    hp, ap = g["home_ml_prob"], g["away_ml_prob"]
+    if hp and ap:
+        return hp / (hp + ap), ap / (hp + ap)
+    if g["line"] is not None:
+        fav, _ = favorite_side(g)
+        if fav:
+            sd = 13.2 if g.get("league") == "NFL" else 16.5
+            p = 0.5 * (1 + math.erf((g["line"] / sd) / math.sqrt(2)))
+            return (p, 1 - p) if fav is g["home"] else (1 - p, p)
+    return None, None
+
+def recommend(g):
+    """(recommended side, its win probability) or (None, None)."""
+    hp, ap = fair_probs(g)
+    if hp is None:
+        fav, _ = favorite_side(g)
+        return fav, None
+    return (g["home"], hp) if hp >= ap else (g["away"], ap)
+
 # ─────────────────────────────────────────────
 # SHARED CARD RENDERING
 # ─────────────────────────────────────────────
@@ -629,6 +656,10 @@ def render_card(g, key_prefix, in_pool):
         odds_bits.append(f"{g['fav_abbr']} −{g['line']:g}")
     if g["over_under"]:
         odds_bits.append(f"O/U {g['over_under']}")
+    if in_pool and not g["completed"]:
+        rec_side, rec_p = recommend(g)
+        if rec_side and rec_p is not None:
+            odds_bits.append(f"model: {rec_side['abbr']} {rec_p:.0%}")
     odds_txt = " · ".join(odds_bits) if odds_bits else "no line yet"
     tv = f" · {g['broadcast']}" if g["broadcast"] else ""
     where = " · neutral site" if g["neutral_site"] else ""
@@ -720,20 +751,63 @@ with tab_pool:
         unentered = sum(1 for eid in slate_ids
                         if eid in picks_by_id and not picks_by_id[eid].get("entered_in_splash"))
         open_games = [g for g in slate_games if not is_locked(g["date"])]
-        c1, c2, c3 = st.columns(3)
+
+        # Expected wins: sum of each picked side's fair win probability.
+        exp_mine = exp_chalk = 0.0
+        n_prob = 0
+        for g in slate_games:
+            hp, ap = fair_probs(g)
+            if hp is None:
+                continue
+            n_prob += 1
+            exp_chalk += max(hp, ap)
+            r = picks_by_id.get(g["event_id"])
+            if r is not None:
+                exp_mine += hp if r["pick_abbr"] == g["home"]["abbr"] else ap
+
+        c1, c2, c3, c4 = st.columns(4)
         c1.metric("Picked", f"{n_done}/{len(slate_games)}")
         c2.metric("In Splash", f"{n_done - unentered}/{n_done}" if n_done else "—")
-        c3.metric("Next lock", lock_label(min(
+        c3.metric("Expected wins", f"{exp_mine:.1f}" if n_done and n_prob else "—",
+                  help="Sum of each pick's win probability. 'Best possible' "
+                       f"(picking every model favorite) is {exp_chalk:.1f}.")
+        c4.metric("Next lock", lock_label(min(
             open_games, key=lambda g: lock_time(g["date"]) or datetime.max.replace(tzinfo=timezone.utc)
         )["date"]) if open_games else "all locked")
 
-        fillable = [g for g in unpicked if not is_locked(g["date"]) and favorite_side(g)[0]]
-        if fillable and st.button(f"⭐ Fill {len(fillable)} open pick(s) with favorites"):
+        fillable = [g for g in unpicked if not is_locked(g["date"]) and recommend(g)[0]]
+        if fillable and st.button(f"🎯 Fill {len(fillable)} open pick(s) with model favorites"):
             for g in fillable:
-                fav, dog = favorite_side(g)
-                upsert_pick(conn, cur_season, cur_week, g, fav, dog, pick_type)
+                side, _p = recommend(g)
+                opp = g["away"] if side is g["home"] else g["home"]
+                upsert_pick(conn, cur_season, cur_week, g, side, opp, pick_type)
             save(conn)
             st.rerun()
+
+        # ── Edge board: every pool game ranked from gimme to coin flip ──
+        with st.expander("🧠 Edge board — where this week is won"):
+            st.caption("Sorted from safest to true coin flips. The bottom rows "
+                       "decide the pool — spend your thinking there. 🎲 marks "
+                       "where your pick disagrees with the model.")
+            rows = []
+            for g in slate_games:
+                side, p = recommend(g)
+                if side is None:
+                    continue
+                r = picks_by_id.get(g["event_id"])
+                mine = r["pick_abbr"] if r is not None else "—"
+                flag = ""
+                if p is not None and p < 0.60:
+                    flag = "⚠️ toss-up"
+                if r is not None and mine != side["abbr"]:
+                    flag = ("🎲 against model " + flag).strip()
+                rows.append({"Game": g["name"], "Model pick": side["abbr"],
+                             "Win %": f"{p:.0%}" if p is not None else "?",
+                             "My pick": mine, "": flag,
+                             "_p": p if p is not None else 0.5})
+            if rows:
+                edge_df = pd.DataFrame(rows).sort_values("_p", ascending=False).drop(columns="_p")
+                st.dataframe(edge_df, hide_index=True, use_container_width=True)
 
         picked_games = [g for g in slate_games if g["event_id"] in picks_by_id]
         if picked_games:
@@ -749,9 +823,15 @@ with tab_pool:
                 if tb_saved is not None:
                     lines.append(f"Tiebreaker (combined total score): {tb_saved}")
                 st.code("\n".join(lines), language=None)
+                tb_game = max((g for g in slate_games if g["over_under"]),
+                              key=lambda g: g["date"], default=None)
+                if tb_game:
+                    st.caption(f"💡 Vegas total for {tb_game['name']} (the last game): "
+                               f"**{tb_game['over_under']}** — the sharpest tiebreaker guess.")
                 tc1, tc2 = st.columns([2, 1])
-                tb_new = tc1.number_input("Tiebreaker: combined total score", 0, 200,
-                                          int(tb_saved) if tb_saved is not None else 44)
+                tb_default = (int(round(float(tb_game["over_under"]))) if tb_game and tb_saved is None
+                              else int(tb_saved) if tb_saved is not None else 44)
+                tb_new = tc1.number_input("Tiebreaker: combined total score", 0, 200, tb_default)
                 if tc2.button("Save tiebreaker"):
                     conn.execute("INSERT INTO tiebreaker (season, week, value) VALUES (?,?,?) "
                                  "ON CONFLICT(season, week) DO UPDATE SET value=excluded.value",
@@ -767,7 +847,18 @@ with tab_pool:
             st.warning(f"⚠️ {unentered} pick(s) not entered in Splash yet.")
 
         st.divider()
-        for g in sorted(slate_games, key=lambda g: (g["date"], g["name"])):
+        pool_sort = st.radio("Order", ["Kickoff", "Toss-ups first", "Safest first"],
+                             horizontal=True, label_visibility="collapsed")
+        def _conf(g):
+            _s, p = recommend(g)
+            return p if p is not None else 0.5
+        if pool_sort == "Toss-ups first":
+            ordered = sorted(slate_games, key=_conf)
+        elif pool_sort == "Safest first":
+            ordered = sorted(slate_games, key=_conf, reverse=True)
+        else:
+            ordered = sorted(slate_games, key=lambda g: (g["date"], g["name"]))
+        for g in ordered:
             render_card(g, "pool", in_pool=True)
 
 # ─────────────────────────────────────────────
