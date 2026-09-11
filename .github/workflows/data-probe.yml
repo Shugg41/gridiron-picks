@@ -1,7 +1,7 @@
-# Manual-only: dumps the structure of ESPN's endpoints so the app's parsers
-# can be written against real field names. The dev sandbox can't reach ESPN,
-# CI can. Read the run's logs, then delete nothing — it's cheap to re-run
-# when ESPN changes a payload.
+# Manual-only diagnostics: what can reach ESPN from where, and is the live
+# app healthy. The dev sandbox has no egress to ESPN and CI gets 403s from
+# plain HTTP clients, so this establishes the real constraints before any
+# parser is written against them.
 name: ESPN data probe
 
 on:
@@ -10,7 +10,11 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: |
+          pip install --quiet playwright
+          python -m playwright install --with-deps chromium
       - run: python scripts/probe_espn.py
