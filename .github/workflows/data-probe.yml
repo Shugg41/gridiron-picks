@@ -10,11 +10,7 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Install Playwright
-        run: |
-          pip install --quiet playwright
-          python -m playwright install --with-deps chromium
       - run: python scripts/probe_espn.py
