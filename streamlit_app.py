@@ -63,6 +63,7 @@ h2 { font-size: 1.35rem !important; }
 }
 .chip-flip { color: var(--accent); border: 1px solid var(--accent); }
 .chip-risk { color: var(--loss);  border: 1px solid var(--loss); }
+.chip-edge { color: var(--field); border: 1px solid var(--field); }
 
 .stButton > button {
     background: var(--surface2) !important;
@@ -269,6 +270,7 @@ def parse_game(event, league="CFB"):
             key = r.get("type") or r.get("name") or ""
             recs[key] = r.get("summary", "")
         side = {
+            "id": str(team.get("id", "")),   # needed for the core stats/FPI API
             "abbr": team.get("abbreviation", "?"),
             "name": team.get("shortDisplayName") or team.get("displayName", "?"),
             "full_name": team.get("displayName", ""),
@@ -487,6 +489,98 @@ def recommend(g):
 
 
 # ─────────────────────────────────────────────
+# TEAM STRENGTH — ESPN's core API (verified live via scripts/probe_espn.py)
+#
+# FPI is a net-points rating: expected margin vs an average opponent on a
+# neutral field, and it carries preseason priors — which is exactly what
+# September needs, when box-score stats are a 2-game sample against
+# whoever happened to be on the schedule. The same payload carries EPA
+# per game for offense, defense and special teams.
+#
+# Note: ESPN's *box score* stats for the current season come back as zeros
+# early in the year, so stat_pack() falls back to last season and says so.
+# ─────────────────────────────────────────────
+CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
+HFA = {"CFB": 2.6, "NFL": 2.0}        # home-field worth, in points
+MARGIN_SD = {"CFB": 16.5, "NFL": 13.2}  # sd of final margin around the spread
+EDGE_MIN = 0.06                        # win-prob gap that counts as disagreement
+
+def _core_get(url):
+    try:
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=12)
+        if r.status_code == 200:
+            return r.json()
+    except requests.RequestException:
+        pass
+    return None
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def fetch_power(league, team_id, season):
+    """FPI + EPA for one team. {} when unavailable."""
+    if not team_id:
+        return {}
+    d = _core_get(f"{CORE}/{LEAGUE_PATH[league]}/seasons/{season}/powerindex/{team_id}")
+    if not d:
+        return {}
+    p = {x.get("name"): x.get("value") for x in d.get("predictives") or []}
+    return {k: p.get(k) for k in
+            ("fpi", "fpirank", "epaoffense", "epadefense", "epaspecialteams")}
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def fetch_team_stats(league, team_id, season):
+    """Flatten core-API team statistics to {'category.statName': value}."""
+    if not team_id:
+        return {}
+    d = _core_get(f"{CORE}/{LEAGUE_PATH[league]}/seasons/{season}/types/2/teams/{team_id}/statistics")
+    if not d:
+        return {}
+    out = {}
+    for cat in ((d.get("splits") or {}).get("categories") or []):
+        cname = cat.get("name")
+        for s in cat.get("stats") or []:
+            out[f"{cname}.{s.get('name')}"] = s.get("value")
+    return out
+
+def stat_pack(league, team_id, season):
+    """This season's stats if they've been populated, else last season's.
+    Always reports which season and how many games it's based on."""
+    cur = fetch_team_stats(league, team_id, season)
+    games = cur.get("general.gamesPlayed") or 0
+    if games and games > 0:
+        return {"season": season, "games": int(games), "stats": cur, "current": True}
+    prev = fetch_team_stats(league, team_id, season - 1)
+    return {"season": season - 1, "games": int(prev.get("general.gamesPlayed") or 0),
+            "stats": prev, "current": False}
+
+def margin_to_prob(margin, league):
+    """Point margin → win probability, normal around the margin."""
+    sd = MARGIN_SD.get(league, 15.0)
+    return 0.5 * (1 + math.erf((margin / sd) / math.sqrt(2)))
+
+def fpi_probs(g):
+    """(home, away) win probability from FPI alone — the second opinion."""
+    season = int(g.get("season") or datetime.now().year)
+    league = g.get("league", "CFB")
+    h = fetch_power(league, g["home"].get("id"), season)
+    a = fetch_power(league, g["away"].get("id"), season)
+    if h.get("fpi") is None or a.get("fpi") is None:
+        return None, None
+    edge = h["fpi"] - a["fpi"] + (0 if g["neutral_site"] else HFA.get(league, 2.5))
+    p_home = margin_to_prob(edge, league)
+    return p_home, 1 - p_home
+
+def market_vs_model(g):
+    """Where FPI and the betting market disagree, and by how much.
+    Returns (side FPI prefers, win-prob gap) or (None, None)."""
+    mh, ma = fair_probs(g)
+    fh, fa = fpi_probs(g)
+    if mh is None or fh is None:
+        return None, None
+    gap = fh - mh                      # >0: FPI likes the home side more
+    side = g["home"] if gap > 0 else g["away"]
+    return side, abs(gap)
+
+# ─────────────────────────────────────────────
 # PLAIN ENGLISH — turn numbers into words a human reads once
 # ─────────────────────────────────────────────
 LEVERAGE_DOG_P = 0.45   # underdog win chance that makes a flip nearly free
@@ -547,6 +641,84 @@ def why_text(g, summary=None):
             out.append(f"{fav['name']} have {n} player(s) on the injury report.")
     return out
 
+
+def fpi_lines(g):
+    """FPI's read on the game, as sentences. Never raises."""
+    try:
+        season = int(g.get("season") or datetime.now().year)
+        league = g.get("league", "CFB")
+        h = fetch_power(league, g["home"].get("id"), season)
+        a = fetch_power(league, g["away"].get("id"), season)
+    except Exception:
+        return []
+    if h.get("fpi") is None or a.get("fpi") is None:
+        return []
+    out = []
+    for side, pw in ((g["home"], h), (g["away"], a)):
+        rank = f" (#{int(pw['fpirank'])})" if pw.get("fpirank") else ""
+        out.append(f"{side['name']}: FPI {pw['fpi']:+.1f}{rank}"
+                   + (f", EPA {pw['epaoffense']:+.1f} off / {pw['epadefense']:+.1f} def"
+                      if pw.get("epaoffense") is not None else ""))
+    side, gap = market_vs_model(g)
+    if side and gap and gap >= EDGE_MIN:
+        out.append(f"**FPI likes {side['name']} more than the betting line does** "
+                   f"— about {gap:.0%} more likely to win than the market implies.")
+    elif side:
+        out.append("FPI and the betting line agree on this one.")
+    return out
+
+STAT_ROWS = [
+    ("Points / game", "scoring.totalPointsPerGame", "{:.1f}"),
+    ("Yards / game", "passing.yardsPerGame", "{:.1f}"),
+    ("Yards / pass att", "passing.yardsPerPassAttempt", "{:.1f}"),
+    ("Yards / rush att", "rushing.yardsPerRushAttempt", "{:.1f}"),
+    ("3rd down %", "miscellaneous.thirdDownConvPct", "{:.1f}%"),
+    ("Red zone TD %", "miscellaneous.redzoneTouchdownPct", "{:.1f}%"),
+    ("Turnover margin", "miscellaneous.turnOverDifferential", "{:+.0f}"),
+    ("Sacks (defense)", "defensive.sacks", "{:.0f}"),
+]
+
+def render_stats(g):
+    """Side-by-side numbers, honest about what season they're from."""
+    league = g.get("league", "CFB")
+    season = int(g.get("season") or datetime.now().year)
+    try:
+        packs = {side["abbr"]: stat_pack(league, side.get("id"), season)
+                 for side in (g["away"], g["home"])}
+    except Exception as e:
+        st.caption(f"Couldn't load stats: {e}")
+        return
+
+    for ln in fpi_lines(g):
+        st.markdown(f"- {ln}")
+
+    rows = []
+    for label, key, fmt in STAT_ROWS:
+        row = {"": label}
+        any_val = False
+        for side in (g["away"], g["home"]):
+            v = packs[side["abbr"]]["stats"].get(key)
+            try:
+                row[side["abbr"]] = fmt.format(float(v))
+                any_val = True
+            except (TypeError, ValueError):
+                row[side["abbr"]] = "—"
+        if any_val:
+            rows.append(row)
+    if rows:
+        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+        notes = []
+        for side in (g["away"], g["home"]):
+            pk = packs[side["abbr"]]
+            if pk["games"]:
+                notes.append(f"{side['abbr']}: {pk['season']} season, {pk['games']} games"
+                             + ("" if pk["current"] else " (this season's box scores "
+                                                         "aren't populated yet)"))
+        if notes:
+            st.caption(" · ".join(notes))
+    else:
+        st.caption("ESPN has no box-score stats for these teams yet.")
+
 # ─────────────────────────────────────────────
 # SETTINGS — tucked in the sidebar, closed by default on a phone
 # ─────────────────────────────────────────────
@@ -605,6 +777,8 @@ except requests.RequestException:
     st.caption("⚠️ NFL games unavailable right now — showing college only.")
 
 games = [g for g in games if g["home"] and g["away"]]
+for g in games:
+    g["season"] = cur_season          # the stats/FPI endpoints are season-scoped
 games_by_id = {g["event_id"]: g for g in games}
 
 conn = get_conn()
@@ -622,6 +796,22 @@ def add_to_pool(g):
         "VALUES (?,?,?,?,?,?)",
         (cur_season, cur_week, g["event_id"], g["name"],
          datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB")))
+
+_auto_graded = 0
+for _eid, _r in picks_by_id.items():
+    if _r["result"] is None:
+        _res, _score = grade_pick(_r, games_by_id.get(_eid))
+        if _res:
+            conn.execute("UPDATE picks SET result=?, final_score=? "
+                         "WHERE season=? AND week=? AND event_id=?",
+                         (_res, _score, cur_season, cur_week, _eid))
+            _auto_graded += 1
+if _auto_graded:
+    save(conn)
+    pick_rows = pd.read_sql_query(
+        "SELECT * FROM picks WHERE season=? AND week=?", conn,
+        params=(cur_season, cur_week))
+    picks_by_id = {r["event_id"]: r for _, r in pick_rows.iterrows()}
 
 if st.session_state.get("sync_failed"):
     c1, c2 = st.columns([4, 1])
@@ -711,20 +901,37 @@ else:
             hp, ap = fair_probs(g)
             if hp is not None:
                 p_for_pick = hp if picked is g["home"] else ap
-            sub = confidence_word(p_for_pick)
-            if show_numbers and p_for_pick is not None:
-                sub += f" · {p_for_pick:.0%}"
+            if r["result"]:
+                sub = {"W": "✅ Won", "L": "❌ Lost", "P": "Push"}.get(r["result"], "")
+                if r["final_score"]:
+                    sub += f" · {r['final_score']}"
+            else:
+                sub = confidence_word(p_for_pick)
+                if show_numbers and p_for_pick is not None:
+                    sub += f" · {p_for_pick:.0%}"
         else:
             picked = other = None
             headline = (f"<span class='pick-none'>No pick yet</span>"
                         f"<span class='pick-opp'> — {g['away']['name']} at {g['home']['name']}</span>")
-            sub = confidence_word(rec_p)
-            if rec_side:
-                sub = f"Suggested: {rec_side['name']} · {sub}"
+            if g["completed"]:
+                sub = "Missed — game already final"
+            else:
+                sub = confidence_word(rec_p)
+                if rec_side:
+                    sub = f"Suggested: {rec_side['name']} · {sub}"
 
         chips = ""
         if flip:
             chips += "<span class='chip chip-flip'>🔄 worth flipping</span>"
+            # Only computed for flip candidates — 2 cached API calls each,
+            # not worth firing for all 32 games on every rerun.
+            try:
+                fpi_side, fpi_gap = market_vs_model(g)
+            except Exception:
+                fpi_side = fpi_gap = None
+            if fpi_side is not None and fpi_gap and fpi_gap >= EDGE_MIN:
+                chips += (f"<span class='chip chip-edge'>📈 FPI likes "
+                          f"{fpi_side['abbr']}</span>")
         if r is not None and rec_side and pick_abbr != rec_side["abbr"] and not flip:
             chips += "<span class='chip chip-risk'>⚠️ risky change</span>"
         when = "Final" if g["completed"] else kickoff_local(g["date"])
@@ -739,7 +946,7 @@ else:
 
         if g["completed"]:
             continue
-        cols = st.columns([3, 2])
+        cols = st.columns([3, 1.4, 1.4] if flip else [3, 1.4])
         can_change = (not locked) or edit_locked
         if r is not None:
             if cols[0].button(f"Switch to {other['name']}", key=f"sw_{eid}",
@@ -756,18 +963,23 @@ else:
                     upsert_pick(conn, cur_season, cur_week, g, side, opp, PICK_TYPE)
                     save(conn)
                     st.rerun()
+        skey = f"stats_{eid}"
+        if cols[1].button("Stats", key=f"sb_{eid}", width="stretch"):
+            st.session_state[skey] = not st.session_state.get(skey, False)
         if flip:
             wkey = f"why_{eid}"
-            if cols[1].button("Why?", key=f"wb_{eid}", width="stretch"):
+            if cols[2].button("Why flip?", key=f"wb_{eid}", width="stretch"):
                 st.session_state[wkey] = not st.session_state.get(wkey, False)
             if st.session_state.get(wkey):
                 try:
                     summary = fetch_summary(eid, g.get("league", "CFB"))
                 except requests.RequestException:
                     summary = None
-                lines = why_text(g, summary)
+                lines = why_text(g, summary) + fpi_lines(g)
                 st.markdown("\n".join(f"- {ln}" for ln in lines) if lines
                             else "- Not much to go on here beyond the line.")
+        if st.session_state.get(skey):
+            render_stats(g)
 
     # ── Copy into Splash ──
     st.divider()

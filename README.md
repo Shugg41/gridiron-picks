@@ -24,6 +24,31 @@ Live app: https://shuggs-picks.streamlit.app
 5. Picks **lock Saturday noon ET** (or kickoff if earlier). Results,
    season record and the full game list live under **More**.
 
+## The numbers
+
+**FPI** (ESPN's Football Power Index) is the app's second opinion: a
+net-points rating — how many points a team beats an average opponent by on
+a neutral field — that carries preseason priors, so it means something in
+September when box-score stats are a two-game sample against nobody. The
+app converts the FPI gap (plus home field: 2.6 pts college, 2.0 NFL) into a
+win probability and compares it to the betting line. A gap of 6+ points of
+win probability earns a **📈 FPI likes X** flag: a real reason to flip,
+not a hunch.
+
+**EPA** (expected points added per game, offense and defense) comes from
+the same source and is the best single efficiency measure available here.
+
+**Tap Stats on any game** for points/game, yards/game, yards per pass and
+per rush attempt, third-down %, red-zone TD %, turnover margin and defensive
+sacks. Every number is labeled with the season and games it's drawn from —
+ESPN's current-season box scores aren't populated this early, so those fall
+back to last season and say so. Turnover margin regresses hard; treat it as
+luck, not skill.
+
+**The betting line still decides the default pick** — it is the best single
+predictor available. FPI, EPA and the box score are there to tell you when
+it might be wrong.
+
 ## Automation (GitHub Actions)
 
 - **keep-awake.yml** — visits the app every 2h so Streamlit Cloud never
