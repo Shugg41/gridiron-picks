@@ -55,12 +55,18 @@ jobs:
               dump(page, "after load")
 
               # If the app fell asleep, click the wake-up button (search every
-              # frame — the platform shell sometimes wraps content).
+              # frame — the platform shell sometimes wraps content). Match the
+              # button's full text only: a bare "wake" also matches team names
+              # like Wake Forest in the app's own content. Never let a false
+              # positive fail the run — rendering is what actually matters.
               for frame in page.frames:
-                  wake = frame.get_by_text(re.compile("get this app back up|wake", re.I))
+                  wake = frame.get_by_text(re.compile("get this app back up", re.I))
                   if wake.count():
-                      print("App was asleep — clicking wake-up button...")
-                      wake.first.click()
+                      print("App may be asleep — clicking wake-up button...")
+                      try:
+                          wake.first.click(timeout=5_000)
+                      except Exception as e:
+                          print("wake click skipped:", type(e).__name__)
                       break
 
               # Wait for the app to render; the open websocket session is
