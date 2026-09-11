@@ -1,0 +1,16 @@
+# Manual-only: dumps the structure of ESPN's endpoints so the app's parsers
+# can be written against real field names. The dev sandbox can't reach ESPN,
+# CI can. Read the run's logs, then delete nothing — it's cheap to re-run
+# when ESPN changes a payload.
+name: ESPN data probe
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/probe_espn.py
