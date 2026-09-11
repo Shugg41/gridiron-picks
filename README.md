@@ -9,22 +9,20 @@ Live app: https://shuggs-picks.streamlit.app
 
 ## Weekly routine
 
-1. **Import the pool** — screenshot the Splash board, send the images to
-   Claude, paste the game list it returns into *My Pool → Import*. (Or type
-   matchups yourself, one per line, or tap ➕ on the Game board tab.)
-2. **⭐ Fill with favorites** — one tap picks the Vegas favorite everywhere.
-3. **Adjust on vibes** — flip individual games. Badges help: 🔒 safe,
-   ⚠️ toss-up, 💎 leverage (dog ≥ 45% — the approved contrarian spots),
-   🛣 road favorite, 🎲 you're on the dog. The 🧠 Edge board ranks the week
-   from gimme to coin flip: for the season prize stay with the model
-   everywhere; for the weekly prize flip 2–3 💎 games to the dog. Each pool
-   game has a 📊 Breakdown with ESPN's matchup predictor, recent form, and
-   injuries.
-4. **Enter in Splash** — copy the numbered *Splash entry list*, enter the
-   picks in Splash, hit *Mark all as entered*.
-5. Picks **lock Saturday noon ET** (or kickoff if earlier); after games go
-   final, *Grade completed games* scores the week and the Season tab keeps
-   the running record.
+1. **Load the games** — screenshot the Splash board, send the images to
+   Claude, paste the list it gives back into *Load this week's games*.
+2. **Tap "Pick all N games for me"** — every game is picked for you using
+   the devigged betting line (the best public predictor there is).
+3. **Look at the 🔄 games** — these float to the top. They're the near
+   coin flips where taking the underdog costs almost nothing on the season
+   but separates you from the chalk crowd on the week. Tap **Why?** for the
+   case in plain English: the line, ESPN's model, recent form, injuries.
+   Flip 2–3 of them. A change anywhere else gets an ⚠️ risky change flag.
+4. **Copy into Splash** — the numbered list at the bottom matches the order
+   you pasted; the tiebreaker is pre-filled with the Vegas total of the last
+   game. Hit *I entered them all* when done.
+5. Picks **lock Saturday noon ET** (or kickoff if earlier). Results,
+   season record and the full game list live under **More**.
 
 ## Automation (GitHub Actions)
 
