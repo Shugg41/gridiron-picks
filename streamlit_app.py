@@ -64,6 +64,7 @@ h2 { font-size: 1.35rem !important; }
 .chip-flip { color: var(--accent); border: 1px solid var(--accent); }
 .chip-risk { color: var(--loss);  border: 1px solid var(--loss); }
 .chip-edge { color: var(--field); border: 1px solid var(--field); }
+.chip-close { color: var(--muted); border: 1px solid var(--border); }
 
 .stButton > button {
     background: var(--surface2) !important;
@@ -719,6 +720,50 @@ def render_stats(g):
     else:
         st.caption("ESPN has no box-score stats for these teams yet.")
 
+
+def flip_score(g):
+    """How live the underdog really is: the market's read on the dog,
+    blended 50/50 with FPI's when FPI has an opinion. Higher = the flip
+    costs less. None when there's nothing to go on."""
+    dp = dog_prob(g)
+    if dp is None:
+        return None
+    _fav, dog = favorite_side(g)
+    if dog is None:
+        return None
+    try:
+        fh, fa = fpi_probs(g)
+    except Exception:
+        fh = fa = None
+    if fh is None:
+        return dp
+    fpi_dog = fh if dog is g["home"] else fa
+    return 0.5 * dp + 0.5 * fpi_dog
+
+def rank_flips(candidates):
+    """Flip candidates, best first, as (score, game, underdog)."""
+    scored = []
+    for g in candidates:
+        if g["completed"] or is_locked(g["date"]):
+            continue      # can't act on it anyway
+        sc = flip_score(g)
+        if sc is None:
+            continue
+        scored.append((sc, g, favorite_side(g)[1]))
+    scored.sort(key=lambda t: -t[0])
+    return scored
+
+FLIP_TAKE = 3          # never recommend more than this
+FLIP_STRONG = 0.47     # a genuine coin flip
+FLIP_FLOOR = 0.45      # the least you'd accept if nothing is a true 50/50
+
+def recommended_flips(scored):
+    """The 2-3 flips actually worth making. Fewer when the week is chalky."""
+    strong = [t for t in scored if t[0] >= FLIP_STRONG][:FLIP_TAKE]
+    if strong:
+        return strong
+    return scored[:1] if scored and scored[0][0] >= FLIP_FLOOR else []
+
 # ─────────────────────────────────────────────
 # SETTINGS — tucked in the sidebar, closed by default on a phone
 # ─────────────────────────────────────────────
@@ -881,9 +926,27 @@ else:
             save(conn)
             st.rerun()
 
-    # Games worth a second look float to the top; everything else by kickoff.
+    # Six "worth flipping" games is a list, not a decision — rank them and
+    # name the two or three actually worth taking.
+    flip_ranked = rank_flips([g for g in slate_games if worth_flipping(g)])
+    take = recommended_flips(flip_ranked)
+    take_ids = {g["event_id"] for _sc, g, _dog in take}
+    if take:
+        names = ", ".join(f"**{dog['name']}**" for _sc, _g, dog in take)
+        lead = "Flip this one" if len(take) == 1 else f"Flip these {len(take)}"
+        st.markdown(f"### 🔄 {lead}: {names}")
+        st.caption("The closest games on your card. Taking the underdog here "
+                   "costs almost nothing over a season but separates you from "
+                   "everyone riding the chalk this week. Everything else: "
+                   "leave it alone.")
+    elif flip_ranked:
+        st.caption("No flip worth making this week — every close game is still "
+                   "leaning the favorite's way. Ride the chalk.")
+
+    # Recommended flips first, then the rest of the close ones, then by kickoff.
     ordered = sorted(slate_games,
-                     key=lambda g: (not worth_flipping(g), g["date"], g["name"]))
+                     key=lambda g: (g["event_id"] not in take_ids,
+                                    not worth_flipping(g), g["date"], g["name"]))
     for g in ordered:
         eid = g["event_id"]
         r = picks_by_id.get(eid)
@@ -924,10 +987,14 @@ else:
         # say flip to WHAT, which is the only thing you need to know here.
         chips = ""
         alt = other if r is not None else (favorite_side(g)[1] or g["away"])
+        take_this = eid in take_ids
+        if take_this and alt:
+            chips += f"<span class='chip chip-flip'>🔄 FLIP TO {alt['name'].upper()}</span>"
+        elif flip and alt:
+            chips += "<span class='chip chip-close'>close game</span>"
         if flip and alt:
-            chips += f"<span class='chip chip-flip'>🔄 flip to {alt['name']}</span>"
             # Two cached API calls per game — worth it for the handful of
-            # flip candidates, not for all 32 on every rerun.
+            # close games, not for all 32 on every rerun.
             try:
                 fpi_side, fpi_gap = market_vs_model(g)
             except Exception:
@@ -977,10 +1044,10 @@ else:
                         save(conn)
                         st.rerun()
 
-        if flip:
+        if take_this:
             switch_button(st.container())
         with st.expander("Details"):
-            if not flip:
+            if not take_this:
                 switch_button(st.container(), "_d")
             if flip:
                 try:
