@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Dump the exact stat field names from ESPN's core API.
+"""Compact: exact stat names available per category, plus FPI shape.
 
-Established by earlier runs: site.api.espn.com 403s from GitHub runners,
-but sports.core.api.espn.com serves fine — and that's where team stats
-live. The app (on Streamlit Cloud) can reach both. This prints the real
-category/stat names so the stats parser isn't written from memory.
+Confirmed so far: sports.core.api.espn.com serves CI fine (site.api does
+not), team statistics live at .../teams/{id}/statistics, and FPI lives at
+.../seasons/{yr}/powerindex/{id} on a net-points scale.
 """
 import json
 import urllib.error
@@ -12,6 +11,11 @@ import urllib.request
 
 CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
 UA = {"User-Agent": "Mozilla/5.0"}
+WANT = ("yardsperplay", "yardspergame", "thirddown", "fourthdown", "redzone",
+        "turnover", "pointspergame", "sack", "possession", "firstdown",
+        "completionpct", "rushingyardspergame", "passingyardspergame",
+        "totalpointspergame", "yardsperrushattempt", "yardsperpassattempt",
+        "totalyards", "penalt", "interception", "fumble", "gamesplayed")
 
 
 def get(url):
@@ -19,43 +23,39 @@ def get(url):
         with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
             return json.load(r)
     except urllib.error.HTTPError as e:
-        print(f"    HTTP {e.code}  {url[:120]}")
+        print(f"    HTTP {e.code}  {url[:110]}")
     except Exception as e:
-        print(f"    {type(e).__name__}: {e}  {url[:120]}")
+        print(f"    {type(e).__name__}  {url[:110]}")
     return None
 
 
-def banner(t):
-    print("\n" + "=" * 72 + f"\n{t}\n" + "=" * 72)
-
-
-# 99 = LSU (CFB), 12 = Chiefs (NFL) — any real id works for shape discovery
-for league, tid, season in (("college-football", "99", 2026), ("nfl", "12", 2026)):
-    for yr in (season, season - 1):
-        banner(f"{league} team {tid} — season {yr} statistics")
+for league, tid in (("college-football", "99"), ("nfl", "12")):
+    print("\n" + "=" * 70)
+    print(f"{league} — team {tid}")
+    print("=" * 70)
+    for yr in (2026, 2025):
         st = get(f"{CORE}/{league}/seasons/{yr}/types/2/teams/{tid}/statistics")
         if not st:
             continue
-        splits = st.get("splits") or {}
-        print(f"  splits keys: {list(splits)}")
-        for cat in splits.get("categories") or []:
-            stats = cat.get("stats") or []
-            print(f"\n  ── category '{cat.get('name')}' ({len(stats)} stats)")
-            for s in stats:
-                print(f"     {s.get('name'):32s} value={s.get('value')!s:12s} "
-                      f"display={s.get('displayValue')!s:12s} perGame={s.get('perGameValue')}")
+        cats = (st.get("splits") or {}).get("categories") or []
+        print(f"\n  season {yr}: categories = {[c.get('name') for c in cats]}")
+        for c in cats:
+            hits = []
+            for s in c.get("stats") or []:
+                nm = (s.get("name") or "")
+                if any(w in nm.lower() for w in WANT):
+                    hits.append(f"{nm}={s.get('displayValue')}"
+                                + (f"(pg {s.get('perGameValue')})"
+                                   if s.get("perGameValue") is not None else ""))
+            if hits:
+                print(f"    [{c.get('name')}] " + " | ".join(hits))
 
-    banner(f"{league} team {tid} — power index (FPI) candidates")
-    for url in (f"{CORE}/{league}/seasons/{season}/types/2/teams/{tid}/powerindex",
-                f"{CORE}/{league}/seasons/{season}/powerindex/{tid}",
-                f"{CORE}/{league}/seasons/{season}/types/2/teams/{tid}/record"):
-        r = get(url)
-        if r:
-            print(f"  OK {url[:120]}")
-            print("  " + json.dumps(r, indent=2)[:1500])
-
-banner("does core API expose a season's team list (id -> abbrev map)?")
-r = get(f"{CORE}/college-football/seasons/2026/types/2/teams?limit=5")
-if r:
-    print("  " + json.dumps(r, indent=2)[:600])
+    fpi = get(f"{CORE}/{league}/seasons/2026/powerindex/{tid}")
+    if fpi:
+        preds = {p.get("name"): p.get("value") for p in fpi.get("predictives") or []}
+        print(f"\n  FPI predictives: {json.dumps(preds)}")
+        print(f"  other keys: {[k for k in fpi if k != 'predictives']}")
+        for k in ("stats", "categories"):
+            if k in fpi:
+                print(f"  {k}: {json.dumps(fpi[k])[:400]}")
 print("\nPROBE COMPLETE")
