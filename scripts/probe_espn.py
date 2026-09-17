@@ -1,61 +1,90 @@
 #!/usr/bin/env python3
-"""Compact: exact stat names available per category, plus FPI shape.
+"""Read the live app's rendered state from CI.
 
-Confirmed so far: sports.core.api.espn.com serves CI fine (site.api does
-not), team statistics live at .../teams/{id}/statistics, and FPI lives at
-.../seasons/{yr}/powerindex/{id} on a net-points scale.
+The dev sandbox can't reach the app or ESPN; CI can drive a real browser.
+This prints what the app actually shows — the week header, whether the
+"picks are not backed up" banner is present, and the results/season
+numbers behind More — so the app's real behaviour can be verified instead
+of assumed.
 """
-import json
-import urllib.error
-import urllib.request
+import re
+import sys
 
-CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
-UA = {"User-Agent": "Mozilla/5.0"}
-WANT = ("yardsperplay", "yardspergame", "thirddown", "fourthdown", "redzone",
-        "turnover", "pointspergame", "sack", "possession", "firstdown",
-        "completionpct", "rushingyardspergame", "passingyardspergame",
-        "totalpointspergame", "yardsperrushattempt", "yardsperpassattempt",
-        "totalyards", "penalt", "interception", "fumble", "gamesplayed")
+from playwright.sync_api import sync_playwright
+
+APP = "https://shuggs-picks.streamlit.app/"
 
 
-def get(url):
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
-            return json.load(r)
-    except urllib.error.HTTPError as e:
-        print(f"    HTTP {e.code}  {url[:110]}")
-    except Exception as e:
-        print(f"    {type(e).__name__}  {url[:110]}")
-    return None
+def text_of(page):
+    best = ""
+    for f in page.frames:
+        try:
+            t = f.locator("body").inner_text()
+            if len(t) > len(best):
+                best = t
+        except Exception:
+            pass
+    return " ".join(best.split())
 
 
-for league, tid in (("college-football", "99"), ("nfl", "12")):
-    print("\n" + "=" * 70)
-    print(f"{league} — team {tid}")
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page(viewport={"width": 420, "height": 1400})
+    page.goto(APP, wait_until="domcontentloaded", timeout=90_000)
+    page.wait_for_timeout(25_000)
+
+    for frame in page.frames:
+        wake = frame.get_by_text(re.compile("get this app back up", re.I))
+        if wake.count():
+            print("app was asleep — waking")
+            try:
+                wake.first.click(timeout=5_000)
+            except Exception:
+                pass
+            page.wait_for_timeout(45_000)
+            break
+
+    main = text_of(page)
     print("=" * 70)
-    for yr in (2026, 2025):
-        st = get(f"{CORE}/{league}/seasons/{yr}/types/2/teams/{tid}/statistics")
-        if not st:
-            continue
-        cats = (st.get("splits") or {}).get("categories") or []
-        print(f"\n  season {yr}: categories = {[c.get('name') for c in cats]}")
-        for c in cats:
-            hits = []
-            for s in c.get("stats") or []:
-                nm = (s.get("name") or "")
-                if any(w in nm.lower() for w in WANT):
-                    hits.append(f"{nm}={s.get('displayValue')}"
-                                + (f"(pg {s.get('perGameValue')})"
-                                   if s.get("perGameValue") is not None else ""))
-            if hits:
-                print(f"    [{c.get('name')}] " + " | ".join(hits))
+    print("MAIN SCREEN")
+    print("=" * 70)
+    print(main[:2500])
 
-    fpi = get(f"{CORE}/{league}/seasons/2026/powerindex/{tid}")
-    if fpi:
-        preds = {p.get("name"): p.get("value") for p in fpi.get("predictives") or []}
-        print(f"\n  FPI predictives: {json.dumps(preds)}")
-        print(f"  other keys: {[k for k in fpi if k != 'predictives']}")
-        for k in ("stats", "categories"):
-            if k in fpi:
-                print(f"  {k}: {json.dumps(fpi[k])[:400]}")
+    print("\n" + "=" * 70)
+    print("CHECKS")
+    print("=" * 70)
+    print("  backup banner present:", "not backed up" in main)
+    print("  flip headline present:", "Flip th" in main)
+    m = re.search(r"Week\s+(\d+)", main)
+    print("  week shown:", m.group(0) if m else "?")
+    m = re.search(r"(\d+) of (\d+) picked", main)
+    print("  picked:", m.group(0) if m else "none yet")
+
+    # open More -> results / season so the graded record is visible
+    for frame in page.frames:
+        more = frame.get_by_text(re.compile(r"More — results", re.I))
+        if more.count():
+            try:
+                more.first.click(timeout=5_000)
+                page.wait_for_timeout(6_000)
+            except Exception as e:
+                print("  couldn't open More:", type(e).__name__)
+            break
+    for label in ("Season", "This week's results"):
+        for frame in page.frames:
+            tab = frame.get_by_text(label, exact=True)
+            if tab.count():
+                try:
+                    tab.first.click(timeout=5_000)
+                    page.wait_for_timeout(5_000)
+                except Exception:
+                    pass
+                break
+
+    after = text_of(page)
+    print("\n" + "=" * 70)
+    print("WITH 'MORE' OPEN (tail)")
+    print("=" * 70)
+    print(after[-2500:])
+    browser.close()
 print("\nPROBE COMPLETE")
