@@ -1,112 +1,98 @@
 #!/usr/bin/env python3
-"""Read the live app's rendered state from CI.
+"""Hunt for two data sources the app doesn't have yet:
 
-The dev sandbox can't reach the app or ESPN; CI can drive a real browser.
-This prints what the app actually shows — the week header, whether the
-"picks are not backed up" banner is present, and the results/season
-numbers behind More — so the app's real behaviour can be verified instead
-of assumed.
+  1. PUBLIC PICK PERCENTAGES — what everyone else picked. In a weekly-prize
+     pool this is the real edge: an underdog is only worth taking if the
+     field is piled on the favorite. Splash's on-board percentages turn out
+     to be win probabilities, not pick distribution, so we need another
+     source. ESPN's Pick'em (gambit) API is the main candidate.
+  2. OPENING LINES — open vs current shows where money moved. If ESPN won't
+     serve it, the fallback is sampling the line ourselves every few hours.
+
+Established constraints: site.api.espn.com 403s GitHub runners;
+sports.core.api.espn.com does not. So try core first, and try the others
+through a real browser, which has worked before where urllib was refused.
 """
-import re
-import sys
+import json
+import urllib.error
+import urllib.request
 
-from playwright.sync_api import sync_playwright
-
-APP = "https://shuggs-picks.streamlit.app/"
-
-
-def text_of(page):
-    best = ""
-    for f in page.frames:
-        try:
-            t = f.locator("body").inner_text()
-            if len(t) > len(best):
-                best = t
-        except Exception:
-            pass
-    return " ".join(best.split())
+CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
+UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
 
 
-with sync_playwright() as p:
-    browser = p.chromium.launch()
-    page = browser.new_page(viewport={"width": 420, "height": 1400})
-    page.goto(APP, wait_until="domcontentloaded", timeout=90_000)
-    page.wait_for_timeout(25_000)
+def get(url, label):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        print(f"    HTTP {e.code}  [{label}]")
+    except Exception as e:
+        print(f"    {type(e).__name__}  [{label}]")
+    return None
 
-    for frame in page.frames:
-        wake = frame.get_by_text(re.compile("get this app back up", re.I))
-        if wake.count():
-            print("app was asleep — waking")
-            try:
-                wake.first.click(timeout=5_000)
-            except Exception:
-                pass
-            page.wait_for_timeout(45_000)
-            break
 
-    main = text_of(page)
-    print("=" * 70)
-    print("MAIN SCREEN")
-    print("=" * 70)
-    print(main[:2500])
+def banner(t):
+    print("\n" + "=" * 72 + f"\n{t}\n" + "=" * 72)
 
-    print("\n" + "=" * 70)
-    print("CHECKS")
-    print("=" * 70)
-    print("  backup banner present:", "not backed up" in main)
-    print("  flip headline present:", "Flip th" in main)
-    m = re.search(r"Week\s+(\d+)", main)
-    print("  week shown:", m.group(0) if m else "?")
-    m = re.search(r"(\d+) of (\d+) picked", main)
-    print("  picked:", m.group(0) if m else "none yet")
 
-    # open More -> results / season so the graded record is visible
-    for frame in page.frames:
-        more = frame.get_by_text(re.compile(r"More — results", re.I))
-        if more.count():
-            try:
-                more.first.click(timeout=5_000)
-                page.wait_for_timeout(6_000)
-            except Exception as e:
-                print("  couldn't open More:", type(e).__name__)
-            break
-    for label in ("Season", "This week's results"):
-        for frame in page.frames:
-            tab = frame.get_by_text(label, exact=True)
-            if tab.count():
-                try:
-                    tab.first.click(timeout=5_000)
-                    page.wait_for_timeout(5_000)
-                except Exception:
-                    pass
+# ── 1. find a live event id via the core API (site API is blocked here) ──
+banner("find an upcoming event id from the core API")
+EVENT = {}
+for league in ("nfl", "college-football"):
+    wk = get(f"{CORE}/{league}/seasons/2026/types/2/weeks/4/events?limit=5", f"{league} week events")
+    if wk and wk.get("items"):
+        ref = wk["items"][0]["$ref"].replace("http://", "https://")
+        ev = get(ref, "event detail")
+        if ev:
+            EVENT[league] = ev.get("id")
+            print(f"  {league}: event {ev.get('id')} — {ev.get('shortName', ev.get('name'))}")
+
+# ── 2. opening lines on the core odds endpoint ──
+banner("OPENING LINES — core odds endpoint")
+for league, eid in EVENT.items():
+    comp = get(f"{CORE}/{league}/events/{eid}/competitions/{eid}/odds", f"{league} odds")
+    if not comp:
+        continue
+    for item in (comp.get("items") or [])[:2]:
+        prov = (item.get("provider") or {}).get("name", "?")
+        keys = sorted(item.keys())
+        print(f"\n  [{league}] provider={prov}")
+        print(f"    keys: {keys}")
+        for k in ("open", "current", "close", "spread", "overUnder", "details"):
+            if k in item:
+                print(f"    {k} = {json.dumps(item[k])[:260]}")
+
+# ── 3. public pick percentages — ESPN Pick'em (gambit) and friends ──
+banner("PUBLIC PICK % — candidate endpoints")
+CANDIDATES = [
+    ("gambit nfl propositions",
+     "https://gambit-api.fantasy.espn.com/apis/v1/propositions?challengeId=nfl-pigskin-pickem-2026&platform=chui&view=chui_default"),
+    ("gambit cfb propositions",
+     "https://gambit-api.fantasy.espn.com/apis/v1/propositions?challengeId=college-football-pickem-2026&platform=chui&view=chui_default"),
+    ("gambit challenge list",
+     "https://gambit-api.fantasy.espn.com/apis/v1/challenges?platform=chui&view=chui_default"),
+    ("core nfl predictor",
+     f"{CORE}/nfl/events/{EVENT.get('nfl')}/competitions/{EVENT.get('nfl')}/predictor"
+     if EVENT.get("nfl") else None),
+    ("core nfl probabilities",
+     f"{CORE}/nfl/events/{EVENT.get('nfl')}/competitions/{EVENT.get('nfl')}/probabilities?limit=1"
+     if EVENT.get("nfl") else None),
+]
+for label, url in CANDIDATES:
+    if not url:
+        continue
+    print(f"\n  -- {label}")
+    d = get(url, label)
+    if d:
+        print(f"     OK top-level keys: {list(d)[:14]}")
+        blob = json.dumps(d)
+        for word in ("percent", "pickPercent", "picksCount", "consensus", "votes"):
+            if word.lower() in blob.lower():
+                i = blob.lower().index(word.lower())
+                print(f"     >>> contains '{word}': ...{blob[max(0,i-120):i+200]}...")
                 break
-
-    # Force a write: saving the tiebreaker at its existing value changes no
-    # data but calls save() -> push, which is the only real test of the token.
-    for frame in page.frames:
-        save_btn = frame.get_by_role("button", name="Save", exact=True)
-        if save_btn.count():
-            print("\nclicking tiebreaker Save to force a GitHub push...")
-            try:
-                save_btn.first.click(timeout=8_000)
-                page.wait_for_timeout(12_000)
-            except Exception as e:
-                print("  save click failed:", type(e).__name__)
-            break
-    else:
-        print("\nno Save button found (no picks yet?) — push not exercised")
-
-    after = text_of(page)
-    print("\nafter save — sync warning present:",
-          "aren't backed up" in after or "rejected the token" in after)
-    for marker in ("GitHub said:", "rejected the token", "Picks saved to GitHub",
-                   "not backed up"):
-        if marker in after:
-            i = after.index(marker)
-            print(f"  [{marker}] ...{after[max(0, i - 80):i + 160]}...")
-    print("\n" + "=" * 70)
-    print("WITH 'MORE' OPEN (tail)")
-    print("=" * 70)
-    print(after[-2500:])
-    browser.close()
+        else:
+            print(f"     no pick-percentage fields; sample: {blob[:300]}")
 print("\nPROBE COMPLETE")
