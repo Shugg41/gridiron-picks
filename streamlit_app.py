@@ -946,9 +946,36 @@ if slate_games:
 # ─────────────────────────────────────────────
 # LOAD THIS WEEK'S GAMES
 # ─────────────────────────────────────────────
+# An iOS Shortcut can hand the whole board over in the URL: it reads the
+# rendered text straight off the Splash page in Safari (real text, no OCR)
+# and opens the app with ?games=<encoded>. Same matcher as a manual paste.
+_shared = st.query_params.get("games")
+if _shared:
+    st.query_params.clear()          # so a refresh doesn't re-import
+    _matched, _unmatched = match_paste_lines(_shared, games)
+    _added = sum(add_to_pool(g).rowcount for _l, g in _matched)
+    if _added:
+        save(conn)
+    # Stash rather than render: adding games triggers a rerun, which would
+    # wipe the message before it could be read.
+    st.session_state["import_note"] = (len(_matched), _added, _unmatched)
+    if _added:
+        st.rerun()
+
+_note = st.session_state.pop("import_note", None)
+if _note:
+    _found, _added, _unmatched = _note
+    st.success(f"Loaded from Splash — found {_found} game(s), added {_added} new.")
+    if _unmatched:
+        with st.expander(f"{len(_unmatched)} line(s) didn't match a game"):
+            st.caption("Page furniture like headers and kickoff times lands "
+                       "here; add any real games under More → All games.")
+            st.write("\n".join(f"- {u}" for u in _unmatched[:40]))
+
 with st.expander("➕ Load this week's games", expanded=not slate_games):
-    st.caption("Send screenshots of the Splash board to Claude, then paste the "
-               "list it gives back — one game per line.")
+    st.caption("Paste the Splash board — the whole page text is fine, it sorts "
+               "out the games itself. Or use the Load into Picks shortcut to "
+               "send it over straight from Safari.")
     with st.form("import_form"):
         paste = st.text_area("Game list", height=140, label_visibility="collapsed",
                              placeholder="Ohio State vs Texas\nPackers vs Vikings\n…")
