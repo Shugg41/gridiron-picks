@@ -409,36 +409,42 @@ def _aliases(side):
             out.add(_norm(a).strip())
     return out
 
+MATCH_WINDOW = 8   # lines apart, at most, for two teams to be one game
+
 def match_paste_lines(text, games):
-    """Each non-empty line → the game it names, by finding team aliases inside
-    the line. Score = (# sides matched, total alias length) so 'Ohio State'
-    beats 'Ohio' and a line naming both teams beats one naming one."""
-    matches, unmatched = {}, []
-    for raw in text.splitlines():
+    """Pull games out of pasted text — a tidy "A vs B" list or a raw dump of
+    the whole Splash page, where each team is its own line.
+
+    Both teams must appear, and appear NEAR each other. Matching on a single
+    team name is too eager: a page carries other weeks' tabs and stray team
+    mentions, which is how a board of 25 games once imported as 28."""
+    lines = text.splitlines()
+    hits = {g["event_id"]: {"home": [], "away": []} for g in games}
+    touched = set()
+    for i, raw in enumerate(lines):
         if not raw.strip():
             continue
         line = _norm(raw)
-        best, best_score = None, (0, 0)
         for g in games:
-            sides_hit, alias_len = 0, 0
-            for side in (g["home"], g["away"]):
-                hit = max((len(a) for a in _aliases(side) if f" {a} " in line), default=0)
-                if hit:
-                    sides_hit += 1
-                    alias_len += hit
-            score = (sides_hit, alias_len)
-            if score > best_score:
-                best, best_score = g, score
-        if best is None:
-            # last resort: fuzzy against "away home" strings
-            names = {f"{g['away']['name']} {g['home']['name']}": g for g in games}
-            close = difflib.get_close_matches(line.strip(), list(names), n=1, cutoff=0.75)
-            best = names.get(close[0]) if close else None
-        if best:
-            matches[best["event_id"]] = (raw.strip(), best)
-        else:
-            unmatched.append(raw.strip())
-    return list(matches.values()), unmatched
+            for key in ("home", "away"):
+                if any(f" {a} " in line for a in _aliases(g[key])):
+                    hits[g["event_id"]][key].append(i)
+                    touched.add(i)
+
+    matched = []
+    for g in games:
+        h = hits[g["event_id"]]
+        if not h["home"] or not h["away"]:
+            continue                     # only one side named — not a game
+        gap = min(abs(a - b) for a in h["home"] for b in h["away"])
+        if gap > MATCH_WINDOW:
+            continue                     # two unrelated mentions, far apart
+        first = min(h["home"] + h["away"])
+        matched.append((lines[first].strip(), g))
+
+    unmatched = [l.strip() for i, l in enumerate(lines)
+                 if l.strip() and i not in touched]
+    return matched, unmatched
 
 # ─────────────────────────────────────────────
 # GRADING
@@ -967,9 +973,10 @@ if _note:
     _found, _added, _unmatched = _note
     st.success(f"Loaded from Splash — found {_found} game(s), added {_added} new.")
     if _unmatched:
-        with st.expander(f"{len(_unmatched)} line(s) didn't match a game"):
-            st.caption("Page furniture like headers and kickoff times lands "
-                       "here; add any real games under More → All games.")
+        with st.expander(f"{len(_unmatched)} line(s) of page text ignored"):
+            st.caption("Headers, kickoff times and the rest of the page land "
+                       "here. If a real game is missing, add it under "
+                       "More → All games.")
             st.write("\n".join(f"- {u}" for u in _unmatched[:40]))
 
 with st.expander("➕ Load this week's games", expanded=not slate_games):
