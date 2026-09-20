@@ -403,11 +403,18 @@ def _norm(s):
     return " " + re.sub(r"\s+", " ", s).strip() + " "
 
 def _aliases(side):
+    """Names to look for. Two-letter codes (SF, KC, LA, TB, NE, GB, NO, LV)
+    count: the board often shows only the code, and skipping them meant a
+    game could not be found at all once both teams became required. They are
+    matched as whole space-delimited tokens, so they don't hit inside words."""
     out = set()
-    for a in (side.get("full_name"), side.get("location"), side.get("name"), side.get("abbr")):
+    for a in (side.get("full_name"), side.get("location"), side.get("name")):
         if a and len(a) >= 3:
             out.add(_norm(a).strip())
-    return out
+    abbr = side.get("abbr")
+    if abbr and len(abbr) >= 2:
+        out.add(_norm(abbr).strip())
+    return {a for a in out if a}
 
 MATCH_WINDOW = 8   # lines apart, at most, for two teams to be one game
 
