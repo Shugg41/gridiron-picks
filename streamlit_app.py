@@ -155,18 +155,31 @@ def push_db_to_github():
         return False
 
 @st.cache_resource
-def verify_token():
-    """One call per boot: can this token actually see the repo? Catches a
-    typo'd token or repo name immediately instead of at the next save.
-    Returns (ok, reason)."""
+def sync_selftest():
+    """Can this token actually WRITE? Returns (ok, reason).
+
+    A read check is not enough: a fine-grained token with no permissions
+    at all still reads a public repo, which once had the app cheerfully
+    reporting "saved to GitHub" while every save was being refused 403.
+    So: if the database is already in the repo, writes have demonstrably
+    worked. If it is not, push it now — that is a real write test, and it
+    also creates the backup on the first boot after the secrets go in.
+    """
     if not sync_enabled():
         return False, "no secrets"
+    url = f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}"
     try:
-        r = requests.get(f"https://api.github.com/repos/{gh_repo()}",
-                         headers=gh_headers(), timeout=15)
+        r = requests.get(url, headers=gh_headers(), timeout=15)
     except requests.RequestException as e:
         return False, f"couldn't reach GitHub ({type(e).__name__})"
-    return (True, "") if r.status_code == 200 else (False, _gh_reason(r))
+    if r.status_code == 200:
+        return True, ""
+    if r.status_code != 404:
+        return False, _gh_reason(r)
+    get_conn().close()          # the file must exist before it can be pushed
+    if push_db_to_github():
+        return True, ""
+    return False, st.session_state.get("sync_error", "push refused")
 
 @st.cache_resource
 def _boot_pull():
@@ -823,9 +836,9 @@ with st.sidebar:
         st.caption("⚠️ Picks are not backed up — add GITHUB_TOKEN and "
                    "GITHUB_REPO in this app's Secrets.")
     else:
-        _ok, _why = verify_token()
+        _ok, _why = sync_selftest()
         st.caption("☁️ Picks saved to GitHub."
-                   if _ok else f"⚠️ GitHub rejected the token — {_why}")
+                   if _ok else f"⚠️ GitHub refused to save — {_why}")
 
 # ─────────────────────────────────────────────
 # LOAD GAMES
@@ -865,23 +878,6 @@ games_by_id = {g["event_id"]: g for g in games}
 
 conn = get_conn()
 
-@st.cache_resource
-def _ensure_remote_copy():
-    """No database in the repo yet (first boot after the secrets go in)?
-    Push one now — otherwise a working token looks exactly like a broken
-    one until something happens to be saved."""
-    if not sync_enabled():
-        return "off"
-    try:
-        r = requests.get(f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}",
-                         headers=gh_headers(), timeout=15)
-    except requests.RequestException:
-        return "unreachable"
-    if r.status_code == 404:
-        return "created" if push_db_to_github() else "failed"
-    return "present" if r.status_code == 200 else _gh_reason(r)
-
-_ensure_remote_copy()
 
 pick_rows = pd.read_sql_query(
     "SELECT * FROM picks WHERE season=? AND week=?", conn, params=(cur_season, cur_week))
