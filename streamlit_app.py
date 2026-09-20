@@ -154,7 +154,7 @@ def push_db_to_github():
         st.session_state["sync_error"] = f"couldn't reach GitHub ({type(e).__name__})"
         return False
 
-@st.cache_resource
+@st.cache_data(ttl=60, show_spinner=False)
 def sync_selftest():
     """Can this token actually WRITE? Returns (ok, reason).
 
@@ -839,6 +839,9 @@ with st.sidebar:
         _ok, _why = sync_selftest()
         st.caption("☁️ Picks saved to GitHub."
                    if _ok else f"⚠️ GitHub refused to save — {_why}")
+        if not _ok and st.button("Re-check GitHub"):
+            sync_selftest.clear()
+            st.rerun()
 
 # ─────────────────────────────────────────────
 # LOAD GAMES
