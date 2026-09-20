@@ -900,7 +900,7 @@ def add_to_pool(g):
 
 _auto_graded = 0
 for _eid, _r in picks_by_id.items():
-    if _r["result"] is None:
+    if pd.isna(_r["result"]):
         _res, _score = grade_pick(_r, games_by_id.get(_eid))
         if _res:
             conn.execute("UPDATE picks SET result=?, final_score=? "
@@ -1022,9 +1022,9 @@ else:
             hp, ap = fair_probs(g)
             if hp is not None:
                 p_for_pick = hp if picked is g["home"] else ap
-            if r["result"]:
+            if not pd.isna(r["result"]):
                 sub = {"W": "✅ Won", "L": "❌ Lost", "P": "Push"}.get(r["result"], "")
-                if r["final_score"]:
+                if not pd.isna(r["final_score"]):
                     sub += f" · {r['final_score']}"
             else:
                 sub = confidence_word(p_for_pick)
