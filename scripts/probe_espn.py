@@ -81,7 +81,29 @@ with sync_playwright() as p:
                     pass
                 break
 
+    # Force a write: saving the tiebreaker at its existing value changes no
+    # data but calls save() -> push, which is the only real test of the token.
+    for frame in page.frames:
+        save_btn = frame.get_by_role("button", name="Save", exact=True)
+        if save_btn.count():
+            print("\nclicking tiebreaker Save to force a GitHub push...")
+            try:
+                save_btn.first.click(timeout=8_000)
+                page.wait_for_timeout(12_000)
+            except Exception as e:
+                print("  save click failed:", type(e).__name__)
+            break
+    else:
+        print("\nno Save button found (no picks yet?) — push not exercised")
+
     after = text_of(page)
+    print("\nafter save — sync warning present:",
+          "aren't backed up" in after or "rejected the token" in after)
+    for marker in ("GitHub said:", "rejected the token", "Picks saved to GitHub",
+                   "not backed up"):
+        if marker in after:
+            i = after.index(marker)
+            print(f"  [{marker}] ...{after[max(0, i - 80):i + 160]}...")
     print("\n" + "=" * 70)
     print("WITH 'MORE' OPEN (tail)")
     print("=" * 70)
