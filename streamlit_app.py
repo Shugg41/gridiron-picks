@@ -118,12 +118,26 @@ def pull_db_from_github():
     except Exception:
         pass  # boot must never crash on a sync hiccup; app falls back to a fresh DB
 
+def _gh_reason(r):
+    """GitHub's own explanation for a non-2xx, short enough for a caption."""
+    try:
+        msg = (r.json() or {}).get("message", "")
+    except Exception:
+        msg = ""
+    return f"{r.status_code} {msg}".strip()
+
 def push_db_to_github():
+    """Returns True on success. On failure, records WHY in session state —
+    a silent False is what made a bad token indistinguishable from an idle
+    app the last time this broke."""
     if not sync_enabled():
         return True  # local-only mode: a local commit is all there is
+    url = f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}"
     try:
-        url = f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}"
         r = requests.get(url, headers=gh_headers(), timeout=15)
+        if r.status_code not in (200, 404):
+            st.session_state["sync_error"] = _gh_reason(r)
+            return False
         sha = r.json().get("sha") if r.status_code == 200 else None
         with open(DB_PATH, "rb") as f:
             payload = {"message": f"Update picks db {datetime.now(ET):%Y-%m-%d %H:%M}",
@@ -131,9 +145,28 @@ def push_db_to_github():
         if sha:
             payload["sha"] = sha
         r = requests.put(url, headers=gh_headers(), json=payload, timeout=20)
-        return r.status_code in (200, 201)
-    except Exception:
+        if r.status_code in (200, 201):
+            st.session_state.pop("sync_error", None)
+            return True
+        st.session_state["sync_error"] = _gh_reason(r)
         return False
+    except requests.RequestException as e:
+        st.session_state["sync_error"] = f"couldn't reach GitHub ({type(e).__name__})"
+        return False
+
+@st.cache_resource
+def verify_token():
+    """One call per boot: can this token actually see the repo? Catches a
+    typo'd token or repo name immediately instead of at the next save.
+    Returns (ok, reason)."""
+    if not sync_enabled():
+        return False, "no secrets"
+    try:
+        r = requests.get(f"https://api.github.com/repos/{gh_repo()}",
+                         headers=gh_headers(), timeout=15)
+    except requests.RequestException as e:
+        return False, f"couldn't reach GitHub ({type(e).__name__})"
+    return (True, "") if r.status_code == 200 else (False, _gh_reason(r))
 
 @st.cache_resource
 def _boot_pull():
@@ -786,9 +819,13 @@ with st.sidebar:
         fetch_summary.clear()
         st.rerun()
     st.divider()
-    st.caption("☁️ Picks saved to GitHub." if sync_enabled()
-               else "⚠️ Picks are not backed up — add GITHUB_TOKEN and "
-                    "GITHUB_REPO in this app's Secrets.")
+    if not sync_enabled():
+        st.caption("⚠️ Picks are not backed up — add GITHUB_TOKEN and "
+                   "GITHUB_REPO in this app's Secrets.")
+    else:
+        _ok, _why = verify_token()
+        st.caption("☁️ Picks saved to GitHub."
+                   if _ok else f"⚠️ GitHub rejected the token — {_why}")
 
 # ─────────────────────────────────────────────
 # LOAD GAMES
@@ -827,6 +864,25 @@ for g in games:
 games_by_id = {g["event_id"]: g for g in games}
 
 conn = get_conn()
+
+@st.cache_resource
+def _ensure_remote_copy():
+    """No database in the repo yet (first boot after the secrets go in)?
+    Push one now — otherwise a working token looks exactly like a broken
+    one until something happens to be saved."""
+    if not sync_enabled():
+        return "off"
+    try:
+        r = requests.get(f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}",
+                         headers=gh_headers(), timeout=15)
+    except requests.RequestException:
+        return "unreachable"
+    if r.status_code == 404:
+        return "created" if push_db_to_github() else "failed"
+    return "present" if r.status_code == 200 else _gh_reason(r)
+
+_ensure_remote_copy()
+
 pick_rows = pd.read_sql_query(
     "SELECT * FROM picks WHERE season=? AND week=?", conn, params=(cur_season, cur_week))
 picks_by_id = {r["event_id"]: r for _, r in pick_rows.iterrows()}
@@ -860,7 +916,9 @@ if _auto_graded:
 
 if st.session_state.get("sync_failed"):
     c1, c2 = st.columns([4, 1])
-    c1.warning("⚠️ Some picks aren't backed up yet — they'd be lost if the app restarts.")
+    _why = st.session_state.get("sync_error", "")
+    c1.warning("⚠️ Some picks aren't backed up yet — they'd be lost if the app "
+               "restarts." + (f" GitHub said: {_why}" if _why else ""))
     if c2.button("Retry"):
         if push_db_to_github():
             st.session_state["sync_failed"] = False
