@@ -419,12 +419,19 @@ def _aliases(side):
 MATCH_WINDOW = 8   # lines apart, at most, for two teams to be one game
 
 def match_paste_lines(text, games):
-    """Pull games out of pasted text — a tidy "A vs B" list or a raw dump of
-    the whole Splash page, where each team is its own line.
+    """Pull games out of pasted text — a tidy "A vs B" list, a raw dump of the
+    whole Splash page, or the iOS Shortcut's team-codes-only payload.
 
     Both teams must appear, and appear NEAR each other. Matching on a single
     team name is too eager: a page carries other weeks' tabs and stray team
-    mentions, which is how a board of 25 games once imported as 28."""
+    mentions, which is how a board of 25 games once imported as 28.
+
+    Proximity alone is not enough on a dense board, though. The Shortcut sends
+    two lines per game, so eight lines away is four games away, and the
+    cross-league code collisions pair right back up (Dolphins' MIA with a
+    college WAKE). So each line is claimed by ONE game: candidate pairings are
+    taken closest-first, and a line already spoken for is gone. A real MIA/SF
+    pairing one line apart takes MIA before any MIA/WAKE invention can."""
     lines = text.splitlines()
     hits = {g["event_id"]: {"home": [], "away": []} for g in games}
     touched = set()
@@ -438,16 +445,26 @@ def match_paste_lines(text, games):
                     hits[g["event_id"]][key].append(i)
                     touched.add(i)
 
-    matched = []
+    # every plausible pairing, closest first; ties go to the earlier game
+    cands = []
     for g in games:
         h = hits[g["event_id"]]
-        if not h["home"] or not h["away"]:
-            continue                     # only one side named — not a game
-        gap = min(abs(a - b) for a in h["home"] for b in h["away"])
-        if gap > MATCH_WINDOW:
-            continue                     # two unrelated mentions, far apart
-        first = min(h["home"] + h["away"])
-        matched.append((lines[first].strip(), g))
+        for a in h["home"]:
+            for b in h["away"]:
+                gap = abs(a - b)
+                if gap <= MATCH_WINDOW:
+                    cands.append((gap, min(a, b), g["event_id"], g, a, b))
+    cands.sort(key=lambda c: (c[0], c[1]))
+
+    matched, claimed, seen = [], set(), set()
+    for _gap, first, eid, g, a, b in cands:
+        if eid in seen or a in claimed or b in claimed:
+            continue
+        seen.add(eid)
+        claimed.update((a, b))
+        matched.append((lines[first].strip(), g, first))
+    matched.sort(key=lambda m: m[2])
+    matched = [(label, g) for label, g, _i in matched]
 
     unmatched = [l.strip() for i, l in enumerate(lines)
                  if l.strip() and i not in touched]

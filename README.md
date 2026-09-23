@@ -52,8 +52,10 @@ it might be wrong.
 ## Importing the board
 
 One tap from Safari via an iOS Shortcut — see **docs/ios-shortcut.md**.
-The paste box accepts the same text if you'd rather copy it by hand; a
-raw dump of the whole page works, it finds the games itself.
+It sends just the team codes off the page (a couple hundred characters);
+the app pairs them into games itself. The paste box accepts the same text
+if you'd rather copy it by hand, and a raw dump of the whole page works
+too — it finds the games either way.
 
 ## Automation (GitHub Actions)
 
