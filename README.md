@@ -49,6 +49,12 @@ luck, not skill.
 predictor available. FPI, EPA and the box score are there to tell you when
 it might be wrong.
 
+## Importing the board
+
+One tap from Safari via an iOS Shortcut — see **docs/ios-shortcut.md**.
+The paste box accepts the same text if you'd rather copy it by hand; a
+raw dump of the whole page works, it finds the games itself.
+
 ## Automation (GitHub Actions)
 
 - **keep-awake.yml** — visits the app every 2h so Streamlit Cloud never
