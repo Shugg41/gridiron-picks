@@ -21,10 +21,11 @@ Live app: https://shuggs-picks.streamlit.app
    from the chalk crowd on the week. Tap **Details** for the case in plain
    English: the line, ESPN's model, recent form, injuries. Flip 2–3 of them.
    A change anywhere else gets an ⚠️ risky change flag.
-4. **Copy into Splash** — cards and the numbered list both run in **board
-   order**, numbered to match, so you can work down the app and the Splash
-   page together; the tiebreaker is pre-filled with the Vegas total of the
-   board's last game. Hit *I entered them all* when done.
+4. **Copy into Splash** — cards and the numbered list both run in **kickoff
+   order**, the same order Splash lists the board in, numbered to match, so
+   you can work down the app and the Splash page together; the tiebreaker is
+   pre-filled with the Vegas total of the last game. Hit *I entered them all*
+   when done.
 5. Picks **lock Saturday noon ET** (or kickoff if earlier). Results,
    season record and the full game list live under **More**.
 

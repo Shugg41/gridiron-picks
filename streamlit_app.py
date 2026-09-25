@@ -984,16 +984,28 @@ conn = get_conn()
 pick_rows = pd.read_sql_query(
     "SELECT * FROM picks WHERE season=? AND week=?", conn, params=(cur_season, cur_week))
 picks_by_id = {r["event_id"]: r for _, r in pick_rows.iterrows()}
-# Board order, not kickoff order: picks get entered by scrolling the Splash
-# page, so the app has to run down it in step. Games added by hand have no
-# board position and sit at the end.
 slate_rows = pd.read_sql_query(
-    "SELECT * FROM slate WHERE season=? AND week=? "
-    "ORDER BY board_pos IS NULL, board_pos, added_at, rowid",
+    "SELECT * FROM slate WHERE season=? AND week=?",
     conn, params=(cur_season, cur_week))
 slate_ids = list(slate_rows["event_id"])
 board_pos = {r["event_id"]: r["board_pos"] for _, r in slate_rows.iterrows()}
-slate_games = [games_by_id[eid] for eid in slate_ids if eid in games_by_id]
+
+# Kickoff order — the order Splash lists the board in, so the app can be
+# scrolled alongside it. Kickoff has to be the key rather than the stored
+# page position: eight of these games are added by hand or were loaded
+# before positions were recorded, and those would otherwise pile up at the
+# end. The stored position only breaks ties, which is where it earns its
+# keep — eight NFL games kick at 1:00 together and Splash has its own order
+# within the slot.
+def _slate_order(g):
+    pos = board_pos.get(g["event_id"])
+    return (g["date"], float(pos) if pd.notna(pos) else float("inf"), g["name"])
+
+slate_games = sorted((games_by_id[eid] for eid in slate_ids if eid in games_by_id),
+                     key=_slate_order)
+# Numbered off that order, so the numbers are always 1…N with no holes,
+# whatever route a game took into the pool.
+slate_num = {g["event_id"]: i for i, g in enumerate(slate_games, 1)}
 
 def add_to_pool(g, pos=None):
     """Add a game to this week's pool; return 1 if it wasn't already there.
@@ -1151,12 +1163,11 @@ else:
     flip_ranked = rank_flips([g for g in slate_games if worth_flipping(g)])
     take = recommended_flips(flip_ranked)
     take_ids = {g["event_id"] for _sc, g, _dog in take}
-    # The standouts, up top, each tagged with its board number — so the week's
-    # decisions are visible at a glance without breaking the list below out of
-    # board order. The number is the bridge between the two.
+    # The standouts, up top, each tagged with its number in the list below —
+    # so the week's decisions are visible at a glance without pulling those
+    # games out of order. The number is the bridge between the two.
     def _num(g):
-        pos = board_pos.get(g["event_id"])
-        return f"{int(pos)}. " if pd.notna(pos) else ""
+        return f"{slate_num[g['event_id']]}. "
 
     if take:
         lead = "Flip this one" if len(take) == 1 else f"Flip these {len(take)}"
@@ -1183,12 +1194,11 @@ else:
                    + ", ".join(f"{_num(g)}{favorite_side(g)[1]['name']}"
                                for g in rest if favorite_side(g)[1]))
 
-    # Board order — the same order the Splash page shows, so both can be
-    # scrolled together. Flips are called out by the headline above and by
-    # each card's chip; they don't need to be hoisted out of position.
+    # Kickoff order — the same order the Splash page lists them in, so both
+    # can be scrolled together. Flips are called out by the block above and
+    # by each card's chip; they don't need to be hoisted out of position.
     for g in slate_games:
         eid = g["event_id"]
-        pos = board_pos.get(eid)
         r = picks_by_id.get(eid)
         rec_side, rec_p = recommend(g)
         locked = is_locked(g["date"])
@@ -1256,7 +1266,7 @@ else:
 
         # The board number makes a card findable on the Splash page at a
         # glance — and makes it obvious if the import skipped something.
-        num = f"<span class='pick-num'>{int(pos)}.</span> " if pd.notna(pos) else ""
+        num = f"<span class='pick-num'>{slate_num[eid]}.</span> "
         st.markdown(f"""
 <div class='pick-card'>
   <div class='pick-line'>{num}{headline}{chips}</div>
@@ -1313,27 +1323,21 @@ else:
         tb_row = conn.execute("SELECT value FROM tiebreaker WHERE season=? AND week=?",
                               (cur_season, cur_week)).fetchone()
         tb_saved = tb_row[0] if tb_row else None
-        # Numbered by BOARD position, not by position in this list: number 7
-        # here is the board's 7th game, so the two can be worked down
-        # together. A gap in the numbers is an unpicked game, which is worth
-        # seeing rather than smoothing over.
-        lines = []
-        for i, g in enumerate(picked_games, 1):
-            pos = board_pos.get(g["event_id"])
-            r = picks_by_id[g["event_id"]]
-            n = int(pos) if pd.notna(pos) else i
-            lines.append(f"{n:2d}. {r['pick_name']} over {r['opp_name']}")
+        # Numbered by position on the board, not by position in this list:
+        # number 7 here is the board's 7th game, so the two can be worked
+        # down together. A gap in the numbers is an unpicked game, which is
+        # worth seeing rather than smoothing over.
+        lines = [f"{slate_num[g['event_id']]:2d}. "
+                 f"{picks_by_id[g['event_id']]['pick_name']} over "
+                 f"{picks_by_id[g['event_id']]['opp_name']}"
+                 for g in picked_games]
         if tb_saved is not None:
             lines.append(f"Tiebreaker: {tb_saved}")
         st.code("\n".join(lines), language=None)
 
-        # The pool's tiebreaker is the board's LAST game, which is not always
-        # the latest kickoff — so go by board position when it's known.
-        def _tb_key(g):
-            pos = board_pos.get(g["event_id"])
-            return (pd.notna(pos), float(pos) if pd.notna(pos) else 0.0, g["date"])
-        tb_game = max((g for g in slate_games if g["over_under"]),
-                      key=_tb_key, default=None)
+        # The pool's tiebreaker is the board's last game — the last one in
+        # the list, since the list is in kickoff order.
+        tb_game = next((g for g in reversed(slate_games) if g["over_under"]), None)
         if tb_game:
             st.caption(f"💡 Vegas expects about **{tb_game['over_under']}** total points "
                        f"in {tb_game['name']} — a good tiebreaker guess.")
