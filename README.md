@@ -67,7 +67,12 @@ prints, so a short import says so instead of passing quietly.
 - **keep-awake.yml** — visits the app every 2h so Streamlit Cloud never
   puts it to sleep.
 - **pick-reminder.yml** — Saturday ~9 AM ET ntfy push if pool games are
-  unpicked or not yet entered in Splash. Silent when everything's done.
+  unpicked, not yet entered in Splash, or the tiebreaker is unsaved. Silent
+  when everything's done.
+- **lock-watch.yml** — every 3h, for games that kick *before* Saturday noon
+  and so lock at kickoff. Pushes when one is 2–5 hours out and still
+  unpicked; the window is as wide as the schedule, so each game is flagged
+  once. Silent about the noon deadline, which is the reminder's job.
 - **results-recap.yml** — Saturday night + Sunday morning ntfy push with the
   week's record.
 
@@ -94,3 +99,16 @@ Without secrets the app still works, local-only.
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
+
+## Tests
+
+```bash
+./tests/run.sh
+```
+
+No network: ESPN is faked with fixtures. `test_notify.py` covers the lock
+maths and every push; `test_import.py` covers loading the board, which is
+where the real bugs have been; `test_render.py` drives the actual screen
+through Streamlit's AppTest for ordering, numbering and grading. Fixtures
+are anchored to "next Saturday" — never hard-code a date, or every game
+reads as locked and the suite lies.

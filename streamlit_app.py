@@ -251,7 +251,8 @@ def get_conn():
     for stmt in ("ALTER TABLE picks ADD COLUMN entered_in_splash INTEGER DEFAULT 0",
                  "ALTER TABLE picks ADD COLUMN league TEXT",
                  "ALTER TABLE slate ADD COLUMN league TEXT",
-                 "ALTER TABLE slate ADD COLUMN board_pos INTEGER"):
+                 "ALTER TABLE slate ADD COLUMN board_pos INTEGER",
+                 "ALTER TABLE slate ADD COLUMN kickoff TEXT"):
         try:
             conn.execute(stmt)
         except sqlite3.OperationalError:
@@ -1003,6 +1004,18 @@ def _slate_order(g):
 
 slate_games = sorted((games_by_id[eid] for eid in slate_ids if eid in games_by_id),
                      key=_slate_order)
+
+# Kickoffs are what the lock watcher runs on, and it reads only the database.
+# Rows stored before the column existed have none, so fill them in from the
+# live scoreboard rather than waiting for a re-paste.
+_missing_kick = [g for g in slate_games
+                 if not (slate_rows.loc[slate_rows["event_id"] == g["event_id"],
+                                        "kickoff"].fillna("").iloc[0])]
+if _missing_kick:
+    for _g in _missing_kick:
+        conn.execute("UPDATE slate SET kickoff=? WHERE season=? AND week=? AND event_id=?",
+                     (_g["date"], cur_season, cur_week, _g["event_id"]))
+    save(conn)
 # Numbered off that order, so the numbers are always 1…N with no holes,
 # whatever route a game took into the pool.
 slate_num = {g["event_id"]: i for i, g in enumerate(slate_games, 1)}
@@ -1015,10 +1028,11 @@ def add_to_pool(g, pos=None):
     partially puts the stragglers in their real slots instead of appending
     them to the end."""
     cur = conn.execute(
-        "INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at, league) "
-        "VALUES (?,?,?,?,?,?)",
+        "INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at, league, kickoff) "
+        "VALUES (?,?,?,?,?,?,?)",
         (cur_season, cur_week, g["event_id"], g["name"],
-         datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB")))
+         datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB"),
+         g.get("date")))
     if pos is not None:
         conn.execute("UPDATE slate SET board_pos=? WHERE season=? AND week=? AND event_id=?",
                      (pos, cur_season, cur_week, g["event_id"]))

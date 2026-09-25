@@ -1,0 +1,26 @@
+# Games that kick before Saturday noon lock at kickoff, and the Saturday
+# morning reminder is far too late for them — a Thursday nighter would just
+# be gone. This checks every three hours and pushes when such a game is
+# 2-5 hours from locking and still unpicked (or picked but not yet entered
+# in Splash). The window is three hours wide and the schedule is three
+# hourly, so each game is flagged once without any state being kept.
+#
+# Silent otherwise, and silent entirely about the noon deadline — that one
+# belongs to pick-reminder.yml.
+name: Lock watch
+
+on:
+  schedule:
+    - cron: "41 */3 * * *"   # every 3 hours, offset to dodge the cron rush
+  workflow_dispatch: {}
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Warn about early-locking games
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python scripts/notify.py locksoon

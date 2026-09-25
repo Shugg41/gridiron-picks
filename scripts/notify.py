@@ -5,8 +5,9 @@ Runs in GitHub Actions with the repo checked out (the picks DB lives in the
 repo thanks to the app's GitHub sync). Uses only the standard library so the
 workflow needs no pip install.
 
-    python scripts/notify.py remind   # Sat AM: nag if picks are missing/unentered
-    python scripts/notify.py recap    # weekend: the week's record
+    python scripts/notify.py remind    # Sat AM: nag if picks are missing/unentered
+    python scripts/notify.py locksoon  # games that lock BEFORE Saturday noon
+    python scripts/notify.py recap     # weekend: the week's record
 
 Both read only the database. ESPN returns 403 to GitHub's runners, so
 scores are graded by the Streamlit app (which ESPN does serve) and land
@@ -19,6 +20,10 @@ import sqlite3
 import sys
 import urllib.parse
 import urllib.request
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
+ET = ZoneInfo("America/New_York")
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "football_picks.db")
 
@@ -55,7 +60,12 @@ def remind(conn):
         (season, week))}
     unpicked = len(slate_ids - set(picks))
     unentered = sum(1 for eid in slate_ids if eid in picks and not picks[eid])
-    if not unpicked and not unentered:
+    # The tiebreaker is its own prize-deciding field and is easy to forget —
+    # the app pre-fills a suggestion but it still has to be saved.
+    no_tb = conn.execute(
+        "SELECT COUNT(*) FROM tiebreaker WHERE season=? AND week=?",
+        (season, week)).fetchone()[0] == 0
+    if not unpicked and not unentered and not no_tb:
         print(f"Week {week}: all {len(slate_ids)} picks made and entered. Silent.")
         return
     bits = []
@@ -63,8 +73,72 @@ def remind(conn):
         bits.append(f"{unpicked} game(s) still unpicked")
     if unentered:
         bits.append(f"{unentered} pick(s) not entered in Splash")
+    if no_tb:
+        bits.append("no tiebreaker saved")
     send("⏰ Picks lock at noon!", f"Week {week}: " + " and ".join(bits) + ".",
          tags="alarm_clock,football")
+
+
+def lock_time(kickoff_iso):
+    """When a pick stops being changeable: noon ET on the slate's Saturday,
+    or kickoff if the game starts before that. Mirrors the app's own rule —
+    the week runs Tue-Mon, so Sunday and Monday games belong to the Saturday
+    behind them, not the one ahead."""
+    try:
+        kick = datetime.fromisoformat(kickoff_iso.replace("Z", "+00:00"))
+    except (AttributeError, ValueError):
+        return None, None
+    kick_et = kick.astimezone(ET)
+    w = kick_et.weekday()                      # Mon=0 … Sun=6
+    days_to_sat = -2 if w == 0 else 5 - w
+    sat = (kick_et + timedelta(days=days_to_sat)).date()
+    noon = datetime(sat.year, sat.month, sat.day, 12, 0, tzinfo=ET).astimezone(timezone.utc)
+    return min(kick, noon), noon
+
+
+# Alert once per game, without keeping any state: the watcher runs every
+# three hours, so a three-hour-wide window catches each game exactly once.
+EARLY_WARN_MIN = timedelta(hours=2)
+EARLY_WARN_MAX = timedelta(hours=5)
+
+
+def locksoon(conn, now=None):
+    """Nag about games that lock BEFORE the Saturday noon deadline.
+
+    A Thursday night game locks at kickoff, and the Saturday morning
+    reminder is far too late for it — that game is simply gone. Only early
+    kickoffs are considered here; the noon deadline is `remind`'s job, and
+    handling them separately keeps the two from doubling up."""
+    now = now or datetime.now(timezone.utc)
+    season, week = latest_week(conn, "slate")
+    if not season:
+        print("No slate recorded — nothing to watch.")
+        return
+    picks = {r[0]: r[1] for r in conn.execute(
+        "SELECT event_id, entered_in_splash FROM picks WHERE season=? AND week=?",
+        (season, week))}
+    due, soonest = [], None
+    for eid, matchup, kickoff in conn.execute(
+            "SELECT event_id, matchup, kickoff FROM slate WHERE season=? AND week=?",
+            (season, week)):
+        lock, noon = lock_time(kickoff)
+        if not lock or lock >= noon:
+            continue                       # locks at the normal deadline
+        if not EARLY_WARN_MIN <= lock - now <= EARLY_WARN_MAX:
+            continue
+        if eid not in picks:
+            due.append(f"{matchup} — no pick")
+        elif not picks[eid]:
+            due.append(f"{matchup} — not entered in Splash")
+        else:
+            continue
+        soonest = lock if soonest is None else min(soonest, lock)
+    if not due:
+        print("No early game needs attention right now. Silent.")
+        return
+    hrs = max(1, round((soonest - now).total_seconds() / 3600))
+    send(f"🔔 Locks in ~{hrs}h (early game)",
+         f"Week {week}: " + "; ".join(due), tags="alarm_clock,football")
 
 
 def recap(conn):
@@ -97,13 +171,13 @@ def recap(conn):
 
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else ""
-    if mode not in ("remind", "recap"):
-        sys.exit("usage: notify.py remind|recap")
+    if mode not in ("remind", "locksoon", "recap"):
+        sys.exit("usage: notify.py remind|locksoon|recap")
     if not os.path.exists(DB_PATH):
         print("No picks DB in repo yet — nothing to do.")
         return
     conn = sqlite3.connect(DB_PATH)
-    (remind if mode == "remind" else recap)(conn)
+    {"remind": remind, "locksoon": locksoon, "recap": recap}[mode](conn)
 
 
 if __name__ == "__main__":
