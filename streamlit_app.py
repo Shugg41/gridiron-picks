@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import base64
 import difflib
+import itertools
 import math
 import os
 import re
@@ -416,23 +417,52 @@ def _aliases(side):
         out.add(_norm(abbr).strip())
     return {a for a in out if a}
 
+def _loose_aliases(side):
+    """Codes other scoreboards use where ESPN uses its own. Splash writes
+    JAC, WAS and LA for teams ESPN calls JAX, WSH and LAR, and does the same
+    to colleges (APP for ESPN's APP ST). Deriving them — prefixes of the
+    squashed name, and every 1-3 letter per-word prefix combination — beats
+    a hand-kept translation table that rots the moment a code changes."""
+    out = set()
+    for a in (side.get("location"), side.get("name")):
+        if not a:
+            continue
+        words = re.sub(r"[^a-z ]", " ", a.lower()).split()
+        if not words:
+            continue
+        squash = "".join(words)
+        out.update(squash[:n] for n in (3, 4) if len(squash) > n)
+        if len(words) > 1:
+            for combo in itertools.product(*[[w[:k] for k in (1, 2, 3) if len(w) >= k]
+                                             for w in words]):
+                joined = "".join(combo)
+                if 2 <= len(joined) <= 5:
+                    out.add(joined)
+    return {a for a in out if len(a) >= 2} - _aliases(side)
+
 MATCH_WINDOW = 8   # lines apart, at most, for two teams to be one game
 
 def match_paste_lines(text, games):
-    """Pull games out of pasted text — a tidy "A vs B" list, a raw dump of the
-    whole Splash page, or the iOS Shortcut's team-codes-only payload.
+    """Pull games out of pasted text — a tidy "A vs B" list or a raw dump of
+    the whole Splash page, where each team is its own line.
 
     Both teams must appear, and appear NEAR each other. Matching on a single
     team name is too eager: a page carries other weeks' tabs and stray team
     mentions, which is how a board of 25 games once imported as 28.
 
-    Proximity alone is not enough on a dense board, though. The Shortcut sends
-    two lines per game, so eight lines away is four games away, and the
-    cross-league code collisions pair right back up (Dolphins' MIA with a
-    college WAKE). So each line is claimed by ONE game: candidate pairings are
-    taken closest-first, and a line already spoken for is gone. A real MIA/SF
-    pairing one line apart takes MIA before any MIA/WAKE invention can."""
+    Proximity alone is not enough either. Team codes run two lines apart, so
+    eight lines away is four games away, and the cross-league collisions pair
+    right back up (the Dolphins' MIA with a college WAKE). So each line is
+    claimed by ONE game: pairings are taken exact-spelling first and
+    closest-first, and a line already spoken for is gone. A real MIA/SF
+    pairing one line apart takes MIA before any MIA/WAKE invention can.
+    At least one side must be spelled exactly as ESPN spells it — two
+    guessed codes are a coincidence, not a game."""
     lines = text.splitlines()
+    # Alias sets are per game, not per line: a whole-page paste is ~800 lines
+    # against ~80 games, and rebuilding them inside the loop was 60k rebuilds.
+    alias = {g["event_id"]: {k: (_aliases(g[k]), _loose_aliases(g[k]))
+                             for k in ("home", "away")} for g in games}
     hits = {g["event_id"]: {"home": [], "away": []} for g in games}
     touched = set()
     for i, raw in enumerate(lines):
@@ -441,23 +471,35 @@ def match_paste_lines(text, games):
         line = _norm(raw)
         for g in games:
             for key in ("home", "away"):
-                if any(f" {a} " in line for a in _aliases(g[key])):
-                    hits[g["event_id"]][key].append(i)
-                    touched.add(i)
+                for tier, names in enumerate(alias[g["event_id"]][key]):
+                    found = next((a for a in names if f" {a} " in line), None)
+                    if found:
+                        hits[g["event_id"]][key].append((i, tier, found))
+                        touched.add(i)
+                        break            # exact beats loose for the same line
 
-    # every plausible pairing, closest first; ties go to the earlier game
+    # every plausible pairing: exact spellings first, then closest, then
+    # earliest on the page
     cands = []
     for g in games:
         h = hits[g["event_id"]]
-        for a in h["home"]:
-            for b in h["away"]:
-                gap = abs(a - b)
-                if gap <= MATCH_WINDOW:
-                    cands.append((gap, min(a, b), g["event_id"], g, a, b))
-    cands.sort(key=lambda c: (c[0], c[1]))
+        for a, ta, na in h["home"]:
+            for b, tb, nb in h["away"]:
+                if abs(a - b) > MATCH_WINDOW:
+                    continue
+                if min(ta, tb) > 0:
+                    continue    # both sides guessed — that is not evidence,
+                                # it is how Houston's code and Tennessee's
+                                # invent a Cougars-Volunteers game
+                if a == b and na == nb:
+                    continue    # one word can't be both teams: "Louisville"
+                                # is not Louisiana playing Louisiana Tech
+                cands.append((max(ta, tb), abs(a - b), min(a, b),
+                              g["event_id"], g, a, b))
+    cands.sort(key=lambda c: c[:3])
 
     matched, claimed, seen = [], set(), set()
-    for _gap, first, eid, g, a, b in cands:
+    for _tier, _gap, first, eid, g, a, b in cands:
         if eid in seen or a in claimed or b in claimed:
             continue
         seen.add(eid)
@@ -469,6 +511,26 @@ def match_paste_lines(text, games):
     unmatched = [l.strip() for i, l in enumerate(lines)
                  if l.strip() and i not in touched]
     return matched, unmatched
+
+def expected_games(text):
+    """How many games the board says it has. Splash heads each day with
+    "Saturday, Sep 19 9 games", so the paste carries its own answer key —
+    which is how the app can promise it got them all instead of the user
+    counting 31 cards on a phone."""
+    total = sum(int(n) for n in re.findall(r"\b(\d+)\s+games?\b", text, re.I))
+    return total or None
+
+# Page furniture that looks like a team code but isn't. "NO" stays out of
+# this list — that's New Orleans.
+_NOT_A_CODE = {"FINAL", "LIVE", "AM", "PM", "ET", "CT", "MT", "PT", "OT",
+               "TBD", "VS", "AT", "PICK", "PICKS", "WINNER", "TIE"}
+
+def code_like(line):
+    """Is this unmatched line a team the app failed to place, as opposed to
+    page furniture? Those are the only ones worth showing."""
+    s = line.strip()
+    return (re.fullmatch(r"[A-Z][A-Z0-9&.'()-]{1,6}( [A-Z0-9&.'()-]{1,4})?", s)
+            is not None and s.upper() not in _NOT_A_CODE)
 
 # ─────────────────────────────────────────────
 # GRADING
@@ -976,6 +1038,35 @@ if slate_games:
 # ─────────────────────────────────────────────
 # LOAD THIS WEEK'S GAMES
 # ─────────────────────────────────────────────
+def report_import(text, found, added, unmatched):
+    """Say plainly whether the whole board made it in.
+
+    A board that quietly comes up three games short is the worst outcome
+    here — the user enters picks in Splash off this list. The board states
+    its own size, so compare against it and name the codes that didn't land
+    rather than leaving a shortfall to be noticed on Saturday."""
+    want = expected_games(text)
+    stray = list(dict.fromkeys(u for u in unmatched if code_like(u)))
+    if want and found < want:
+        msg = f"Board says {want} games — only matched {found} ({added} new)."
+        if stray:
+            msg += "  Couldn't place: " + ", ".join(stray[:12]) + "."
+        st.warning(msg + "  Add the rest under More → All games, and tell "
+                   "Claude which codes missed.")
+    elif want and found > want:
+        st.warning(f"Matched {found} games but the board lists {want} — "
+                   f"check More → All games for one that isn't yours.")
+    elif want:
+        st.success(f"Got all {want} games on the board — {added} new.")
+    else:
+        st.success(f"Found {found} game(s), added {added} new.")
+    if unmatched:
+        with st.expander(f"{len(unmatched)} line(s) of page text ignored"):
+            st.caption("Kickoff times, records and the rest of the page land "
+                       "here. If a real game is missing, add it under "
+                       "More → All games.")
+            st.write("\n".join(f"- {u}" for u in unmatched[:60]))
+
 # An iOS Shortcut can hand the whole board over in the URL: it reads the
 # rendered text straight off the Splash page in Safari (real text, no OCR)
 # and opens the app with ?games=<encoded>. Same matcher as a manual paste.
@@ -988,25 +1079,19 @@ if _shared:
         save(conn)
     # Stash rather than render: adding games triggers a rerun, which would
     # wipe the message before it could be read.
-    st.session_state["import_note"] = (len(_matched), _added, _unmatched)
+    st.session_state["import_note"] = (_shared, len(_matched), _added, _unmatched)
     if _added:
         st.rerun()
 
 _note = st.session_state.pop("import_note", None)
 if _note:
-    _found, _added, _unmatched = _note
-    st.success(f"Loaded from Splash — found {_found} game(s), added {_added} new.")
-    if _unmatched:
-        with st.expander(f"{len(_unmatched)} line(s) of page text ignored"):
-            st.caption("Headers, kickoff times and the rest of the page land "
-                       "here. If a real game is missing, add it under "
-                       "More → All games.")
-            st.write("\n".join(f"- {u}" for u in _unmatched[:40]))
+    report_import(*_note)
 
 with st.expander("➕ Load this week's games", expanded=not slate_games):
-    st.caption("Paste the Splash board — the whole page text is fine, it sorts "
-               "out the games itself. Or use the Load into Picks shortcut to "
-               "send it over straight from Safari.")
+    st.caption("Run the Load into Picks shortcut on the Splash board in "
+               "Safari — it copies the page — then paste here. The whole "
+               "page text is what it wants; it sorts out the games itself "
+               "and tells you if any are missing.")
     with st.form("import_form"):
         paste = st.text_area("Game list", height=140, label_visibility="collapsed",
                              placeholder="Ohio State vs Texas\nPackers vs Vikings\n…")
@@ -1016,12 +1101,9 @@ with st.expander("➕ Load this week's games", expanded=not slate_games):
         added = sum(add_to_pool(g).rowcount for _line, g in matched)
         if added:
             save(conn)
-        st.success(f"Found {len(matched)} game(s), added {added}.")
-        if unmatched:
-            st.warning("Couldn't find these — add them under More → All games:\n\n- "
-                       + "\n- ".join(unmatched))
-        if added:
+            st.session_state["import_note"] = (paste, len(matched), added, unmatched)
             st.rerun()
+        report_import(paste, len(matched), added, unmatched)
 
 # ─────────────────────────────────────────────
 # THE PICK LIST — the whole point of the app

@@ -1,58 +1,54 @@
-# One-tap import from Splash (iOS Shortcut)
+# One-tap copy of the Splash board (iOS Shortcut)
 
-Reads the Splash board straight out of Safari — real page text, no
-screenshot and no OCR — and opens the app with the games loaded.
+Reads the board straight out of Safari — real page text, no screenshot and
+no OCR — copies it, and opens the app. You paste. Two taps instead of one,
+and **every game comes across**, which is the trade the one-tap version
+could not make.
 
 ## Build it once
 
-Shortcuts → **+** → **Edit** → add two actions:
+Shortcuts → **+** → **Edit** → add three actions:
 
-1. **Run JavaScript on Web Page** — paste the script below.
+1. **Run JavaScript on Web Page** — the whole script is one line:
+   ```javascript
+   completion(document.body.innerText);
+   ```
    Requires Settings → Shortcuts → Advanced → **Allow Running Scripts**.
    Set the action's input to **Shortcut Input**.
-2. **Open URLs** — feed it the JavaScript Result.
+2. **Copy to Clipboard** — feed it the JavaScript Result.
+3. **Open URLs** — `https://shuggs-picks.streamlit.app`
 
 Then ⓘ → **Show in Share Sheet** on. Name it *Load into Picks*.
 
-Use: Splash board in Safari → Share → *Load into Picks*.
+## Use it
 
-## The script
+Splash board in Safari → Share → *Load into Picks* → the app opens → tap
+the paste box under **Load this week's games**, paste, **Add these games**.
 
-```javascript
-var seen = document.body.innerText.split('\n').map(function(s){return s.trim();});
-var skip = /^(FINAL|LIVE|AM|PM|ET|CT|MT|PT|OT|TBD|VS|AT)$/;
-var keep = seen.filter(function(s){
-  return /^[A-Z][A-Z0-9&.()'-]{1,5}$/.test(s) && !skip.test(s);
-});
-completion('https://shuggs-picks.streamlit.app/?games=' + encodeURIComponent(keep.join('\n')));
-```
+The same clipboard text can go into a Claude chat instead, if you'd rather
+talk through the board than load it.
 
-It keeps **team codes only** — the all-caps 2–6 character lines (DET, BUF,
-UNC, CLEM), minus scoreboard furniture. Everything else on the page goes:
-records, win percentages, kickoff times, "Winner", "1 pick", day headers.
-A full board comes out around 200 characters encoded.
+## Why it copies instead of just opening the app loaded
 
-### Why the payload has to be this small
+It used to put the board in the URL. A URL here carries almost nothing: the
+whole page returned **414 Request-URI Too Large** from nginx, and even
+filtered down it returned **502** — under nginx's cap but still too big for
+Streamlit's own server. Shrinking the payload to team codes fit fine, but
+codes alone lose games: Splash writes **JAC**, **WAS**, **LA** where ESPN
+writes JAX, WSH and LAR, and it clips college codes the same way. A 25-game
+board came in at 22.
 
-Sending the whole page returned **414 Request-URI Too Large** — nginx caps
-the request line near 8KB. Filtering to "lines that could be a team name"
-cleared nginx but then returned **502 Bad Gateway**: the URL still passed
-the front door and Streamlit's own server dropped it. Codes only is two
-orders of magnitude under either limit, with room for a 40-game board.
+The clipboard has no size limit, so the app gets the full page — codes
+*and* the full team names printed lower down — and can find everything.
 
-Codes alone are enough because the app matches on abbreviations too, and
-pairs the two teams of a game by how close their lines are.
+## How you know nothing is missing
 
-## Note for whoever touches the matcher
-
-Codes-only input is **dense** — two lines per game instead of ten. The old
-"within 8 lines" rule then spans four games, which let the cross-league
-code collisions re-pair (the Dolphins' `MIA` with a college `WAKE`, three
-games down). `match_paste_lines()` now claims each line for exactly one
-game, closest pairing first, so a real `MIA`/`SF` one line apart takes
-`MIA` before any invention can. Scratchpad `abbrev_test.py` guards it.
+The board states its own size in the day headers ("Saturday, Sep 19 **9
+games**"). The app adds those up and reports against the total: *"Got all
+31 games on the board"*, or a warning naming the codes it couldn't place.
+A short import can't pass silently any more.
 
 ## If it ever breaks
 
-The app's **Load this week's games** box takes the same text: select the
-board in Safari, copy, paste. No length ceiling, a few more taps.
+Select the board in Safari by hand, copy, paste into the same box. That is
+all the Shortcut is doing.

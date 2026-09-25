@@ -51,11 +51,11 @@ it might be wrong.
 
 ## Importing the board
 
-One tap from Safari via an iOS Shortcut — see **docs/ios-shortcut.md**.
-It sends just the team codes off the page (a couple hundred characters);
-the app pairs them into games itself. The paste box accepts the same text
-if you'd rather copy it by hand, and a raw dump of the whole page works
-too — it finds the games either way.
+An iOS Shortcut copies the board out of Safari in one tap — see
+**docs/ios-shortcut.md** — then you paste it into *Load this week's games*.
+A raw dump of the whole page is exactly what it wants; it finds the games
+itself, and it checks what it found against the game count the board
+prints, so a short import says so instead of passing quietly.
 
 ## Automation (GitHub Actions)
 
