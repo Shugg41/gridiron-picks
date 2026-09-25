@@ -56,6 +56,7 @@ h2 { font-size: 1.35rem !important; }
 .pick-team  { color: var(--accent); font-weight: 700; }
 .pick-none  { color: var(--muted); font-weight: 700; }
 .pick-opp   { color: var(--text); opacity: 0.72; font-weight: 400; }
+.pick-num   { color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
 .pick-sub   { color: var(--muted); font-size: 0.82rem; margin-top: 0.1rem; }
 .chip {
     display: inline-block; font-size: 0.7rem; font-weight: 700;
@@ -244,7 +245,8 @@ def get_conn():
     """)
     for stmt in ("ALTER TABLE picks ADD COLUMN entered_in_splash INTEGER DEFAULT 0",
                  "ALTER TABLE picks ADD COLUMN league TEXT",
-                 "ALTER TABLE slate ADD COLUMN league TEXT"):
+                 "ALTER TABLE slate ADD COLUMN league TEXT",
+                 "ALTER TABLE slate ADD COLUMN board_pos INTEGER"):
         try:
             conn.execute(stmt)
         except sqlite3.OperationalError:
@@ -977,17 +979,33 @@ conn = get_conn()
 pick_rows = pd.read_sql_query(
     "SELECT * FROM picks WHERE season=? AND week=?", conn, params=(cur_season, cur_week))
 picks_by_id = {r["event_id"]: r for _, r in pick_rows.iterrows()}
+# Board order, not kickoff order: picks get entered by scrolling the Splash
+# page, so the app has to run down it in step. Games added by hand have no
+# board position and sit at the end.
 slate_rows = pd.read_sql_query(
-    "SELECT * FROM slate WHERE season=? AND week=? ORDER BY added_at, rowid", conn, params=(cur_season, cur_week))
+    "SELECT * FROM slate WHERE season=? AND week=? "
+    "ORDER BY board_pos IS NULL, board_pos, added_at, rowid",
+    conn, params=(cur_season, cur_week))
 slate_ids = list(slate_rows["event_id"])
+board_pos = {r["event_id"]: r["board_pos"] for _, r in slate_rows.iterrows()}
 slate_games = [games_by_id[eid] for eid in slate_ids if eid in games_by_id]
 
-def add_to_pool(g):
-    return conn.execute(
+def add_to_pool(g, pos=None):
+    """Add a game to this week's pool; return 1 if it wasn't already there.
+
+    `pos` is where the game sits on the Splash board. It is written on every
+    import, not just the first, so re-pasting a board that already loaded
+    partially puts the stragglers in their real slots instead of appending
+    them to the end."""
+    cur = conn.execute(
         "INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at, league) "
         "VALUES (?,?,?,?,?,?)",
         (cur_season, cur_week, g["event_id"], g["name"],
          datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB")))
+    if pos is not None:
+        conn.execute("UPDATE slate SET board_pos=? WHERE season=? AND week=? AND event_id=?",
+                     (pos, cur_season, cur_week, g["event_id"]))
+    return cur.rowcount
 
 _auto_graded = 0
 for _eid, _r in picks_by_id.items():
@@ -1074,7 +1092,7 @@ _shared = st.query_params.get("games")
 if _shared:
     st.query_params.clear()          # so a refresh doesn't re-import
     _matched, _unmatched = match_paste_lines(_shared, games)
-    _added = sum(add_to_pool(g).rowcount for _l, g in _matched)
+    _added = sum(add_to_pool(g, i) for i, (_l, g) in enumerate(_matched, 1))
     if _added:
         save(conn)
     # Stash rather than render: adding games triggers a rerun, which would
@@ -1098,7 +1116,7 @@ with st.expander("➕ Load this week's games", expanded=not slate_games):
         submitted = st.form_submit_button("Add these games")
     if submitted and paste.strip():
         matched, unmatched = match_paste_lines(paste, games)
-        added = sum(add_to_pool(g).rowcount for _line, g in matched)
+        added = sum(add_to_pool(g, i) for i, (_line, g) in enumerate(matched, 1))
         if added:
             save(conn)
             st.session_state["import_note"] = (paste, len(matched), added, unmatched)
@@ -1140,12 +1158,12 @@ else:
         st.caption("No flip worth making this week — every close game is still "
                    "leaning the favorite's way. Ride the chalk.")
 
-    # Recommended flips first, then the rest of the close ones, then by kickoff.
-    ordered = sorted(slate_games,
-                     key=lambda g: (g["event_id"] not in take_ids,
-                                    not worth_flipping(g), g["date"], g["name"]))
-    for g in ordered:
+    # Board order — the same order the Splash page shows, so both can be
+    # scrolled together. Flips are called out by the headline above and by
+    # each card's chip; they don't need to be hoisted out of position.
+    for g in slate_games:
         eid = g["event_id"]
+        pos = board_pos.get(eid)
         r = picks_by_id.get(eid)
         rec_side, rec_p = recommend(g)
         locked = is_locked(g["date"])
@@ -1211,9 +1229,12 @@ else:
             if dp is not None and alt:
                 sub += f" · {alt['name']} {dp:.0%} to win"
 
+        # The board number makes a card findable on the Splash page at a
+        # glance — and makes it obvious if the import skipped something.
+        num = f"<span class='pick-num'>{int(pos)}.</span> " if pd.notna(pos) else ""
         st.markdown(f"""
 <div class='pick-card'>
-  <div class='pick-line'>{headline}{chips}</div>
+  <div class='pick-line'>{num}{headline}{chips}</div>
   <div class='pick-sub'>{sub} · {when}</div>
 </div>""", unsafe_allow_html=True)
 
@@ -1267,15 +1288,27 @@ else:
         tb_row = conn.execute("SELECT value FROM tiebreaker WHERE season=? AND week=?",
                               (cur_season, cur_week)).fetchone()
         tb_saved = tb_row[0] if tb_row else None
-        lines = [f"{i:2d}. {picks_by_id[g['event_id']]['pick_name']} over "
-                 f"{picks_by_id[g['event_id']]['opp_name']}"
-                 for i, g in enumerate(picked_games, 1)]
+        # Numbered by BOARD position, not by position in this list: number 7
+        # here is the board's 7th game, so the two can be worked down
+        # together. A gap in the numbers is an unpicked game, which is worth
+        # seeing rather than smoothing over.
+        lines = []
+        for i, g in enumerate(picked_games, 1):
+            pos = board_pos.get(g["event_id"])
+            r = picks_by_id[g["event_id"]]
+            n = int(pos) if pd.notna(pos) else i
+            lines.append(f"{n:2d}. {r['pick_name']} over {r['opp_name']}")
         if tb_saved is not None:
             lines.append(f"Tiebreaker: {tb_saved}")
         st.code("\n".join(lines), language=None)
 
+        # The pool's tiebreaker is the board's LAST game, which is not always
+        # the latest kickoff — so go by board position when it's known.
+        def _tb_key(g):
+            pos = board_pos.get(g["event_id"])
+            return (pd.notna(pos), float(pos) if pd.notna(pos) else 0.0, g["date"])
         tb_game = max((g for g in slate_games if g["over_under"]),
-                      key=lambda g: g["date"], default=None)
+                      key=_tb_key, default=None)
         if tb_game:
             st.caption(f"💡 Vegas expects about **{tb_game['over_under']}** total points "
                        f"in {tb_game['name']} — a good tiebreaker guess.")

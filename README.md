@@ -9,18 +9,22 @@ Live app: https://shuggs-picks.streamlit.app
 
 ## Weekly routine
 
-1. **Load the games** — screenshot the Splash board, send the images to
-   Claude, paste the list it gives back into *Load this week's games*.
+1. **Load the games** — run the *Load into Picks* shortcut on the Splash
+   board in Safari and paste into *Load this week's games*. The app reports
+   what it found against the game count the board prints, so a short import
+   says so.
 2. **Tap "Pick all N games for me"** — every game is picked for you using
    the devigged betting line (the best public predictor there is).
-3. **Look at the 🔄 games** — these float to the top. They're the near
-   coin flips where taking the underdog costs almost nothing on the season
-   but separates you from the chalk crowd on the week. Tap **Why?** for the
-   case in plain English: the line, ESPN's model, recent form, injuries.
-   Flip 2–3 of them. A change anywhere else gets an ⚠️ risky change flag.
-4. **Copy into Splash** — the numbered list at the bottom matches the order
-   you pasted; the tiebreaker is pre-filled with the Vegas total of the last
-   game. Hit *I entered them all* when done.
+3. **Look at the 🔄 games** — the headline at the top names them, and each
+   one carries its chip in the list. They're the near coin flips where
+   taking the underdog costs almost nothing on the season but separates you
+   from the chalk crowd on the week. Tap **Details** for the case in plain
+   English: the line, ESPN's model, recent form, injuries. Flip 2–3 of them.
+   A change anywhere else gets an ⚠️ risky change flag.
+4. **Copy into Splash** — cards and the numbered list both run in **board
+   order**, numbered to match, so you can work down the app and the Splash
+   page together; the tiebreaker is pre-filled with the Vegas total of the
+   board's last game. Hit *I entered them all* when done.
 5. Picks **lock Saturday noon ET** (or kickoff if earlier). Results,
    season record and the full game list live under **More**.
 
