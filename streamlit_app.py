@@ -57,6 +57,11 @@ h2 { font-size: 1.35rem !important; }
 .pick-none  { color: var(--muted); font-weight: 700; }
 .pick-opp   { color: var(--text); opacity: 0.72; font-weight: 400; }
 .pick-num   { color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+.standout   {
+    font-size: 1.05rem; line-height: 1.5; padding: 0.35rem 0.7rem;
+    margin: 0.2rem 0; border-radius: 8px;
+    background: var(--surface2); border-left: 3px solid var(--accent);
+}
 .pick-sub   { color: var(--muted); font-size: 0.82rem; margin-top: 0.1rem; }
 .chip {
     display: inline-block; font-size: 0.7rem; font-weight: 700;
@@ -1146,10 +1151,24 @@ else:
     flip_ranked = rank_flips([g for g in slate_games if worth_flipping(g)])
     take = recommended_flips(flip_ranked)
     take_ids = {g["event_id"] for _sc, g, _dog in take}
+    # The standouts, up top, each tagged with its board number — so the week's
+    # decisions are visible at a glance without breaking the list below out of
+    # board order. The number is the bridge between the two.
+    def _num(g):
+        pos = board_pos.get(g["event_id"])
+        return f"{int(pos)}. " if pd.notna(pos) else ""
+
     if take:
-        names = ", ".join(f"**{dog['name']}**" for _sc, _g, dog in take)
         lead = "Flip this one" if len(take) == 1 else f"Flip these {len(take)}"
-        st.markdown(f"### 🔄 {lead}: {names}")
+        st.markdown(f"### 🔄 {lead}")
+        for _sc, g, dog in take:
+            fav = g["home"] if dog is g["away"] else g["away"]
+            dp = dog_prob(g)
+            odds = f" — {dp:.0%} to win" if dp is not None else ""
+            st.markdown(f"<div class='standout'><span class='pick-num'>{_num(g)}</span>"
+                        f"<span class='pick-team'>{dog['name']}</span>"
+                        f"<span class='pick-opp'> over {fav['name']}{odds}</span></div>",
+                        unsafe_allow_html=True)
         st.caption("The closest games on your card. Taking the underdog here "
                    "costs almost nothing over a season but separates you from "
                    "everyone riding the chalk this week. Everything else: "
@@ -1157,6 +1176,12 @@ else:
     elif flip_ranked:
         st.caption("No flip worth making this week — every close game is still "
                    "leaning the favorite's way. Ride the chalk.")
+
+    rest = [g for _sc, g, _dog in flip_ranked if g["event_id"] not in take_ids]
+    if rest:
+        st.caption("Also close, but still leaning the favorite: "
+                   + ", ".join(f"{_num(g)}{favorite_side(g)[1]['name']}"
+                               for g in rest if favorite_side(g)[1]))
 
     # Board order — the same order the Splash page shows, so both can be
     # scrolled together. Flips are called out by the headline above and by
