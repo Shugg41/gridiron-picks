@@ -28,6 +28,19 @@ ET = ZoneInfo("America/New_York")
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "football_picks.db")
 
 
+def header_safe(text):
+    """HTTP headers are latin-1 only. An emoji in the title raises
+    UnicodeEncodeError inside http.client before anything is sent — which
+    is exactly how the Saturday reminder managed to fail silently every
+    week while the ASCII-titled recap went through fine. The emoji belongs
+    in `tags` anyway: ntfy renders those as emoji beside the title."""
+    try:
+        text.encode("latin-1")
+        return text
+    except UnicodeEncodeError:
+        return "".join(c for c in text if ord(c) < 256).strip() or "Gridiron Picks"
+
+
 def send(title, message, tags="football"):
     topic = os.environ.get("NTFY_TOPIC", "").strip()
     if not topic:
@@ -35,8 +48,8 @@ def send(title, message, tags="football"):
         return
     req = urllib.request.Request(
         f"https://ntfy.sh/{urllib.parse.quote(topic)}",
-        data=message.encode(),
-        headers={"Title": title, "Tags": tags})
+        data=message.encode(),                 # the body is UTF-8, emoji fine
+        headers={"Title": header_safe(title), "Tags": tags})
     with urllib.request.urlopen(req, timeout=15) as r:
         print(f"ntfy: {r.status}")
 
@@ -75,7 +88,7 @@ def remind(conn):
         bits.append(f"{unentered} pick(s) not entered in Splash")
     if no_tb:
         bits.append("no tiebreaker saved")
-    send("⏰ Picks lock at noon!", f"Week {week}: " + " and ".join(bits) + ".",
+    send("Picks lock at noon!", f"Week {week}: " + " and ".join(bits) + ".",
          tags="alarm_clock,football")
 
 
@@ -137,7 +150,7 @@ def locksoon(conn, now=None):
         print("No early game needs attention right now. Silent.")
         return
     hrs = max(1, round((soonest - now).total_seconds() / 3600))
-    send(f"🔔 Locks in ~{hrs}h (early game)",
+    send(f"Early game locks in ~{hrs}h",
          f"Week {week}: " + "; ".join(due), tags="alarm_clock,football")
 
 

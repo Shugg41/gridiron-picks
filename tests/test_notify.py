@@ -9,13 +9,49 @@ import os
 import sqlite3
 import sys
 import tempfile
+import urllib.request
 from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 import notify                                          # noqa: E402
 
 SENT = []
-notify.send = lambda title, message, tags="football": SENT.append((title, message))
+ALL_TITLES = []          # never cleared, so the sweep at the end sees them all
+_real_send = notify.send
+
+
+def _capture(title, message, tags="football"):
+    SENT.append((title, message))
+    ALL_TITLES.append(title)
+
+
+notify.send = _capture
+
+
+def sent_for_real(title, message, tags="football"):
+    """Run the genuine send() against a fake ntfy, so a title that cannot go
+    into an HTTP header fails here instead of in a workflow at 9 AM."""
+    captured = {}
+
+    class FakeResp:
+        status = 200
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=None):
+        captured["headers"] = dict(req.header_items())
+        captured["body"] = req.data
+        return FakeResp()
+
+    real_urlopen = urllib.request.urlopen
+    urllib.request.urlopen = fake_urlopen
+    os.environ["NTFY_TOPIC"] = "test-topic"
+    try:
+        _real_send(title, message, tags)
+    finally:
+        urllib.request.urlopen = real_urlopen
+        os.environ.pop("NTFY_TOPIC", None)
+    return captured
 
 
 def db():
@@ -157,5 +193,28 @@ SENT.clear()
 notify.recap(conn)
 assert not SENT
 print("recap stays quiet before kickoff OK")
+
+# ── the wire itself: an emoji title used to raise UnicodeEncodeError deep
+#    inside http.client, so the Saturday reminder never sent at all while
+#    the ASCII-titled recap did. Headers are latin-1; the body is not. ───
+cap = sent_for_real("⏰ Picks lock at noon!", "Week 4: 1 game(s) still unpicked.",
+                    tags="alarm_clock,football")
+assert cap["headers"]["Title"] == "Picks lock at noon!", cap["headers"]
+cap["headers"]["Title"].encode("latin-1")            # must not raise
+assert cap["headers"]["Tags"] == "alarm_clock,football", cap["headers"]
+assert notify.header_safe("Early game locks in ~3h") == "Early game locks in ~3h"
+assert notify.header_safe("🔔") == "Gridiron Picks", notify.header_safe("🔔")
+# an em dash is latin-1 safe? no — but it must survive as *something*
+assert notify.header_safe("Picks — lock").encode("latin-1")
+# the body keeps its unicode
+cap = sent_for_real("Pick results", "Week 4: 24–7 final")
+assert "24–7".encode() in cap["body"], cap["body"]
+print("emoji titles can no longer break a send OK")
+
+# every title the app produced anywhere in this run must be header-clean
+assert ALL_TITLES, "no notification fired — the sweep below would prove nothing"
+for title in ALL_TITLES:
+    title.encode("latin-1")
+print(f"all {len(ALL_TITLES)} titles raised in this run are latin-1 clean OK")
 
 print("\nALL NOTIFY TESTS PASS")
