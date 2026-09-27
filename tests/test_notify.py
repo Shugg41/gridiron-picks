@@ -157,11 +157,13 @@ SENT.clear()
 notify.remind(conn)
 assert not SENT, "everything done — should be silent"
 
+# ...but once every pick is in and marked entered, the user has said they
+# are done in Splash, and the app cannot see the tiebreaker they typed there
 conn.execute("DELETE FROM tiebreaker")
 SENT.clear()
 notify.remind(conn)
-assert SENT and "no tiebreaker saved" in SENT[-1][1], SENT
-print("remind nags about a missing tiebreaker OK")
+assert not SENT, f"nagged about a tiebreaker after everything was entered: {SENT}"
+print("remind trusts 'all entered' and stops nagging OK")
 
 conn = db()
 add_game(conn, "a", "A @ B", SAT_LATE)
@@ -172,6 +174,13 @@ msg = SENT[-1][1]
 assert "1 game(s) still unpicked" in msg and "1 pick(s) not entered" in msg, msg
 assert "no tiebreaker" in msg, msg
 print("remind reports all three gaps OK")
+
+# with work outstanding but the tiebreaker saved, it is not mentioned
+conn.execute("INSERT INTO tiebreaker VALUES (2026,4,42)")
+SENT.clear()
+notify.remind(conn)
+assert "no tiebreaker" not in SENT[-1][1], SENT
+print("remind stays quiet about a saved tiebreaker OK")
 
 # ── recap: grades only what the app already graded ───────────────────────
 conn = db()

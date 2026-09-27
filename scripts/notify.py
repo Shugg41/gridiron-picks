@@ -74,11 +74,14 @@ def remind(conn):
     unpicked = len(slate_ids - set(picks))
     unentered = sum(1 for eid in slate_ids if eid in picks and not picks[eid])
     # The tiebreaker is its own prize-deciding field and is easy to forget —
-    # the app pre-fills a suggestion but it still has to be saved.
-    no_tb = conn.execute(
+    # the app pre-fills a suggestion but it still has to be saved. Only raise
+    # it while something else is outstanding, though: the app cannot see
+    # Splash, and "I entered them all" is the user saying they are finished.
+    # Nagging past that point is crying wolf about a box already ticked.
+    no_tb = (unpicked or unentered) and conn.execute(
         "SELECT COUNT(*) FROM tiebreaker WHERE season=? AND week=?",
         (season, week)).fetchone()[0] == 0
-    if not unpicked and not unentered and not no_tb:
+    if not unpicked and not unentered:
         print(f"Week {week}: all {len(slate_ids)} picks made and entered. Silent.")
         return
     bits = []
