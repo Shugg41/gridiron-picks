@@ -255,51 +255,77 @@ def parse_distribution(text):
     return [(sides[i], sides[i + 1]) for i in range(0, len(sides) - 1, 2)]
 
 
-def parse_standings(text, me=None):
-    """Read the Standings page into [(rank, name, points)], best first.
+@dataclass
+class Standing:
+    rank: int = 0
+    name: str = ""
+    entry: str = ""
+    points: int = 0
+    wins: int = 0
+    losses: int = 0
+    ties: int = 0
+    tie_diff: Optional[int] = None      # cumulative, lower is better
+    me: bool = False
 
-    Splash prints a rank, an entry name and a points total per row. The
-    layout of everything around it is unknown until a real page is seen,
-    so this stays deliberately loose: find a rank-looking number, take the
-    next line as a name and the next number as points, and skip anything
-    that doesn't fit rather than inventing rows.
+
+def parse_standings(text):
+    """Read the Standings page into (rows, field_size), best rank first.
+
+    Every row is anchored on its own "View entry details" link, because
+    that is the one line each row definitely has and definitely has only
+    once. Points, the W-L record and the tie differential follow it; the
+    entry label and entrant name come before it; the rank sits before
+    those, past a single-letter avatar line that some rows have and others
+    do not. Anchoring on the rank number instead breaks on exactly that
+    inconsistency, and on the fact that a bare integer is also what points
+    and tie differentials look like.
+
+    The tie differential matters more than it first appears: it is
+    cumulative over the season and settles placings whenever entries tie
+    on points, so it is carried through rather than dropped.
     """
-    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    lines = [l.strip() for l in text.splitlines()]
     rows = []
     for i, line in enumerate(lines):
-        rank = _int(line.lstrip("#"))
-        if rank is None or not 1 <= rank <= 999:
+        if not line.lower().startswith(". view entry"):
             continue
-        name, pts = None, None
-        for j in range(i + 1, min(i + 4, len(lines))):
-            nxt = lines[j]
-            if name is None and _int(nxt.lstrip("#")) is None:
-                name = nxt
-            elif name is not None:
-                pts = _int(nxt.split()[0]) if nxt.split() else None
-                if pts is not None:
-                    break
-        if name and pts is not None:
-            rows.append((rank, name, pts))
-    rows.sort(key=lambda r: r[0])
-    return rows
+        if i + 3 >= len(lines) or i < 3:
+            continue
+        pts, rec, diff = lines[i + 1], lines[i + 2], lines[i + 3]
+        wl = re.match(r"^(\d+)-(\d+)(?:-(\d+))?$", rec)
+        if _int(pts) is None or not wl:
+            continue
+        name = lines[i - 2]
+        j = i - 3
+        if j >= 0 and len(lines[j]) == 1 and lines[j].isalpha() and lines[j].isupper():
+            j -= 1                      # the avatar initial, when present
+        rank = _int(lines[j]) if j >= 0 else None
+        if rank is None:
+            continue
+        rows.append(Standing(
+            rank=rank, name=name.replace(" You", "").strip(), entry=lines[i - 1],
+            points=_int(pts), wins=_int(wl.group(1)), losses=_int(wl.group(2)),
+            ties=_int(wl.group(3)) or 0, tie_diff=_int(diff),
+            me=name.endswith("You") or " You" in name))
+    rows.sort(key=lambda r: r.rank)
+    size = re.search(r"All entries\s*(\d+)", text)
+    return rows, (_int(size.group(1)) if size else len(rows))
 
 
 def sniff(text):
-    """Which Splash page is this? Returns 'entry', 'distribution',
-    'standings', 'board' or None.
+    """Which Splash page is this? 'entry', 'distribution', 'standings',
+    'board', or None.
 
-    The user pastes four different pages into one box, and guessing wrong
-    would write nonsense into the database, so each test is something only
-    that page has.
+    Every page carries the same navigation bar — Standings, My entries,
+    Pick Distribution — so the nav says nothing about which page you are
+    actually on. Each test below keys on something only the page body has.
     """
     t = text.lower()
-    if "pick distribution" in t and "%)" in text:
+    if ". view entry details" in t or ("all entries" in t and "tie diff" in t):
+        return "standings"
+    if "autopicks" in t and "%)" in text:
         return "distribution"
-    if "standings" in t and re.search(r"^\s*#?\d{1,3}\s*$", text, re.M):
-        if "my entries" not in t:
-            return "standings"
-    if re.search(r"\bpts\b", t) and ("rank:" in t or "view picks" in t):
+    if "view picks" in t or "rank:" in t:
         return "entry"
     if re.search(r"\d+\s+games?\b", t):
         return "board"

@@ -16,10 +16,15 @@ from gridiron import splash                                   # noqa: E402
 HERE = os.path.dirname(__file__)
 ENTRY = open(os.path.join(HERE, "fixtures", "entry_week4.txt")).read()
 DIST = open(os.path.join(HERE, "fixtures", "distribution_week4.txt")).read()
+STAND = open(os.path.join(HERE, "fixtures", "standings_week4.txt")).read()
 
 # ── which page is this? ─────────────────────────────────────────────────
 assert splash.sniff(ENTRY) == "entry", splash.sniff(ENTRY)
 assert splash.sniff(DIST) == "distribution", splash.sniff(DIST)
+assert splash.sniff(STAND) == "standings", splash.sniff(STAND)
+# every page carries the same nav bar, so the nav must not decide it
+for page in (ENTRY, DIST, STAND):
+    assert "Pick Distribution" in page and "Standings" in page
 assert splash.sniff("") is None
 assert splash.sniff("just some text") is None
 print("sniff tells the pages apart OK")
@@ -94,6 +99,44 @@ missing = dist_codes - entry_codes
 assert missing == {"GB", "ATL"}, missing
 print("entry page omits unpicked games — reconcile against the board OK")
 
+# ── the standings page ──────────────────────────────────────────────────
+rows, size = splash.parse_standings(STAND)
+assert size == 38, size
+assert len(rows) == 8, len(rows)          # the fixture is trimmed to 8 shapes
+assert [r.rank for r in rows] == sorted(r.rank for r in rows)
+
+top = rows[0]
+assert (top.rank, top.name, top.points) == (1, "KB-778", 70), top
+assert (top.wins, top.losses, top.tie_diff) == (70, 20, 18), top
+
+mine = [r for r in rows if r.me]
+assert len(mine) == 1, mine
+me = mine[0]
+assert (me.rank, me.name, me.points) == (16, "MJSMITH1642", 63), me
+assert me.tie_diff == 21, me
+assert "You" not in me.name, "the marker should be stripped from the name"
+
+# rows with no avatar initial, and the same entrant twice under different
+# entry names — both real shapes on the page, both easy to get wrong
+no_avatar = [r for r in rows if r.rank == 6][0]
+assert no_avatar.name == "Godfather-CFP", no_avatar
+twice = [r for r in rows if r.name == "toddbuckeye"]
+assert len(twice) == 2 and {t.entry for t in twice} == {"Kylefootball", "Toddfootballc"}
+print("standings page OK")
+
+# ── what the standings are actually FOR: how alive the season is ────────
+leader = rows[0].points
+gap = leader - me.points
+played = me.wins + me.losses + me.ties
+assert (gap, played) == (7, 90), (gap, played)
+# 4 weeks of 20 done, so ~360 games left; 7 points is well inside one
+# standard deviation of that, which is what keeps the app in chalk mode
+import math
+games_left = played / 4 * 16
+sd = math.sqrt(games_left * 0.7 * 0.3)
+assert gap < sd, (gap, sd)
+print(f"contention: {gap} pts behind, ~{games_left:.0f} games left, 1 SD = {sd:.1f} OK")
+
 # ── nothing here may raise on junk ──────────────────────────────────────
 for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
              DIST[:80], "FINAL\nFINAL\nFINAL"):
@@ -103,6 +146,7 @@ for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
     splash.sniff(junk)
 assert splash.parse_entry("").games == []
 assert splash.parse_distribution("") == []
+assert splash.parse_standings("") == ([], 0)
 print("junk input degrades quietly OK")
 
 # ── a truncated page keeps the games it did see ─────────────────────────
