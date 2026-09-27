@@ -29,6 +29,27 @@ Live app: https://shuggs-picks.streamlit.app
 5. Picks **lock Saturday noon ET** (or kickoff if earlier). Results,
    season record and the full game list live under **More**.
 
+## The field
+
+A weekly prize is won against the other entries, not against the spread.
+Splash shows how everyone picked once the deadline passes, on its **Pick
+Distribution** page — paste that into **More → The field** and the app
+records it.
+
+What it does with it:
+
+- Each card says what share of the league had your pick, and whether that
+  puts you with the crowd or against it.
+- **More → The field** separates your losses into the ones the crowd took
+  too (which cost nothing in the standings) and the ones you took alone
+  (the expensive kind) — and the wins the crowd missed, which is the only
+  place ground is actually made up.
+- Over time it learns how much chalkier the league is than the betting
+  line, and leans flip recommendations toward games the crowd will pile
+  into. This one needs several weeks before it can tell two coin flips
+  apart — every flip candidate sits in the same range of the curve, so
+  early on it has nothing to separate them with.
+
 ## The numbers
 
 **FPI** (ESPN's Football Power Index) is the app's second opinion: a

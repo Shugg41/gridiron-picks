@@ -241,6 +241,18 @@ def get_conn():
         )
     """)
     conn.execute("""
+        CREATE TABLE IF NOT EXISTS field_picks (
+            season   INTEGER NOT NULL,
+            week     INTEGER NOT NULL,
+            event_id TEXT    NOT NULL,
+            abbr     TEXT    NOT NULL,
+            picks    INTEGER,
+            pct      REAL,
+            mkt_prob REAL,
+            PRIMARY KEY (season, week, event_id, abbr)
+        )
+    """)
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS tiebreaker (
             season INTEGER NOT NULL,
             week   INTEGER NOT NULL,
@@ -519,6 +531,78 @@ def match_paste_lines(text, games):
     unmatched = [l.strip() for i, l in enumerate(lines)
                  if l.strip() and i not in touched]
     return matched, unmatched
+
+# Splash reveals how the whole league picked once the deadline passes, on
+# its Pick Distribution page. That is the only place the field's behaviour
+# is visible, and the field is what a weekly prize is won against.
+_PCT = re.compile(r"^\((\d+(?:\.\d+)?)%\)$")
+
+def parse_distribution(text):
+    """Team codes and their share of the league's picks, two per game.
+
+    The page prints each side as four lines — an outcome word, the code,
+    how many entries took it, then the percentage:
+
+        Lost.
+        GB
+        34
+        (89.5%)
+
+    Anchoring on the percentage and reading backwards is sturdier than
+    trying to recognise the headings around it, which differ by game state
+    (FINAL, a clock, a kickoff time) and would have to be chased whenever
+    Splash relabels something."""
+    lines = [l.strip() for l in text.splitlines()]
+    sides = []
+    for i, line in enumerate(lines):
+        m = _PCT.match(line)
+        if not m or i < 2:
+            continue
+        code, count = lines[i - 2], lines[i - 1]
+        if not code_like(code) or not count.replace(",", "").isdigit():
+            continue
+        sides.append((code, int(count.replace(",", "")), float(m.group(1)) / 100))
+    return [(sides[i], sides[i + 1]) for i in range(0, len(sides) - 1, 2)]
+
+
+def match_distribution(text, games):
+    """Pair each side of a distribution block to a real game.
+
+    Both codes have to land on the same game — a pair naming two teams that
+    never played each other is a parse that has drifted out of step, and
+    silently attributing it to a game would poison the field numbers."""
+    matched, unmatched = [], []
+    for (ca, na, pa), (cb, nb, pb) in parse_distribution(text):
+        want = {_norm(ca).strip(), _norm(cb).strip()}
+        hit = None
+        for g in games:
+            have = set()
+            for key in ("home", "away"):
+                have |= _aliases(g[key]) | _loose_aliases(g[key])
+            if want <= have:
+                # and not both on the same side of it
+                side_a = {k for k in ("home", "away")
+                          if _norm(ca).strip() in (_aliases(g[k]) | _loose_aliases(g[k]))}
+                side_b = {k for k in ("home", "away")
+                          if _norm(cb).strip() in (_aliases(g[k]) | _loose_aliases(g[k]))}
+                if side_a and side_b and side_a != side_b:
+                    hit = g
+                    break
+        if hit:
+            matched.append((hit, (ca, na, pa), (cb, nb, pb)))
+        else:
+            unmatched.append(f"{ca} / {cb}")
+    return matched, unmatched
+
+
+def field_share(field, g, team):
+    """The league's share on one side of a game, 0-1, or None if unknown."""
+    row = field.get(g["event_id"], {})
+    for alias in _aliases(team) | _loose_aliases(team):
+        if alias in row:
+            return row[alias]
+    return None
+
 
 def expected_games(text):
     """How many games the board says it has. Splash heads each day with
@@ -886,8 +970,47 @@ def flip_score(g):
     fpi_dog = fh if dog is g["home"] else fa
     return 0.5 * dp + 0.5 * fpi_dog
 
-def rank_flips(candidates):
-    """Flip candidates, best first, as (score, game, underdog)."""
+# How much chalkier the league is than the market. Learned from whatever
+# weeks have been loaded, bucketed by how big a favorite the market made it,
+# and shrunk toward the market when a bucket is thin — one week of data
+# should nudge the order, not dictate it.
+FIELD_BUCKETS = ((0.50, 0.60), (0.60, 0.70), (0.70, 0.80), (0.80, 0.90), (0.90, 1.01))
+
+def field_tendency(rows):
+    """{bucket_index: average share the league put on the favorite}."""
+    buckets = {}
+    for mkt, pct in rows:
+        if mkt is None or pct is None or mkt < 0.5:
+            continue               # only look at it from the favorite's side
+        for i, (lo, hi) in enumerate(FIELD_BUCKETS):
+            if lo <= mkt < hi:
+                buckets.setdefault(i, []).append(pct)
+                break
+    return {i: sum(v) / len(v) for i, v in buckets.items() if v}
+
+def expected_field_share(g, tendency):
+    """What share of the league will likely take the favorite here.
+
+    Falls back to the market's own probability when nothing has been
+    learned for that range yet, which just means "assume the league is as
+    chalky as the line" — wrong, but wrong in a harmless direction."""
+    hp, ap = fair_probs(g)
+    if hp is None:
+        return None
+    fav_p = max(hp, ap)
+    for i, (lo, hi) in enumerate(FIELD_BUCKETS):
+        if lo <= fav_p < hi:
+            seen = tendency.get(i)
+            return seen if seen is not None else fav_p
+    return fav_p
+
+def rank_flips(candidates, tendency=None):
+    """Flip candidates, best first, as (score, game, underdog).
+
+    With the league's habits known, ordering leans toward the games where
+    the crowd will be piled on the favorite: a coin flip nobody else is
+    fading is worth more than an equally close one the pool is already
+    split on, because separation is the entire point of flipping."""
     scored = []
     for g in candidates:
         if g["completed"] or is_locked(g["date"]):
@@ -896,7 +1019,13 @@ def rank_flips(candidates):
         if sc is None:
             continue
         scored.append((sc, g, favorite_side(g)[1]))
-    scored.sort(key=lambda t: -t[0])
+    if tendency:
+        # Sort on the leverage, but hand back the raw score: the thresholds
+        # in recommended_flips() mean "how live is this dog", and folding
+        # the crowd into that number would quietly move them.
+        scored.sort(key=lambda t: -(t[0] * (expected_field_share(t[1], tendency) or 0.5)))
+    else:
+        scored.sort(key=lambda t: -t[0])
     return scored
 
 FLIP_TAKE = 3          # never recommend more than this
@@ -1019,6 +1148,34 @@ if _missing_kick:
 # Numbered off that order, so the numbers are always 1…N with no holes,
 # whatever route a game took into the pool.
 slate_num = {g["event_id"]: i for i, g in enumerate(slate_games, 1)}
+
+field_rows = pd.read_sql_query(
+    "SELECT * FROM field_picks WHERE season=? AND week=?",
+    conn, params=(cur_season, cur_week))
+# {event_id: {alias: share}} — aliases so a lookup works from either the
+# code Splash prints or the name ESPN uses
+field = {}
+for _, _r in field_rows.iterrows():
+    field.setdefault(_r["event_id"], {})[_norm(_r["abbr"]).strip()] = _r["pct"]
+
+
+def save_distribution(matched):
+    """Record how the league picked. Stored per side with the market's read
+    at the time, so later weeks can learn how much chalkier the field is
+    than the line — which is the part that is useful BEFORE a deadline."""
+    for g, (ca, na, pa), (cb, nb, pb) in matched:
+        hp, ap = fair_probs(g)
+        for code, n, pct in ((ca, na, pa), (cb, nb, pb)):
+            alias = _norm(code).strip()
+            is_home = alias in (_aliases(g["home"]) | _loose_aliases(g["home"]))
+            mkt = (hp if is_home else ap) if hp is not None else None
+            conn.execute(
+                "INSERT INTO field_picks (season, week, event_id, abbr, picks, pct, mkt_prob) "
+                "VALUES (?,?,?,?,?,?,?) ON CONFLICT(season, week, event_id, abbr) "
+                "DO UPDATE SET picks=excluded.picks, pct=excluded.pct, "
+                "mkt_prob=excluded.mkt_prob",
+                (cur_season, cur_week, g["event_id"], code, n, pct, mkt))
+
 
 def add_to_pool(g, pos=None):
     """Add a game to this week's pool; return 1 if it wasn't already there.
@@ -1174,7 +1331,10 @@ else:
 
     # Six "worth flipping" games is a list, not a decision — rank them and
     # name the two or three actually worth taking.
-    flip_ranked = rank_flips([g for g in slate_games if worth_flipping(g)])
+    _tendency = field_tendency(list(pd.read_sql_query(
+        "SELECT mkt_prob, pct FROM field_picks WHERE season=?",
+        conn, params=(cur_season,)).itertuples(index=False, name=None)))
+    flip_ranked = rank_flips([g for g in slate_games if worth_flipping(g)], _tendency)
     take = recommended_flips(flip_ranked)
     take_ids = {g["event_id"] for _sc, g, _dog in take}
     # The standouts, up top, each tagged with its number in the list below —
@@ -1190,10 +1350,14 @@ else:
             fav = g["home"] if dog is g["away"] else g["away"]
             dp = dog_prob(g)
             odds = f" — {dp:.0%} to win" if dp is not None else ""
+            crowd = ""
+            exp = expected_field_share(g, _tendency) if _tendency else None
+            if exp is not None and exp >= 0.7:
+                crowd = f", and ~{exp:.0%} of the league will be on {fav['name']}"
             st.markdown(f"<div class='standout'><span class='pick-num'>{_num(g)}</span>"
                         f"<span class='pick-team'>{dog['name']}</span>"
-                        f"<span class='pick-opp'> over {fav['name']}{odds}</span></div>",
-                        unsafe_allow_html=True)
+                        f"<span class='pick-opp'> over {fav['name']}{odds}{crowd}"
+                        f"</span></div>", unsafe_allow_html=True)
         st.caption("The closest games on your card. Taking the underdog here "
                    "costs almost nothing over a season but separates you from "
                    "everyone riding the chalk this week. Everything else: "
@@ -1271,6 +1435,14 @@ else:
         when = "Final" if g["completed"] else kickoff_local(g["date"])
         if locked and not g["completed"]:
             when += " · 🔒 locked"
+
+        # What the league did with this game, once Splash has revealed it.
+        if r is not None and picked is not None:
+            mine = field_share(field, g, picked)
+            if mine is not None:
+                crowd = ("with the crowd" if mine >= 0.6 else
+                         "against the crowd" if mine <= 0.35 else "a split")
+                sub += f" · {mine:.0%} of the league had them, {crowd}"
 
         # A flip candidate should explain itself without being tapped.
         if flip and not g["completed"]:
@@ -1380,7 +1552,70 @@ else:
 # ─────────────────────────────────────────────
 st.divider()
 with st.expander("More — results, all games, stats"):
-    t_res, t_all, t_season = st.tabs(["This week's results", "All games", "Season"])
+    t_res, t_field, t_all, t_season = st.tabs(
+        ["This week's results", "The field", "All games", "Season"])
+
+    with t_field:
+        st.caption("Splash shows how the whole league picked once the deadline "
+                   "passes — the **Pick Distribution** page. Paste it here. "
+                   "A weekly prize is won against these people, not against "
+                   "the spread, so this is the number that decides which "
+                   "coin flips are worth taking.")
+        with st.form("field_form"):
+            fpaste = st.text_area("Pick distribution", height=140,
+                                  label_visibility="collapsed",
+                                  placeholder="Paste the Pick Distribution page…")
+            fsub = st.form_submit_button("Load the league's picks")
+        if fsub and fpaste.strip():
+            fmatched, funmatched = match_distribution(fpaste, games)
+            if fmatched:
+                save_distribution(fmatched)
+                save(conn)
+            st.success(f"Read the league's picks for {len(fmatched)} game(s).")
+            if funmatched:
+                st.warning("Couldn't place: " + ", ".join(funmatched[:10]))
+            if fmatched:
+                st.rerun()
+
+        if field:
+            mine_rows = []
+            for g in slate_games:
+                r = picks_by_id.get(g["event_id"])
+                if r is None:
+                    continue
+                picked = g["home"] if r["pick_abbr"] == g["home"]["abbr"] else g["away"]
+                shr = field_share(field, g, picked)
+                if shr is None:
+                    continue
+                mine_rows.append((g, r, picked, shr))
+            if mine_rows:
+                contrarian = [m for m in mine_rows if m[3] <= 0.35]
+                withchalk = [m for m in mine_rows if m[3] >= 0.6]
+                st.markdown(f"**{len(mine_rows)} of your picks matched up "
+                            f"against the league.**")
+                # Only graded games can say whether being different paid.
+                done = [m for m in mine_rows if not pd.isna(m[1]["result"])]
+                if done:
+                    gained = [m for m in done if m[1]["result"] == "W" and m[3] <= 0.5]
+                    cost = [m for m in done if m[1]["result"] == "L" and m[3] <= 0.5]
+                    safe_loss = [m for m in done if m[1]["result"] == "L" and m[3] >= 0.6]
+                    st.markdown(
+                        f"- **{len(gained)}** win(s) the league mostly missed "
+                        f"— that is where ground is made up\n"
+                        f"- **{len(cost)}** loss(es) taken against the crowd "
+                        f"— the expensive kind\n"
+                        f"- **{len(safe_loss)}** loss(es) the crowd took too "
+                        f"— these cost you nothing in the standings")
+                st.caption(f"{len(contrarian)} pick(s) against the crowd, "
+                           f"{len(withchalk)} with it.")
+                for g, r, picked, shr in sorted(mine_rows, key=lambda m: m[3]):
+                    mark = ("✅" if r["result"] == "W" else
+                            "❌" if r["result"] == "L" else "·")
+                    st.markdown(f"{mark} **{picked['name']}** — {shr:.0%} of the "
+                                f"league <span class='pick-sub'>{g['name']}</span>",
+                                unsafe_allow_html=True)
+        else:
+            st.caption("Nothing loaded yet for this week.")
 
     with t_res:
         if pick_rows.empty:
