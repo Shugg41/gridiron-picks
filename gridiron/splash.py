@@ -312,6 +312,118 @@ def parse_standings(text):
     return rows, (_int(size.group(1)) if size else len(rows))
 
 
+@dataclass
+class EntryPicks:
+    """One entry's whole card for a week, in the page's game order."""
+    name: str = ""
+    entry: str = ""
+    rank: str = ""                      # "1" or "T15" — ties are printed
+    points: Optional[int] = None
+    picks: list = _field(default_factory=list)   # [(team, state), ...]
+    me: bool = False
+
+
+# How each pick is annotated, and what it means for scoring.
+_PICK_STATE = {
+    "correct": "W",
+    "incorrect": "L",
+    "currently winning": "live_up",
+    "currently losing": "live_down",
+    "not yet graded": "open",
+}
+_MATCHUP = re.compile(r"^([A-Z][A-Z0-9&.'()-]{1,6})\s+@\s+([A-Z][A-Z0-9&.'()-]{1,6})$")
+
+
+def parse_picks_by_week(text):
+    """Read the Picks by Week page: every entry's pick on every game.
+
+    This is the richest page Splash has. The Pick Distribution page only
+    gives percentages; this gives the actual matrix, which is what makes
+    real leverage — who exactly is on which side — computable rather than
+    estimated. It also states a missing pick outright, which no other page
+    does: the entry page simply omits the game.
+
+    The page lists the games once as a header, then repeats that same
+    order inside every entry block, so the games are read first and each
+    entry's picks are zipped against them positionally.
+
+    Returns (games, entries) where games is [(away, home), ...].
+    """
+    lines = [l.strip() for l in text.splitlines()]
+    games, seen = [], set()
+    for line in lines:
+        m = _MATCHUP.match(line)
+        if m and line not in seen:
+            seen.add(line)
+            games.append((m.group(1), m.group(2)))
+
+    entries, i = [], 0
+    while i < len(lines):
+        if not lines[i].startswith("Rank"):
+            i += 1
+            continue
+        e = EntryPicks(rank=lines[i][4:].strip())
+        j = i + 1
+        if j < len(lines) and len(lines[j]) == 1 and lines[j].isupper():
+            j += 1                                  # avatar initial
+        e.name = lines[j] if j < len(lines) else ""
+        j += 1
+        if j < len(lines) and lines[j] == "You":    # the user's own row
+            e.me = True
+            j += 1
+        e.entry = lines[j] if j < len(lines) else ""
+        # skip forward to the link that ends every entry's header
+        while j < len(lines) and not lines[j].lower().startswith(". view entry"):
+            if lines[j].startswith("Pts:"):
+                e.points = _int(lines[j].split(":", 1)[1])
+            j += 1
+        j += 1
+
+        # then the picks, in the header's order, until the next entry
+        while j < len(lines) and not lines[j].startswith("Rank"):
+            line = lines[j]
+            if line in ("▲", "▼", ""):
+                j += 1
+                continue
+            if line == "-" and j + 1 < len(lines) and lines[j + 1] == "Missing pick":
+                e.picks.append((None, "missing"))
+                j += 2
+                continue
+            nxt = lines[j + 1] if j + 1 < len(lines) else ""
+            if is_code(line) and nxt.startswith("—"):
+                state = _PICK_STATE.get(nxt.lstrip("—").strip(), "open")
+                e.picks.append((line, state))
+                j += 2
+                continue
+            j += 1
+        if e.name and e.picks:
+            entries.append(e)
+        i = j
+    return games, entries
+
+
+def distribution_from_matrix(games, entries):
+    """Collapse the pick matrix into per-side counts and shares.
+
+    Same shape parse_distribution returns, so the rest of the app does not
+    care which page the field came from — and this one is exact rather
+    than rounded to a tenth of a percent.
+    """
+    out = []
+    for idx, (away, home) in enumerate(games):
+        tally = {away: 0, home: 0}
+        for e in entries:
+            if idx >= len(e.picks):
+                continue
+            team = e.picks[idx][0]
+            if team in tally:
+                tally[team] += 1
+        total = len(entries) or 1
+        out.append(((away, tally[away], tally[away] / total),
+                    (home, tally[home], tally[home] / total)))
+    return out
+
+
 def sniff(text):
     """Which Splash page is this? 'entry', 'distribution', 'standings',
     'board', or None.
@@ -321,6 +433,11 @@ def sniff(text):
     actually on. Each test below keys on something only the page body has.
     """
     t = text.lower()
+    # Check this before standings: the picks matrix carries the standings
+    # nav, the "All entries" count and "View entry details" links too, and
+    # only the per-pick annotations tell the two apart.
+    if "— correct" in text or "— incorrect" in text or "missing pick" in t:
+        return "picks_by_week"
     if ". view entry details" in t or ("all entries" in t and "tie diff" in t):
         return "standings"
     if "autopicks" in t and "%)" in text:

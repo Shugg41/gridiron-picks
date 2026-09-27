@@ -1,0 +1,169 @@
+# Trimmed: the full game header, then four entry blocks — the leader, the
+# user (with a missing pick), an entry with a custom name, and one with
+# no avatar initial. Copied verbatim otherwise.
+Standings
+Full season
+Weekly
+Picks by Week
+All entries38
+RANK
+ENTRANT
+ATL @ GB
+FINAL
+ARMY @ TEM
+FINAL
+NAVY @ UAB
+FINAL
+CLEM @ CAL
+FINAL
+SDSU @ TOL
+FINAL
+TEX @ TENN
+FINAL
+UCLA @ MD
+FINAL
+MISS @ FLA
+FINAL
+SEA @ WAS
+Q4 8:40
+LAC @ BUF
+Q4 2:29
+ARI @ SF
+Sun 4:05pm
+PHI @ CHI
+Mon 8:15pm
+
+Rank1
+M
+mrainer
+Entry 1
+Pts: 14
+Tie Diff: —
+. View entry details
+ATL
+— correct
+ARMY
+— correct
+NAVY
+— incorrect
+CLEM
+— correct
+TOL
+— correct
+TEX
+— correct
+UCLA
+— correct
+MISS
+— incorrect
+SEA
+— not yet graded
+▲
+BUF
+— currently winning
+SF
+— not yet graded
+PHI
+— not yet graded
+
+RankT15
+M
+MJSMITH1642
+You
+Entry 1
+Pts: 10
+Tie Diff: —
+. View entry details
+-
+Missing pick
+ARMY
+— correct
+NAVY
+— incorrect
+CLEM
+— correct
+TOL
+— correct
+TEX
+— correct
+MD
+— incorrect
+MISS
+— incorrect
+SEA
+— not yet graded
+▲
+BUF
+— currently winning
+SF
+— not yet graded
+PHI
+— not yet graded
+
+RankT15
+T
+toddbuckeye
+Kylefootball
+Pts: 10
+Tie Diff: —
+. View entry details
+GB
+— incorrect
+ARMY
+— correct
+NAVY
+— incorrect
+CLEM
+— correct
+TOL
+— correct
+TEX
+— correct
+UCLA
+— correct
+MISS
+— incorrect
+SEA
+— not yet graded
+▲
+BUF
+— currently winning
+TB
+— not yet graded
+PHI
+— not yet graded
+
+RankT8
+Ttowndoc
+Entry 1
+Pts: 11
+Tie Diff: —
+. View entry details
+GB
+— incorrect
+ARMY
+— correct
+NAVY
+— incorrect
+CAL
+— incorrect
+TOL
+— correct
+TEX
+— correct
+UCLA
+— correct
+FLA
+— correct
+SEA
+— not yet graded
+▲
+BUF
+— currently winning
+SF
+— not yet graded
+CHI
+— not yet graded
+
+
+Picks by week

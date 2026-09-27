@@ -17,14 +17,20 @@ HERE = os.path.dirname(__file__)
 ENTRY = open(os.path.join(HERE, "fixtures", "entry_week4.txt")).read()
 DIST = open(os.path.join(HERE, "fixtures", "distribution_week4.txt")).read()
 STAND = open(os.path.join(HERE, "fixtures", "standings_week4.txt")).read()
+MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
 
 # ── which page is this? ─────────────────────────────────────────────────
 assert splash.sniff(ENTRY) == "entry", splash.sniff(ENTRY)
 assert splash.sniff(DIST) == "distribution", splash.sniff(DIST)
 assert splash.sniff(STAND) == "standings", splash.sniff(STAND)
+assert splash.sniff(MATRIX) == "picks_by_week", splash.sniff(MATRIX)
 # every page carries the same nav bar, so the nav must not decide it
 for page in (ENTRY, DIST, STAND):
     assert "Pick Distribution" in page and "Standings" in page
+# and the matrix page shares the standings furniture too, which is why it
+# has to be tested for before standings rather than after
+assert "Standings" in MATRIX and "All entries" in MATRIX
+assert ". View entry details" in MATRIX
 assert splash.sniff("") is None
 assert splash.sniff("just some text") is None
 print("sniff tells the pages apart OK")
@@ -137,16 +143,56 @@ sd = math.sqrt(games_left * 0.7 * 0.3)
 assert gap < sd, (gap, sd)
 print(f"contention: {gap} pts behind, ~{games_left:.0f} games left, 1 SD = {sd:.1f} OK")
 
+# ── the picks matrix: every entry's pick on every game ─────────────────
+games, entries = splash.parse_picks_by_week(MATRIX)
+assert games[0] == ("ATL", "GB"), games[0]
+assert len(games) == 12, len(games)        # the fixture is trimmed
+assert len(entries) == 4, [e.name for e in entries]
+assert all(len(e.picks) == len(games) for e in entries), \
+    [(e.name, len(e.picks)) for e in entries]
+
+lead = entries[0]
+assert (lead.rank, lead.name, lead.points) == ("1", "mrainer", 14), lead
+assert lead.picks[0] == ("ATL", "W"), lead.picks[0]   # the one who had Atlanta
+
+mine = [e for e in entries if e.me]
+assert len(mine) == 1 and mine[0].name == "MJSMITH1642", [e.name for e in entries]
+me_picks = mine[0]
+assert me_picks.rank == "T15" and me_picks.points == 10, me_picks
+
+# THE finding: the page states a missing pick outright. No other page does
+# — the entry page just omits the game, which is how it stayed hidden.
+assert me_picks.picks[0] == (None, "missing"), me_picks.picks[0]
+assert me_picks.picks[6] == ("MD", "L"), me_picks.picks[6]
+assert me_picks.picks[9] == ("BUF", "live_up"), me_picks.picks[9]
+assert me_picks.picks[11] == ("PHI", "open"), me_picks.picks[11]
+
+# rows with a custom entry label, and with no avatar initial, both parse
+assert [e.entry for e in entries if e.name == "toddbuckeye"] == ["Kylefootball"]
+assert [e.rank for e in entries if e.name == "Ttowndoc"] == ["T8"]
+print("picks matrix OK — including the missing pick stated outright")
+
+# ── the matrix subsumes the distribution page, and more exactly ─────────
+dist = splash.distribution_from_matrix(games, entries)
+assert len(dist) == len(games)
+(a_code, a_n, _a_pct), (h_code, h_n, _h_pct) = dist[0]
+assert (a_code, a_n) == ("ATL", 1), dist[0]       # only the leader had ATL
+assert (h_code, h_n) == ("GB", 2), dist[0]        # two took GB, one missed
+assert a_n + h_n == len(entries) - 1, "the missing pick must not be counted"
+print("distribution derived from the matrix OK")
+
 # ── nothing here may raise on junk ──────────────────────────────────────
 for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
              DIST[:80], "FINAL\nFINAL\nFINAL"):
     splash.parse_entry(junk)
     splash.parse_distribution(junk)
     splash.parse_standings(junk)
+    splash.parse_picks_by_week(junk)
     splash.sniff(junk)
 assert splash.parse_entry("").games == []
 assert splash.parse_distribution("") == []
 assert splash.parse_standings("") == ([], 0)
+assert splash.parse_picks_by_week("") == ([], [])
 print("junk input degrades quietly OK")
 
 # ── a truncated page keeps the games it did see ─────────────────────────
