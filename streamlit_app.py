@@ -1,99 +1,35 @@
-import streamlit as st
-import sqlite3
-import pandas as pd
-import requests
-import base64
-import difflib
-import itertools
-import math
+"""Gridiron Picks — the screen.
+
+Deliberately thin. Everything decidable without Streamlit is decided in
+gridiron/, so this only fetches, arranges and renders. The old version
+put all of it in one file and every fix reached something unrelated.
+
+The shape of a week:
+
+    paste the board    -> the games exist
+    the app proposes   -> a list to type into Splash
+    paste your entry   -> what you actually did, and the results
+    paste the field    -> how the league picked, and what it cost
+
+No per-game controls. Splash holds the picks, this holds the reasoning —
+which is also what keeps the page quick, since thirty games of buttons is
+thirty ways to trigger a rerun.
+"""
 import os
-import re
-from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
 
-# ─────────────────────────────────────────────
-# PAGE CONFIG & THEME
-# ─────────────────────────────────────────────
-st.set_page_config(page_title="Gridiron Picks", layout="wide", page_icon="🏈")
+import streamlit as st
 
-st.markdown("""
-<style>
-/* ── Theme: charcoal + gold + field green ── */
-:root {
-    --bg:           #0d0e10;
-    --surface:      #16181c;
-    --surface2:     #1c1f24;
-    --border:       #2b2f36;
-    --accent:       #d9a441;   /* gold — headings, highlights */
-    --accent-hover: #e6b95e;
-    --field:        #4f8f5b;   /* field green — wins, favorites */
-    --loss:         #c15b5b;
-    --push:         #b3a878;
-    --text:         #e0e0e0;
-    --muted:        #8a8f98;
-}
-html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
-    background-color: var(--bg) !important;
-    color: var(--text) !important;
-}
-[data-testid="stSidebar"] { background-color: var(--surface) !important; }
-[data-testid="stHeader"]  { background-color: var(--bg) !important; }
-.block-container { padding-top: 2.2rem !important; padding-bottom: 2rem !important; }
-hr { border-color: var(--border) !important; margin: 0.6rem 0 !important; }
-[data-testid="stToolbar"] { display: none !important; }
-h1, h2, h3, h4 { color: var(--accent) !important; font-family: 'Georgia', serif; letter-spacing: 1px; }
-h2 { font-size: 1.35rem !important; }
+from gridiron import espn, model, splash, store, view
 
-.pick-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--border);
-    border-radius: 10px;
-    padding: 0.65rem 0.85rem 0.5rem;
-    margin: 0.7rem 0 0.3rem;
-}
-.pick-line  { font-size: 1.12rem; line-height: 1.45; }
-.pick-team  { color: var(--accent); font-weight: 700; }
-.pick-none  { color: var(--muted); font-weight: 700; }
-.pick-opp   { color: var(--text); opacity: 0.72; font-weight: 400; }
-.pick-num   { color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
-.standout   {
-    font-size: 1.05rem; line-height: 1.5; padding: 0.35rem 0.7rem;
-    margin: 0.2rem 0; border-radius: 8px;
-    background: var(--surface2); border-left: 3px solid var(--accent);
-}
-.pick-sub   { color: var(--muted); font-size: 0.82rem; margin-top: 0.1rem; }
-.chip {
-    display: inline-block; font-size: 0.7rem; font-weight: 700;
-    border-radius: 999px; padding: 0.08rem 0.5rem; margin-left: 0.45rem;
-    vertical-align: middle; white-space: nowrap;
-}
-.chip-flip { color: var(--accent); border: 1px solid var(--accent); }
-.chip-risk { color: var(--loss);  border: 1px solid var(--loss); }
-.chip-edge { color: var(--field); border: 1px solid var(--field); }
-.chip-close { color: var(--muted); border: 1px solid var(--border); }
+DB = os.path.join(os.path.dirname(__file__), "football_picks.db")
+SEASON = 2026
+WEEKS_IN_SEASON = 20
 
-.stButton > button {
-    background: var(--surface2) !important;
-    color: var(--text) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
-    padding: 0.25rem 0.6rem !important;
-    font-size: 0.85rem !important;
-}
-.stButton > button:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="Gridiron Picks", page_icon="🏈",
+                   layout="centered", initial_sidebar_state="collapsed")
+st.markdown(view.CSS, unsafe_allow_html=True)
 
-ET = ZoneInfo("America/New_York")
-DB_PATH = "football_picks.db"
 
-# ─────────────────────────────────────────────
-# GITHUB SYNC — the durable copy of the picks DB lives in the repo.
-# Streamlit Cloud's disk is ephemeral, so we pull the DB once per server
-# boot and push it back after every write (same pattern as the Metal
-# Earth tracker). Without secrets the app runs fine in local-only mode.
-# ─────────────────────────────────────────────
 def secret(name):
     try:
         if name in st.secrets:
@@ -102,1598 +38,302 @@ def secret(name):
         pass
     return os.environ.get(name)
 
-def gh_repo():
-    return secret("GITHUB_REPO")
-
-def gh_headers():
-    return {"Authorization": f"token {secret('GITHUB_TOKEN')}",
-            "Accept": "application/vnd.github.v3+json"}
-
-def sync_enabled():
-    return bool(secret("GITHUB_TOKEN") and secret("GITHUB_REPO"))
-
-def pull_db_from_github():
-    if not sync_enabled():
-        return
-    try:
-        url = f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}"
-        r = requests.get(url, headers=gh_headers(), timeout=15)
-        if r.status_code == 200:
-            content = base64.b64decode(r.json()["content"])
-            with open(DB_PATH, "wb") as f:
-                f.write(content)
-    except Exception:
-        pass  # boot must never crash on a sync hiccup; app falls back to a fresh DB
-
-def _gh_reason(r):
-    """GitHub's own explanation for a non-2xx, short enough for a caption."""
-    try:
-        msg = (r.json() or {}).get("message", "")
-    except Exception:
-        msg = ""
-    return f"{r.status_code} {msg}".strip()
-
-def push_db_to_github():
-    """Returns True on success. On failure, records WHY in session state —
-    a silent False is what made a bad token indistinguishable from an idle
-    app the last time this broke."""
-    if not sync_enabled():
-        return True  # local-only mode: a local commit is all there is
-    url = f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}"
-    try:
-        r = requests.get(url, headers=gh_headers(), timeout=15)
-        if r.status_code not in (200, 404):
-            st.session_state["sync_error"] = _gh_reason(r)
-            return False
-        sha = r.json().get("sha") if r.status_code == 200 else None
-        with open(DB_PATH, "rb") as f:
-            payload = {"message": f"Update picks db {datetime.now(ET):%Y-%m-%d %H:%M}",
-                       "content": base64.b64encode(f.read()).decode()}
-        if sha:
-            payload["sha"] = sha
-        r = requests.put(url, headers=gh_headers(), json=payload, timeout=20)
-        if r.status_code in (200, 201):
-            st.session_state.pop("sync_error", None)
-            return True
-        st.session_state["sync_error"] = _gh_reason(r)
-        return False
-    except requests.RequestException as e:
-        st.session_state["sync_error"] = f"couldn't reach GitHub ({type(e).__name__})"
-        return False
-
-@st.cache_data(ttl=60, show_spinner=False)
-def sync_selftest():
-    """Can this token actually WRITE? Returns (ok, reason).
-
-    A read check is not enough: a fine-grained token with no permissions
-    at all still reads a public repo, which once had the app cheerfully
-    reporting "saved to GitHub" while every save was being refused 403.
-    So: if the database is already in the repo, writes have demonstrably
-    worked. If it is not, push it now — that is a real write test, and it
-    also creates the backup on the first boot after the secrets go in.
-    """
-    if not sync_enabled():
-        return False, "no secrets"
-    url = f"https://api.github.com/repos/{gh_repo()}/contents/{DB_PATH}"
-    try:
-        r = requests.get(url, headers=gh_headers(), timeout=15)
-    except requests.RequestException as e:
-        return False, f"couldn't reach GitHub ({type(e).__name__})"
-    if r.status_code == 200:
-        return True, ""
-    if r.status_code != 404:
-        return False, _gh_reason(r)
-    get_conn().close()          # the file must exist before it can be pushed
-    if push_db_to_github():
-        return True, ""
-    return False, st.session_state.get("sync_error", "push refused")
 
 @st.cache_resource
-def _boot_pull():
-    # Once per SERVER boot, not per browser visit — the local DB is always
-    # at least as fresh as GitHub's copy after boot.
-    pull_db_from_github()
-    return True
+def _sync():
+    return store.Sync(secret("GITHUB_REPO"), secret("GITHUB_TOKEN"), db_path=DB)
 
-_boot_pull()
 
-def save(conn):
-    """Commit locally, then push to GitHub. Flags the session when the
-    remote copy is stale so the user knows a restart would lose data."""
-    conn.commit()
-    if not push_db_to_github():
-        st.session_state["sync_failed"] = True
-
-# ─────────────────────────────────────────────
-# DATABASE
-# ─────────────────────────────────────────────
-def get_conn():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS picks (
-            season      INTEGER NOT NULL,
-            week        INTEGER NOT NULL,
-            event_id    TEXT    NOT NULL,
-            matchup     TEXT,
-            kickoff     TEXT,
-            pick_abbr   TEXT,
-            pick_name   TEXT,
-            opp_abbr    TEXT,
-            opp_name    TEXT,
-            pick_type   TEXT,               -- 'SU' straight up, 'ATS' against the spread
-            fav_abbr    TEXT,               -- favorite at time of pick
-            line        REAL,               -- points laid by the favorite (positive)
-            confidence  INTEGER DEFAULT 0,
-            result      TEXT,               -- 'W','L','P' or NULL until graded
-            final_score TEXT,
-            created_at  TEXT,
-            PRIMARY KEY (season, week, event_id)
-        )
-    """)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS slate (
-            season   INTEGER NOT NULL,
-            week     INTEGER NOT NULL,
-            event_id TEXT    NOT NULL,
-            matchup  TEXT,
-            added_at TEXT,
-            PRIMARY KEY (season, week, event_id)
-        )
-    """)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS field_picks (
-            season   INTEGER NOT NULL,
-            week     INTEGER NOT NULL,
-            event_id TEXT    NOT NULL,
-            abbr     TEXT    NOT NULL,
-            picks    INTEGER,
-            pct      REAL,
-            mkt_prob REAL,
-            PRIMARY KEY (season, week, event_id, abbr)
-        )
-    """)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS tiebreaker (
-            season INTEGER NOT NULL,
-            week   INTEGER NOT NULL,
-            value  INTEGER,
-            PRIMARY KEY (season, week)
-        )
-    """)
-    for stmt in ("ALTER TABLE picks ADD COLUMN entered_in_splash INTEGER DEFAULT 0",
-                 "ALTER TABLE picks ADD COLUMN league TEXT",
-                 "ALTER TABLE slate ADD COLUMN league TEXT",
-                 "ALTER TABLE slate ADD COLUMN board_pos INTEGER",
-                 "ALTER TABLE slate ADD COLUMN kickoff TEXT"):
-        try:
-            conn.execute(stmt)
-        except sqlite3.OperationalError:
-            pass  # column already exists
+@st.cache_resource
+def _conn():
+    """Opened through the sync, so a write made outside the running app —
+    by Claude, in a session — is picked up instead of ignored until the
+    next restart."""
+    conn = store.open_synced(DB, _sync())
+    store.migrate_legacy(conn)
     return conn
 
-# ─────────────────────────────────────────────
-# ESPN API
-# ─────────────────────────────────────────────
-BASE = "https://site.api.espn.com/apis/site/v2/sports/football"
-LEAGUE_PATH = {"CFB": "college-football", "NFL": "nfl"}
 
-@st.cache_data(ttl=300, show_spinner="Fetching games from ESPN…")
-def fetch_scoreboard(league="CFB", year=None, week=None, seasontype=2, dates=None):
-    params = {"limit": "400"}
-    if league == "CFB":
-        params["groups"] = "80"   # groups=80 → all of FBS
-    if year and week:
-        params.update({"dates": str(year), "seasontype": str(seasontype), "week": str(week)})
-    elif dates:
-        params["dates"] = dates   # YYYYMMDD-YYYYMMDD range (used for NFL history)
-    r = requests.get(f"{BASE}/{LEAGUE_PATH[league]}/scoreboard", params=params, timeout=15)
-    r.raise_for_status()
-    return r.json()
+sync, conn = _sync(), _conn()
 
-@st.cache_data(ttl=3600, show_spinner="Loading game breakdown…")
-def fetch_summary(event_id, league="CFB"):
-    r = requests.get(f"{BASE}/{LEAGUE_PATH[league]}/summary",
-                     params={"event": event_id}, timeout=15)
-    r.raise_for_status()
-    return r.json()
 
-def implied_prob(moneyline):
-    """American moneyline → implied win probability (0–1), or None."""
-    try:
-        ml = float(moneyline)
-    except (TypeError, ValueError):
-        return None
-    if ml == 0:
-        return None
-    return (-ml) / (-ml + 100) if ml < 0 else 100 / (ml + 100)
+def save():
+    conn.commit()
+    if sync.enabled and not sync.push(conn):
+        st.session_state["sync_error"] = sync.reason
+    else:
+        st.session_state.pop("sync_error", None)
 
-def parse_game(event, league="CFB"):
-    """Flatten one ESPN scoreboard event into a plain dict. Defensive: missing
-    fields (odds don't exist for every game) come back as None."""
-    comp = (event.get("competitions") or [{}])[0]
-    g = {
-        "league": league,
-        "event_id": str(event.get("id", "")),
-        "name": event.get("shortName") or event.get("name", ""),
-        "date": event.get("date", ""),
-        "completed": bool((event.get("status") or {}).get("type", {}).get("completed")),
-        "status_detail": (event.get("status") or {}).get("type", {}).get("shortDetail", ""),
-        "neutral_site": bool(comp.get("neutralSite")),
-        "broadcast": "",
-        "home": None, "away": None,
-        "fav_abbr": None, "line": None, "over_under": None,
-        "home_ml_prob": None, "away_ml_prob": None,
-    }
-    for b in comp.get("broadcasts") or []:
-        names = b.get("names") or []
-        if names:
-            g["broadcast"] = names[0]
-            break
 
-    for c in comp.get("competitors") or []:
-        team = c.get("team") or {}
-        rank = (c.get("curatedRank") or {}).get("current")
-        recs = {}
-        for r in c.get("records") or []:
-            key = r.get("type") or r.get("name") or ""
-            recs[key] = r.get("summary", "")
-        side = {
-            "id": str(team.get("id", "")),   # needed for the core stats/FPI API
-            "abbr": team.get("abbreviation", "?"),
-            "name": team.get("shortDisplayName") or team.get("displayName", "?"),
-            "full_name": team.get("displayName", ""),
-            "location": team.get("location", ""),
-            "rank": rank if rank and rank != 99 else None,
-            "record": recs.get("total", ""),
-            "score": c.get("score"),
-            "winner": bool(c.get("winner")),
-        }
-        if c.get("homeAway") == "home":
-            g["home"] = side
-        else:
-            g["away"] = side
+@st.cache_data(ttl=900, show_spinner=False)
+def scoreboard():
+    """Both leagues, and whatever went wrong, as a value.
 
-    odds = (comp.get("odds") or [{}])[0]
-    g["over_under"] = odds.get("overUnder")
-    # details is e.g. "UGA -7.5" or "EVEN"; the most reliable favorite signal
-    details = odds.get("details") or ""
-    m = re.match(r"^([A-Z&'.\- ]+?)\s+(-?\d+(?:\.\d+)?)$", details.strip())
-    if m:
-        g["fav_abbr"] = m.group(1).strip()
-        g["line"] = abs(float(m.group(2)))
-    g["home_ml_prob"] = implied_prob((odds.get("homeTeamOdds") or {}).get("moneyLine"))
-    g["away_ml_prob"] = implied_prob((odds.get("awayTeamOdds") or {}).get("moneyLine"))
-    return g
+    The failure is returned rather than stashed in session_state: a
+    cached function only runs on a miss, so anything it writes to state
+    is silently absent on every subsequent run — the error would show
+    once and then vanish while still being true.
+    """
+    out, failed = [], []
+    for league in ("CFB", "NFL"):
+        try:
+            out += espn.scoreboard(league)
+        except Exception as exc:
+            failed.append(f"{league}: {type(exc).__name__}")
+    return out, ", ".join(failed)
 
-def parse_kick(iso_str):
-    try:
-        return datetime.strptime(iso_str, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
-    except (ValueError, TypeError):
-        return None
 
-def kickoff_local(iso_str):
-    dt = parse_kick(iso_str)
-    if not dt:
-        return iso_str
-    dt = dt.astimezone(ET)
-    return dt.strftime("%a %m/%d %I:%M %p ET").replace(" 0", " ")
+# ── loading a week ──────────────────────────────────────────────────────
+_, latest = store.latest_week(conn, SEASON)
+all_weeks = [r[0] for r in conn.execute(
+    "SELECT DISTINCT week FROM game WHERE season=? ORDER BY week DESC", (SEASON,))]
+week = latest
+if len(all_weeks) > 1:
+    week = st.selectbox("Week", all_weeks, index=0, label_visibility="collapsed",
+                        format_func=lambda w: f"Week {w}")
 
-# ─────────────────────────────────────────────
-# LOCK TIMES — pool locks Saturday noon ET, or at kickoff if earlier.
-# ─────────────────────────────────────────────
-def lock_time(kickoff_iso):
-    """Lock = min(kickoff, noon ET on this slate week's Saturday). The CFB
-    week runs Tue–Mon, so a Sunday/Monday game belongs to the PREVIOUS
-    Saturday's slate."""
-    kick = parse_kick(kickoff_iso)
-    if not kick:
-        return None
-    kick_et = kick.astimezone(ET)
-    w = kick_et.weekday()                       # Mon=0 … Sun=6
-    days_to_sat = -2 if w == 0 else 5 - w       # Mon→prev Sat; Sun→prev Sat (−1)
-    sat = (kick_et + timedelta(days=days_to_sat)).date()
-    sat_noon = datetime(sat.year, sat.month, sat.day, 12, 0, tzinfo=ET)
-    return min(kick, sat_noon.astimezone(timezone.utc))
+games = store.week_games(conn, SEASON, week) if week else []
+entry = store.week_entry(conn, SEASON, week) if week else {}
+field = store.week_field(conn, SEASON, week) if week else {}
+standings = [splash.Standing(rank=r[2], name=r[0], entry=r[1], points=r[3],
+                             wins=r[4], losses=r[5], tie_diff=r[6], me=bool(r[7]))
+             for r in conn.execute(
+                 "SELECT name, entry_name, rank, points, wins, losses, tie_diff, "
+                 "me FROM standing WHERE season=?", (SEASON,))]
+strat = model.strategy(standings, max(0, WEEKS_IN_SEASON - (week or 0)))
 
-def is_locked(kickoff_iso, now=None):
-    lt = lock_time(kickoff_iso)
-    now = now or datetime.now(timezone.utc)
-    return bool(lt and now >= lt)
 
-def lock_label(kickoff_iso, now=None):
-    lt = lock_time(kickoff_iso)
-    if not lt:
-        return ""
-    now = now or datetime.now(timezone.utc)
-    if now >= lt:
-        return "🔒 locked"
-    left = lt - now
-    hrs = int(left.total_seconds() // 3600)
-    if hrs >= 48:
-        return f"locks {lt.astimezone(ET).strftime('%a %I:%M %p ET').replace(' 0', ' ')}"
-    if hrs >= 1:
-        return f"locks in {hrs}h {int(left.total_seconds() % 3600 // 60)}m"
-    return f"locks in {int(left.total_seconds() // 60)}m"
+def enrich(games):
+    """Attach an ESPN event to each game, remembering the link.
 
-# ─────────────────────────────────────────────
-# PASTE-IMPORT MATCHING — match "Team A vs Team B" lines to real games.
-# ─────────────────────────────────────────────
-def _norm(s):
-    s = re.sub(r"[#(].*?[)]|#\d+|\b\d+-\d+\b", " ", s)   # strip ranks & records
-    s = re.sub(r"[^a-z0-9& ]", " ", s.lower())
-    return " " + re.sub(r"\s+", " ", s).strip() + " "
-
-def _aliases(side):
-    """Names to look for. Two-letter codes (SF, KC, LA, TB, NE, GB, NO, LV)
-    count: the board often shows only the code, and skipping them meant a
-    game could not be found at all once both teams became required. They are
-    matched as whole space-delimited tokens, so they don't hit inside words."""
-    out = set()
-    for a in (side.get("full_name"), side.get("location"), side.get("name")):
-        if a and len(a) >= 3:
-            out.add(_norm(a).strip())
-    abbr = side.get("abbr")
-    if abbr and len(abbr) >= 2:
-        out.add(_norm(abbr).strip())
-    return {a for a in out if a}
-
-def _loose_aliases(side):
-    """Codes other scoreboards use where ESPN uses its own. Splash writes
-    JAC, WAS and LA for teams ESPN calls JAX, WSH and LAR, and does the same
-    to colleges (APP for ESPN's APP ST). Deriving them — prefixes of the
-    squashed name, and every 1-3 letter per-word prefix combination — beats
-    a hand-kept translation table that rots the moment a code changes."""
-    out = set()
-    for a in (side.get("location"), side.get("name")):
-        if not a:
-            continue
-        words = re.sub(r"[^a-z ]", " ", a.lower()).split()
-        if not words:
-            continue
-        squash = "".join(words)
-        out.update(squash[:n] for n in (3, 4) if len(squash) > n)
-        if len(words) > 1:
-            for combo in itertools.product(*[[w[:k] for k in (1, 2, 3) if len(w) >= k]
-                                             for w in words]):
-                joined = "".join(combo)
-                if 2 <= len(joined) <= 5:
-                    out.add(joined)
-    return {a for a in out if len(a) >= 2} - _aliases(side)
-
-MATCH_WINDOW = 8   # lines apart, at most, for two teams to be one game
-
-def match_paste_lines(text, games):
-    """Pull games out of pasted text — a tidy "A vs B" list or a raw dump of
-    the whole Splash page, where each team is its own line.
-
-    Both teams must appear, and appear NEAR each other. Matching on a single
-    team name is too eager: a page carries other weeks' tabs and stray team
-    mentions, which is how a board of 25 games once imported as 28.
-
-    Proximity alone is not enough either. Team codes run two lines apart, so
-    eight lines away is four games away, and the cross-league collisions pair
-    right back up (the Dolphins' MIA with a college WAKE). So each line is
-    claimed by ONE game: pairings are taken exact-spelling first and
-    closest-first, and a line already spoken for is gone. A real MIA/SF
-    pairing one line apart takes MIA before any MIA/WAKE invention can.
-    At least one side must be spelled exactly as ESPN spells it — two
-    guessed codes are a coincidence, not a game."""
-    lines = text.splitlines()
-    # Alias sets are per game, not per line: a whole-page paste is ~800 lines
-    # against ~80 games, and rebuilding them inside the loop was 60k rebuilds.
-    alias = {g["event_id"]: {k: (_aliases(g[k]), _loose_aliases(g[k]))
-                             for k in ("home", "away")} for g in games}
-    hits = {g["event_id"]: {"home": [], "away": []} for g in games}
-    touched = set()
-    for i, raw in enumerate(lines):
-        if not raw.strip():
-            continue
-        line = _norm(raw)
-        for g in games:
-            for key in ("home", "away"):
-                for tier, names in enumerate(alias[g["event_id"]][key]):
-                    found = next((a for a in names if f" {a} " in line), None)
-                    if found:
-                        hits[g["event_id"]][key].append((i, tier, found))
-                        touched.add(i)
-                        break            # exact beats loose for the same line
-
-    # every plausible pairing: exact spellings first, then closest, then
-    # earliest on the page
-    cands = []
+    A game that will not match keeps its place with no odds — the board
+    decides what exists, and a missing line is cosmetic where a missing
+    game is not.
+    """
+    if not games:
+        return {}
+    events = {e["event_id"]: e for e in scoreboard()[0]}
+    found, unlinked = {}, []
     for g in games:
-        h = hits[g["event_id"]]
-        for a, ta, na in h["home"]:
-            for b, tb, nb in h["away"]:
-                if abs(a - b) > MATCH_WINDOW:
-                    continue
-                if min(ta, tb) > 0:
-                    continue    # both sides guessed — that is not evidence,
-                                # it is how Houston's code and Tennessee's
-                                # invent a Cougars-Volunteers game
-                if a == b and na == nb:
-                    continue    # one word can't be both teams: "Louisville"
-                                # is not Louisiana playing Louisiana Tech
-                cands.append((max(ta, tb), abs(a - b), min(a, b),
-                              g["event_id"], g, a, b))
-    cands.sort(key=lambda c: c[:3])
-
-    matched, claimed, seen = [], set(), set()
-    for _tier, _gap, first, eid, g, a, b in cands:
-        if eid in seen or a in claimed or b in claimed:
-            continue
-        seen.add(eid)
-        claimed.update((a, b))
-        matched.append((lines[first].strip(), g, first))
-    matched.sort(key=lambda m: m[2])
-    matched = [(label, g) for label, g, _i in matched]
-
-    unmatched = [l.strip() for i, l in enumerate(lines)
-                 if l.strip() and i not in touched]
-    return matched, unmatched
-
-# Splash reveals how the whole league picked once the deadline passes, on
-# its Pick Distribution page. That is the only place the field's behaviour
-# is visible, and the field is what a weekly prize is won against.
-_PCT = re.compile(r"^\((\d+(?:\.\d+)?)%\)$")
-
-def parse_distribution(text):
-    """Team codes and their share of the league's picks, two per game.
-
-    The page prints each side as four lines — an outcome word, the code,
-    how many entries took it, then the percentage:
-
-        Lost.
-        GB
-        34
-        (89.5%)
-
-    Anchoring on the percentage and reading backwards is sturdier than
-    trying to recognise the headings around it, which differ by game state
-    (FINAL, a clock, a kickoff time) and would have to be chased whenever
-    Splash relabels something."""
-    lines = [l.strip() for l in text.splitlines()]
-    sides = []
-    for i, line in enumerate(lines):
-        m = _PCT.match(line)
-        if not m or i < 2:
-            continue
-        code, count = lines[i - 2], lines[i - 1]
-        if not code_like(code) or not count.replace(",", "").isdigit():
-            continue
-        sides.append((code, int(count.replace(",", "")), float(m.group(1)) / 100))
-    return [(sides[i], sides[i + 1]) for i in range(0, len(sides) - 1, 2)]
-
-
-def match_distribution(text, games):
-    """Pair each side of a distribution block to a real game.
-
-    Both codes have to land on the same game — a pair naming two teams that
-    never played each other is a parse that has drifted out of step, and
-    silently attributing it to a game would poison the field numbers."""
-    matched, unmatched = [], []
-    for (ca, na, pa), (cb, nb, pb) in parse_distribution(text):
-        want = {_norm(ca).strip(), _norm(cb).strip()}
-        hit = None
-        for g in games:
-            have = set()
-            for key in ("home", "away"):
-                have |= _aliases(g[key]) | _loose_aliases(g[key])
-            if want <= have:
-                # and not both on the same side of it
-                side_a = {k for k in ("home", "away")
-                          if _norm(ca).strip() in (_aliases(g[k]) | _loose_aliases(g[k]))}
-                side_b = {k for k in ("home", "away")
-                          if _norm(cb).strip() in (_aliases(g[k]) | _loose_aliases(g[k]))}
-                if side_a and side_b and side_a != side_b:
-                    hit = g
-                    break
-        if hit:
-            matched.append((hit, (ca, na, pa), (cb, nb, pb)))
+        key = (g["away_code"], g["home_code"])
+        if g["espn_id"] and g["espn_id"] in events:
+            found[key] = events[g["espn_id"]]
         else:
-            unmatched.append(f"{ca} / {cb}")
-    return matched, unmatched
+            unlinked.append(g)
+    if unlinked and events:
+        spare = [e for e in events.values() if e not in found.values()]
+        pending = [splash.Game(away_code=g["away_code"], home_code=g["home_code"],
+                               away=g["away"] or "", home=g["home"] or "")
+                   for g in unlinked]
+        for sg, evt in espn.link(pending, spare):
+            if not evt:
+                continue
+            found[(sg.away_code, sg.home_code)] = evt
+            conn.execute(
+                "UPDATE game SET espn_id=?, kickoff=COALESCE(?, kickoff) "
+                "WHERE season=? AND week=? AND away_code=? AND home_code=?",
+                (evt["event_id"], evt.get("date"), SEASON, week,
+                 sg.away_code, sg.home_code))
+        conn.commit()
+    return found
 
 
-def field_share(field, g, team):
-    """The league's share on one side of a game, 0-1, or None if unknown."""
-    row = field.get(g["event_id"], {})
-    for alias in _aliases(team) | _loose_aliases(team):
-        if alias in row:
-            return row[alias]
+events = enrich(games)
+linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
+                       away=g["away"] or "", home=g["home"] or ""),
+           events.get((g["away_code"], g["home_code"]))) for g in games]
+picks = model.propose(linked, field=field, strat=strat)
+numbered = list(enumerate(picks, 1))
+by_key = {(p.away, p.home): p for p in picks}
+
+# ── header ──────────────────────────────────────────────────────────────
+st.markdown(f"<div class='gp-head'>Week {week or '—'}</div>",
+            unsafe_allow_html=True)
+if games:
+    nxt = min((g["kickoff"] for g in games if g["kickoff"]), default=None)
+    unpicked = sum(1 for g in games
+                   if entry.get((g["away_code"], g["home_code"]), (None,))[0] is None
+                   and (g["away_code"], g["home_code"]) in entry)
+    bits = [f"{len(games)} games"]
+    if nxt:
+        bits.append(view.locks_in(nxt))
+    if entry:
+        bits.append(f"{len(entry) - unpicked} of {len(games)} entered")
+    st.markdown(f"<div class='gp-sub'>{' · '.join(bits)}</div>",
+                unsafe_allow_html=True)
+st.markdown(f"<div class='gp-mode'>{strat.why}</div>", unsafe_allow_html=True)
+
+# A successful paste ends in st.rerun(), which wipes anything written
+# before it — so the confirmation is stashed and rendered on the way back.
+_note = st.session_state.pop("note", None)
+if _note:
+    {"ok": st.success, "warn": st.warning}[_note[0]](_note[1])
+
+if st.session_state.get("sync_error"):
+    st.warning(f"Not saved to GitHub: {st.session_state['sync_error']}")
+_espn_error = scoreboard()[1]
+if _espn_error:
+    st.caption(f"No lines right now — ESPN unreachable ({_espn_error}). "
+               f"The card is intact; the odds are not.")
+
+def _match_pair(games, a, b):
+    """Find the stored game these two codes belong to, either way round."""
+    for g in games:
+        if {a, b} == {g["away_code"], g["home_code"]}:
+            return g["away_code"], g["home_code"]
     return None
 
 
-def expected_games(text):
-    """How many games the board says it has. Splash heads each day with
-    "Saturday, Sep 19 9 games", so the paste carries its own answer key —
-    which is how the app can promise it got them all instead of the user
-    counting 31 cards on a phone."""
-    total = sum(int(n) for n in re.findall(r"\b(\d+)\s+games?\b", text, re.I))
-    return total or None
-
-# Page furniture that looks like a team code but isn't. "NO" stays out of
-# this list — that's New Orleans.
-_NOT_A_CODE = {"FINAL", "LIVE", "AM", "PM", "ET", "CT", "MT", "PT", "OT",
-               "TBD", "VS", "AT", "PICK", "PICKS", "WINNER", "TIE"}
-
-def code_like(line):
-    """Is this unmatched line a team the app failed to place, as opposed to
-    page furniture? Those are the only ones worth showing."""
-    s = line.strip()
-    return (re.fullmatch(r"[A-Z][A-Z0-9&.'()-]{1,6}( [A-Z0-9&.'()-]{1,4})?", s)
-            is not None and s.upper() not in _NOT_A_CODE)
-
-# ─────────────────────────────────────────────
-# GRADING
-# ─────────────────────────────────────────────
-def grade_pick(row, game):
-    """Return ('W'|'L'|'P', 'AWAY 24–21 HOME') for a completed game, else (None, None)."""
-    if not game or not game["completed"]:
-        return None, None
-    home, away = game["home"], game["away"]
-    try:
-        hs, as_ = int(home["score"]), int(away["score"])
-    except (TypeError, ValueError):
-        return None, None
-    score_str = f"{away['abbr']} {as_}–{hs} {home['abbr']}"
-
-    pick_is_home = row["pick_abbr"] == home["abbr"]
-    pick_pts = hs if pick_is_home else as_
-    opp_pts = as_ if pick_is_home else hs
-
-    if row["pick_type"] == "ATS" and row["line"] is not None and row["fav_abbr"]:
-        margin = pick_pts - opp_pts
-        adj = margin - row["line"] if row["pick_abbr"] == row["fav_abbr"] else margin + row["line"]
-        if adj > 0:
-            return "W", score_str
-        if adj < 0:
-            return "L", score_str
-        return "P", score_str
-
-    if pick_pts > opp_pts:
-        return "W", score_str
-    if pick_pts < opp_pts:
-        return "L", score_str
-    return "P", score_str
-
-# ─────────────────────────────────────────────
-# PICK WRITES
-# ─────────────────────────────────────────────
-def upsert_pick(conn, season, week, g, side, opp, pick_type):
-    # A changed pick resets result AND entered_in_splash — the Splash entry
-    # no longer matches, so the banner should nag until it's re-entered.
-    conn.execute("""
-        INSERT INTO picks (season, week, event_id, matchup, kickoff,
-            pick_abbr, pick_name, opp_abbr, opp_name, pick_type,
-            fav_abbr, line, created_at, entered_in_splash, league)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?)
-        ON CONFLICT(season, week, event_id) DO UPDATE SET
-            pick_abbr=excluded.pick_abbr, pick_name=excluded.pick_name,
-            opp_abbr=excluded.opp_abbr, opp_name=excluded.opp_name,
-            pick_type=excluded.pick_type, fav_abbr=excluded.fav_abbr,
-            line=excluded.line, result=NULL, final_score=NULL,
-            entered_in_splash=0, league=excluded.league
-    """, (season, week, g["event_id"], g["name"], g["date"],
-          side["abbr"], side["name"], opp["abbr"], opp["name"], pick_type,
-          g["fav_abbr"], g["line"], datetime.now().isoformat(timespec="seconds"),
-          g.get("league", "CFB")))
-
-def favorite_side(g):
-    """(favorite side, underdog side) from the line, falling back to
-    moneyline probability; (None, None) when there's no signal."""
-    if g["fav_abbr"]:
-        if g["fav_abbr"] == g["home"]["abbr"]:
-            return g["home"], g["away"]
-        if g["fav_abbr"] == g["away"]["abbr"]:
-            return g["away"], g["home"]
-    hp, ap = g["home_ml_prob"], g["away_ml_prob"]
-    if hp is not None and ap is not None and hp != ap:
-        return (g["home"], g["away"]) if hp > ap else (g["away"], g["home"])
-    return None, None
-
-def fair_probs(g):
-    """Best available true win probabilities (home, away).
-
-    Raw moneyline-implied probabilities include the book's vig (they sum to
-    ~104-105%), so normalize them to a fair 100%. With no moneyline, derive
-    from the spread: margins are roughly normal with sd ≈ 13.2 (NFL) or
-    ≈ 16.5 (CFB), so P(favorite wins) = Φ(line/sd)."""
-    hp, ap = g["home_ml_prob"], g["away_ml_prob"]
-    if hp and ap:
-        return hp / (hp + ap), ap / (hp + ap)
-    if g["line"] is not None:
-        fav, _ = favorite_side(g)
-        if fav:
-            sd = 13.2 if g.get("league") == "NFL" else 16.5
-            p = 0.5 * (1 + math.erf((g["line"] / sd) / math.sqrt(2)))
-            return (p, 1 - p) if fav is g["home"] else (1 - p, p)
-    return None, None
-
-def recommend(g):
-    """(recommended side, its win probability) or (None, None)."""
-    hp, ap = fair_probs(g)
-    if hp is None:
-        fav, _ = favorite_side(g)
-        return fav, None
-    return (g["home"], hp) if hp >= ap else (g["away"], ap)
-
-
-# ─────────────────────────────────────────────
-# TEAM STRENGTH — ESPN's core API (verified live via scripts/probe_espn.py)
-#
-# FPI is a net-points rating: expected margin vs an average opponent on a
-# neutral field, and it carries preseason priors — which is exactly what
-# September needs, when box-score stats are a 2-game sample against
-# whoever happened to be on the schedule. The same payload carries EPA
-# per game for offense, defense and special teams.
-#
-# Note: ESPN's *box score* stats for the current season come back as zeros
-# early in the year, so stat_pack() falls back to last season and says so.
-# ─────────────────────────────────────────────
-CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
-HFA = {"CFB": 2.6, "NFL": 2.0}        # home-field worth, in points
-MARGIN_SD = {"CFB": 16.5, "NFL": 13.2}  # sd of final margin around the spread
-EDGE_MIN = 0.06                        # win-prob gap that counts as disagreement
-
-def _core_get(url):
-    try:
-        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=12)
-        if r.status_code == 200:
-            return r.json()
-    except requests.RequestException:
-        pass
-    return None
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def fetch_power(league, team_id, season):
-    """FPI + EPA for one team. {} when unavailable."""
-    if not team_id:
-        return {}
-    d = _core_get(f"{CORE}/{LEAGUE_PATH[league]}/seasons/{season}/powerindex/{team_id}")
-    if not d:
-        return {}
-    p = {x.get("name"): x.get("value") for x in d.get("predictives") or []}
-    return {k: p.get(k) for k in
-            ("fpi", "fpirank", "epaoffense", "epadefense", "epaspecialteams")}
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def fetch_team_stats(league, team_id, season):
-    """Flatten core-API team statistics to {'category.statName': value}."""
-    if not team_id:
-        return {}
-    d = _core_get(f"{CORE}/{LEAGUE_PATH[league]}/seasons/{season}/types/2/teams/{team_id}/statistics")
-    if not d:
-        return {}
-    out = {}
-    for cat in ((d.get("splits") or {}).get("categories") or []):
-        cname = cat.get("name")
-        for s in cat.get("stats") or []:
-            out[f"{cname}.{s.get('name')}"] = s.get("value")
-    return out
-
-def stat_pack(league, team_id, season):
-    """This season's stats if they've been populated, else last season's.
-    Always reports which season and how many games it's based on."""
-    cur = fetch_team_stats(league, team_id, season)
-    games = cur.get("general.gamesPlayed") or 0
-    if games and games > 0:
-        return {"season": season, "games": int(games), "stats": cur, "current": True}
-    prev = fetch_team_stats(league, team_id, season - 1)
-    return {"season": season - 1, "games": int(prev.get("general.gamesPlayed") or 0),
-            "stats": prev, "current": False}
-
-def margin_to_prob(margin, league):
-    """Point margin → win probability, normal around the margin."""
-    sd = MARGIN_SD.get(league, 15.0)
-    return 0.5 * (1 + math.erf((margin / sd) / math.sqrt(2)))
-
-def fpi_probs(g):
-    """(home, away) win probability from FPI alone — the second opinion."""
-    season = int(g.get("season") or datetime.now().year)
-    league = g.get("league", "CFB")
-    h = fetch_power(league, g["home"].get("id"), season)
-    a = fetch_power(league, g["away"].get("id"), season)
-    if h.get("fpi") is None or a.get("fpi") is None:
-        return None, None
-    edge = h["fpi"] - a["fpi"] + (0 if g["neutral_site"] else HFA.get(league, 2.5))
-    p_home = margin_to_prob(edge, league)
-    return p_home, 1 - p_home
-
-def market_vs_model(g):
-    """Where FPI and the betting market disagree, and by how much.
-    Returns (side FPI prefers, win-prob gap) or (None, None)."""
-    mh, ma = fair_probs(g)
-    fh, fa = fpi_probs(g)
-    if mh is None or fh is None:
-        return None, None
-    gap = fh - mh                      # >0: FPI likes the home side more
-    side = g["home"] if gap > 0 else g["away"]
-    return side, abs(gap)
-
-# ─────────────────────────────────────────────
-# PLAIN ENGLISH — turn numbers into words a human reads once
-# ─────────────────────────────────────────────
-LEVERAGE_DOG_P = 0.45   # underdog win chance that makes a flip nearly free
-
-def dog_prob(g):
-    """The underdog's fair win probability, or None."""
-    hp, ap = fair_probs(g)
-    return min(hp, ap) if hp is not None else None
-
-def confidence_word(p):
-    if p is None:
-        return "No line yet"
-    if p >= 0.78:
-        return "Safe"
-    if p >= 0.60:
-        return "Should win"
-    return "Close call"
-
-def worth_flipping(g):
-    dp = dog_prob(g)
-    return dp is not None and dp >= LEVERAGE_DOG_P and not g["completed"]
-
-def why_text(g, summary=None):
-    """The case for the underdog, in sentences. `summary` may be None or
-    missing any key — every lookup degrades quietly."""
-    fav, dog = favorite_side(g)
-    if not dog:
-        return []
-    dp = dog_prob(g)
-    out = []
-    pct = f" — about {dp:.0%} to win outright" if dp else ""
-    if g["line"] is not None:
-        out.append(f"**{dog['name']}** are only a {g['line']:g}-point underdog{pct}.")
-    elif dp:
-        out.append(f"**{dog['name']}** are about {dp:.0%} to win outright.")
-    if dog is g["home"] and not g["neutral_site"]:
-        out.append("They're at home, usually worth about 2–3 points.")
-    s = summary or {}
-    key = "homeTeam" if dog is g["home"] else "awayTeam"
-    proj = ((s.get("predictor") or {}).get(key) or {}).get("gameProjection")
-    try:
-        if proj is not None:
-            out.append(f"ESPN's prediction model gives them {float(proj):.0f}%.")
-    except (TypeError, ValueError):
-        pass
-    for block in s.get("lastFiveGames") or []:
-        evs = block.get("events") or []
-        if not evs:
-            continue
-        abbr = (block.get("team") or {}).get("abbreviation")
-        who = dog["name"] if abbr == dog["abbr"] else fav["name"] if abbr == fav["abbr"] else None
-        if who:
-            wins = sum(1 for e in evs if str(e.get("gameResult", "")).upper().startswith("W"))
-            out.append(f"{who} have won {wins} of their last {len(evs)}.")
-    for block in s.get("injuries") or []:
-        n = len(block.get("injuries") or [])
-        if n and (block.get("team") or {}).get("abbreviation") == fav["abbr"]:
-            out.append(f"{fav['name']} have {n} player(s) on the injury report.")
-    return out
-
-
-def fpi_lines(g):
-    """FPI's read on the game, as sentences. Never raises."""
-    try:
-        season = int(g.get("season") or datetime.now().year)
-        league = g.get("league", "CFB")
-        h = fetch_power(league, g["home"].get("id"), season)
-        a = fetch_power(league, g["away"].get("id"), season)
-    except Exception:
-        return []
-    if h.get("fpi") is None or a.get("fpi") is None:
-        return []
-    out = []
-    for side, pw in ((g["home"], h), (g["away"], a)):
-        rank = f" (#{int(pw['fpirank'])})" if pw.get("fpirank") else ""
-        out.append(f"{side['name']}: FPI {pw['fpi']:+.1f}{rank}"
-                   + (f", EPA {pw['epaoffense']:+.1f} off / {pw['epadefense']:+.1f} def"
-                      if pw.get("epaoffense") is not None else ""))
-    side, gap = market_vs_model(g)
-    if side and gap and gap >= EDGE_MIN:
-        out.append(f"**FPI likes {side['name']} more than the betting line does** "
-                   f"— about {gap:.0%} more likely to win than the market implies.")
-    elif side:
-        out.append("FPI and the betting line agree on this one.")
-    return out
-
-STAT_ROWS = [
-    ("Points / game", "scoring.totalPointsPerGame", "{:.1f}"),
-    ("Yards / game", "passing.yardsPerGame", "{:.1f}"),
-    ("Yards / pass att", "passing.yardsPerPassAttempt", "{:.1f}"),
-    ("Yards / rush att", "rushing.yardsPerRushAttempt", "{:.1f}"),
-    ("3rd down %", "miscellaneous.thirdDownConvPct", "{:.1f}%"),
-    ("Red zone TD %", "miscellaneous.redzoneTouchdownPct", "{:.1f}%"),
-    ("Turnover margin", "miscellaneous.turnOverDifferential", "{:+.0f}"),
-    ("Sacks (defense)", "defensive.sacks", "{:.0f}"),
-]
-
-def render_stats(g):
-    """Side-by-side numbers, honest about what season they're from."""
-    league = g.get("league", "CFB")
-    season = int(g.get("season") or datetime.now().year)
-    try:
-        packs = {side["abbr"]: stat_pack(league, side.get("id"), season)
-                 for side in (g["away"], g["home"])}
-    except Exception as e:
-        st.caption(f"Couldn't load stats: {e}")
-        return
-
-    for ln in fpi_lines(g):
-        st.markdown(f"- {ln}")
-
-    rows = []
-    for label, key, fmt in STAT_ROWS:
-        row = {"": label}
-        any_val = False
-        for side in (g["away"], g["home"]):
-            v = packs[side["abbr"]]["stats"].get(key)
-            try:
-                row[side["abbr"]] = fmt.format(float(v))
-                any_val = True
-            except (TypeError, ValueError):
-                row[side["abbr"]] = "—"
-        if any_val:
-            rows.append(row)
-    if rows:
-        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
-        notes = []
-        for side in (g["away"], g["home"]):
-            pk = packs[side["abbr"]]
-            if pk["games"]:
-                notes.append(f"{side['abbr']}: {pk['season']} season, {pk['games']} games"
-                             + ("" if pk["current"] else " (this season's box scores "
-                                                         "aren't populated yet)"))
-        if notes:
-            st.caption(" · ".join(notes))
-    else:
-        st.caption("ESPN has no box-score stats for these teams yet.")
-
-
-def flip_score(g):
-    """How live the underdog really is: the market's read on the dog,
-    blended 50/50 with FPI's when FPI has an opinion. Higher = the flip
-    costs less. None when there's nothing to go on."""
-    dp = dog_prob(g)
-    if dp is None:
-        return None
-    _fav, dog = favorite_side(g)
-    if dog is None:
-        return None
-    try:
-        fh, fa = fpi_probs(g)
-    except Exception:
-        fh = fa = None
-    if fh is None:
-        return dp
-    fpi_dog = fh if dog is g["home"] else fa
-    return 0.5 * dp + 0.5 * fpi_dog
-
-# How much chalkier the league is than the market. Learned from whatever
-# weeks have been loaded, bucketed by how big a favorite the market made it,
-# and shrunk toward the market when a bucket is thin — one week of data
-# should nudge the order, not dictate it.
-FIELD_BUCKETS = ((0.50, 0.60), (0.60, 0.70), (0.70, 0.80), (0.80, 0.90), (0.90, 1.01))
-
-def field_tendency(rows):
-    """{bucket_index: average share the league put on the favorite}."""
-    buckets = {}
-    for mkt, pct in rows:
-        if mkt is None or pct is None or mkt < 0.5:
-            continue               # only look at it from the favorite's side
-        for i, (lo, hi) in enumerate(FIELD_BUCKETS):
-            if lo <= mkt < hi:
-                buckets.setdefault(i, []).append(pct)
-                break
-    return {i: sum(v) / len(v) for i, v in buckets.items() if v}
-
-def expected_field_share(g, tendency):
-    """What share of the league will likely take the favorite here.
-
-    Falls back to the market's own probability when nothing has been
-    learned for that range yet, which just means "assume the league is as
-    chalky as the line" — wrong, but wrong in a harmless direction."""
-    hp, ap = fair_probs(g)
-    if hp is None:
-        return None
-    fav_p = max(hp, ap)
-    for i, (lo, hi) in enumerate(FIELD_BUCKETS):
-        if lo <= fav_p < hi:
-            seen = tendency.get(i)
-            return seen if seen is not None else fav_p
-    return fav_p
-
-def rank_flips(candidates, tendency=None):
-    """Flip candidates, best first, as (score, game, underdog).
-
-    With the league's habits known, ordering leans toward the games where
-    the crowd will be piled on the favorite: a coin flip nobody else is
-    fading is worth more than an equally close one the pool is already
-    split on, because separation is the entire point of flipping."""
-    scored = []
-    for g in candidates:
-        if g["completed"] or is_locked(g["date"]):
-            continue      # can't act on it anyway
-        sc = flip_score(g)
-        if sc is None:
-            continue
-        scored.append((sc, g, favorite_side(g)[1]))
-    if tendency:
-        # Sort on the leverage, but hand back the raw score: the thresholds
-        # in recommended_flips() mean "how live is this dog", and folding
-        # the crowd into that number would quietly move them.
-        scored.sort(key=lambda t: -(t[0] * (expected_field_share(t[1], tendency) or 0.5)))
-    else:
-        scored.sort(key=lambda t: -t[0])
-    return scored
-
-FLIP_TAKE = 3          # never recommend more than this
-FLIP_STRONG = 0.47     # a genuine coin flip
-FLIP_FLOOR = 0.45      # the least you'd accept if nothing is a true 50/50
-
-def recommended_flips(scored):
-    """The 2-3 flips actually worth making. Fewer when the week is chalky."""
-    strong = [t for t in scored if t[0] >= FLIP_STRONG][:FLIP_TAKE]
-    if strong:
-        return strong
-    return scored[:1] if scored and scored[0][0] >= FLIP_FLOOR else []
-
-# ─────────────────────────────────────────────
-# SETTINGS — tucked in the sidebar, closed by default on a phone
-# ─────────────────────────────────────────────
-now = datetime.now()
-default_season = now.year if now.month >= 8 else now.year - 1
-PICK_TYPE = "SU"   # this league is straight up
-
-with st.sidebar:
-    st.markdown("## Settings")
-    show_numbers = st.toggle("Show percentages", value=False,
-                             help="Adds win % next to every pick.")
-    edit_locked = st.toggle("Edit locked picks", value=False,
-                            help="Change picks after the Saturday-noon lock.")
-    st.divider()
-    use_current = st.toggle("This week (automatic)", value=True)
-    season = st.number_input("Season", 2020, 2030, default_season, disabled=use_current)
-    week = st.selectbox("Week", list(range(1, 17)), disabled=use_current)
-    if st.button("🔄 Reload games"):
-        fetch_scoreboard.clear()
-        fetch_summary.clear()
-        st.rerun()
-    st.divider()
-    if not sync_enabled():
-        st.caption("⚠️ Picks are not backed up — add GITHUB_TOKEN and "
-                   "GITHUB_REPO in this app's Secrets.")
-    else:
-        _ok, _why = sync_selftest()
-        st.caption("☁️ Picks saved to GitHub."
-                   if _ok else f"⚠️ GitHub refused to save — {_why}")
-        if not _ok and st.button("Re-check GitHub"):
-            sync_selftest.clear()
+# ── the paste bar ───────────────────────────────────────────────────────
+with st.expander("Paste from Splash", expanded=not games):
+    st.caption("Any of the four pages — the board, your entry, Pick "
+               "Distribution, or the standings. It works out which is "
+               "which. Text only: run the shortcut and paste.")
+    with st.form("paste", clear_on_submit=True):
+        text = st.text_area("Paste", height=150, label_visibility="collapsed")
+        wk = st.number_input("Week", 1, WEEKS_IN_SEASON,
+                             value=int(week or 1), step=1)
+        go = st.form_submit_button("Load it", type="primary")
+    if go and text.strip():
+        kind = splash.sniff(text)
+        wk = int(wk)
+        if kind == "board" or kind == "entry":
+            parsed = splash.parse_entry(text)
+            store.save_games(conn, SEASON, wk, parsed.games)
+            rows = [{"away_code": g.away_code, "home_code": g.home_code,
+                     "team": g.picked,
+                     "result": None if g.points is None else
+                     ("W" if g.points else "L")} for g in parsed.games]
+            if any(r["team"] for r in rows):
+                store.save_entry(conn, SEASON, wk, rows)
+            if parsed.tiebreaker is not None:
+                conn.execute("INSERT INTO tiebreak (season, week, guess) "
+                             "VALUES (?,?,?) ON CONFLICT(season, week) "
+                             "DO UPDATE SET guess=excluded.guess",
+                             (SEASON, wk, parsed.tiebreaker))
+            save()
+            st.session_state["note"] = (
+                "ok", f"Week {wk}: {len(parsed.games)} games loaded.")
             st.rerun()
 
-# ─────────────────────────────────────────────
-# LOAD GAMES
-# ─────────────────────────────────────────────
-try:
-    data = fetch_scoreboard("CFB") if use_current else fetch_scoreboard("CFB", int(season), int(week))
-except requests.RequestException as e:
-    st.error(f"Couldn't reach ESPN: {e}")
+        elif kind == "picks_by_week":
+            board_games, entries = splash.parse_picks_by_week(text)
+            gobjs = [splash.Game(away_code=a, home_code=h) for a, h in board_games]
+            store.save_games(conn, SEASON, wk, gobjs)
+            mine = next((e for e in entries if e.me), None)
+            if mine:
+                rows = []
+                for i, (a, h) in enumerate(board_games):
+                    team, state = (mine.picks[i] if i < len(mine.picks)
+                                   else (None, "open"))
+                    rows.append({"away_code": a, "home_code": h, "team": team,
+                                 "result": {"W": "W", "L": "L"}.get(state)})
+                store.save_entry(conn, SEASON, wk, rows)
+            dist = splash.distribution_from_matrix(board_games, entries)
+            store.save_field(conn, SEASON, wk, [
+                (board_games[i][0], board_games[i][1], side[0], side[1],
+                 side[2], None)
+                for i in range(len(board_games)) for side in dist[i]])
+            save()
+            missed = sum(1 for p in (mine.picks if mine else []) if p[0] is None)
+            note = f"Week {wk}: {len(board_games)} games, {len(entries)} entries."
+            if missed:
+                note += f"  {missed} game(s) you never picked."
+            st.session_state["note"] = ("ok", note)
+            st.rerun()
+
+        elif kind == "distribution":
+            rows = splash.parse_distribution(text)
+            saved = 0
+            for (ca, na, pa), (cb, nb, pb) in rows:
+                key = _match_pair(games, ca, cb)
+                if not key:
+                    continue
+                store.save_field(conn, SEASON, wk,
+                                 [(key[0], key[1], ca, na, pa, None),
+                                  (key[0], key[1], cb, nb, pb, None)])
+                saved += 1
+            save()
+            st.session_state["note"] = (
+                "ok", f"Field loaded for {saved} of {len(rows)} games.")
+            st.rerun()
+
+        elif kind == "standings":
+            rows, size = splash.parse_standings(text)
+            store.save_standings(conn, SEASON, None, rows)
+            save()
+            me = next((r for r in rows if r.me), None)
+            st.session_state["note"] = (
+                "ok", f"Standings loaded — {len(rows)} of {size} entries"
+                + (f", you are {me.rank} on {me.points}." if me else "."))
+            st.rerun()
+        else:
+            st.session_state["note"] = (
+                "warn", "Couldn't tell which page that is — paste the whole "
+                        "page rather than a selection.")
+
+
+# ── the week ────────────────────────────────────────────────────────────
+if not games:
+    st.info("Paste this week's board to get started.")
     st.stop()
 
-api_week = (data.get("week") or {}).get("number")
-api_season = ((data.get("season") or {}).get("year")) or ((data.get("leagues") or [{}])[0].get("season") or {}).get("year")
-cur_season = int(api_season) if use_current and api_season else int(season)
-cur_week = int(api_week) if use_current and api_week else int(week)
+flips = [(n, p) for n, p in numbered if p.flipped]
+if flips and not entry:
+    st.markdown(f"**Flip {'this one' if len(flips) == 1 else f'these {len(flips)}'}**")
+    for n, p in flips:
+        st.markdown(view.standout(n, p), unsafe_allow_html=True)
+    st.caption("The closest games on the card. Taking the underdog costs "
+               "almost nothing over a season and is the only thing that "
+               "separates you from everyone riding the chalk.")
 
-games = [parse_game(e, "CFB") for e in data.get("events") or []]
+show_pct = st.toggle("Show percentages", value=False)
+for n, p in numbered:
+    g = games[n - 1]
+    st.markdown(view.card(n, p, g, entry.get((p.away, p.home)) if entry else None,
+                          show_pct=show_pct),
+                unsafe_allow_html=True)
 
-# NFL runs on its own week numbers, so for the current pool just take its
-# current week; when browsing history, fetch by the CFB week's date span.
-try:
-    if use_current:
-        nfl_data = fetch_scoreboard("NFL")
-    else:
-        kicks = sorted(k for k in (parse_kick(g["date"]) for g in games) if k)
-        nfl_data = {"events": []}
-        if kicks:
-            span = f"{kicks[0]:%Y%m%d}-{kicks[-1] + timedelta(days=2):%Y%m%d}"
-            nfl_data = fetch_scoreboard("NFL", dates=span)
-    games += [parse_game(e, "NFL") for e in nfl_data.get("events") or []]
-except requests.RequestException:
-    st.caption("⚠️ NFL games unavailable right now — showing college only.")
-
-games = [g for g in games if g["home"] and g["away"]]
-for g in games:
-    g["season"] = cur_season          # the stats/FPI endpoints are season-scoped
-games_by_id = {g["event_id"]: g for g in games}
-
-conn = get_conn()
-
-
-pick_rows = pd.read_sql_query(
-    "SELECT * FROM picks WHERE season=? AND week=?", conn, params=(cur_season, cur_week))
-picks_by_id = {r["event_id"]: r for _, r in pick_rows.iterrows()}
-slate_rows = pd.read_sql_query(
-    "SELECT * FROM slate WHERE season=? AND week=?",
-    conn, params=(cur_season, cur_week))
-slate_ids = list(slate_rows["event_id"])
-board_pos = {r["event_id"]: r["board_pos"] for _, r in slate_rows.iterrows()}
-
-# Kickoff order — the order Splash lists the board in, so the app can be
-# scrolled alongside it. Kickoff has to be the key rather than the stored
-# page position: eight of these games are added by hand or were loaded
-# before positions were recorded, and those would otherwise pile up at the
-# end. The stored position only breaks ties, which is where it earns its
-# keep — eight NFL games kick at 1:00 together and Splash has its own order
-# within the slot.
-def _slate_order(g):
-    pos = board_pos.get(g["event_id"])
-    return (g["date"], float(pos) if pd.notna(pos) else float("inf"), g["name"])
-
-slate_games = sorted((games_by_id[eid] for eid in slate_ids if eid in games_by_id),
-                     key=_slate_order)
-
-# Kickoffs are what the lock watcher runs on, and it reads only the database.
-# Rows stored before the column existed have none, so fill them in from the
-# live scoreboard rather than waiting for a re-paste.
-_missing_kick = [g for g in slate_games
-                 if not (slate_rows.loc[slate_rows["event_id"] == g["event_id"],
-                                        "kickoff"].fillna("").iloc[0])]
-if _missing_kick:
-    for _g in _missing_kick:
-        conn.execute("UPDATE slate SET kickoff=? WHERE season=? AND week=? AND event_id=?",
-                     (_g["date"], cur_season, cur_week, _g["event_id"]))
-    save(conn)
-# Numbered off that order, so the numbers are always 1…N with no holes,
-# whatever route a game took into the pool.
-slate_num = {g["event_id"]: i for i, g in enumerate(slate_games, 1)}
-
-field_rows = pd.read_sql_query(
-    "SELECT * FROM field_picks WHERE season=? AND week=?",
-    conn, params=(cur_season, cur_week))
-# {event_id: {alias: share}} — aliases so a lookup works from either the
-# code Splash prints or the name ESPN uses
-field = {}
-for _, _r in field_rows.iterrows():
-    field.setdefault(_r["event_id"], {})[_norm(_r["abbr"]).strip()] = _r["pct"]
-
-
-def save_distribution(matched):
-    """Record how the league picked. Stored per side with the market's read
-    at the time, so later weeks can learn how much chalkier the field is
-    than the line — which is the part that is useful BEFORE a deadline."""
-    for g, (ca, na, pa), (cb, nb, pb) in matched:
-        hp, ap = fair_probs(g)
-        for code, n, pct in ((ca, na, pa), (cb, nb, pb)):
-            alias = _norm(code).strip()
-            is_home = alias in (_aliases(g["home"]) | _loose_aliases(g["home"]))
-            mkt = (hp if is_home else ap) if hp is not None else None
-            conn.execute(
-                "INSERT INTO field_picks (season, week, event_id, abbr, picks, pct, mkt_prob) "
-                "VALUES (?,?,?,?,?,?,?) ON CONFLICT(season, week, event_id, abbr) "
-                "DO UPDATE SET picks=excluded.picks, pct=excluded.pct, "
-                "mkt_prob=excluded.mkt_prob",
-                (cur_season, cur_week, g["event_id"], code, n, pct, mkt))
-
-
-def add_to_pool(g, pos=None):
-    """Add a game to this week's pool; return 1 if it wasn't already there.
-
-    `pos` is where the game sits on the Splash board. It is written on every
-    import, not just the first, so re-pasting a board that already loaded
-    partially puts the stragglers in their real slots instead of appending
-    them to the end."""
-    cur = conn.execute(
-        "INSERT OR IGNORE INTO slate (season, week, event_id, matchup, added_at, league, kickoff) "
-        "VALUES (?,?,?,?,?,?,?)",
-        (cur_season, cur_week, g["event_id"], g["name"],
-         datetime.now().isoformat(timespec="seconds"), g.get("league", "CFB"),
-         g.get("date")))
-    if pos is not None:
-        conn.execute("UPDATE slate SET board_pos=? WHERE season=? AND week=? AND event_id=?",
-                     (pos, cur_season, cur_week, g["event_id"]))
-    return cur.rowcount
-
-_auto_graded = 0
-for _eid, _r in picks_by_id.items():
-    if pd.isna(_r["result"]):
-        _res, _score = grade_pick(_r, games_by_id.get(_eid))
-        if _res:
-            conn.execute("UPDATE picks SET result=?, final_score=? "
-                         "WHERE season=? AND week=? AND event_id=?",
-                         (_res, _score, cur_season, cur_week, _eid))
-            _auto_graded += 1
-if _auto_graded:
-    save(conn)
-    pick_rows = pd.read_sql_query(
-        "SELECT * FROM picks WHERE season=? AND week=?", conn,
-        params=(cur_season, cur_week))
-    picks_by_id = {r["event_id"]: r for _, r in pick_rows.iterrows()}
-
-if st.session_state.get("sync_failed"):
-    c1, c2 = st.columns([4, 1])
-    _why = st.session_state.get("sync_error", "")
-    c1.warning("⚠️ Some picks aren't backed up yet — they'd be lost if the app "
-               "restarts." + (f" GitHub said: {_why}" if _why else ""))
-    if c2.button("Retry"):
-        if push_db_to_github():
-            st.session_state["sync_failed"] = False
-            st.rerun()
-        else:
-            st.error("Still can't reach GitHub. Check GITHUB_TOKEN in Secrets.")
-
-# ─────────────────────────────────────────────
-# HEADER — one line that says where the week stands
-# ─────────────────────────────────────────────
-n_picked = sum(1 for eid in slate_ids if eid in picks_by_id)
-flips = [g for g in slate_games if worth_flipping(g)]
-open_games = [g for g in slate_games if not is_locked(g["date"])]
-next_lock = (lock_label(min(open_games,
-                            key=lambda g: lock_time(g["date"]) or datetime.max.replace(tzinfo=timezone.utc)
-                            )["date"]) if open_games else "all locked")
-
-st.markdown(f"# Week {cur_week}")
-if slate_games:
-    bits = [f"**{n_picked} of {len(slate_games)}** picked"]
-    if flips:
-        bits.append(f"**{len(flips)}** worth a look")
-    bits.append(next_lock)
-    st.markdown(" · ".join(bits))
-
-# ─────────────────────────────────────────────
-# LOAD THIS WEEK'S GAMES
-# ─────────────────────────────────────────────
-def report_import(text, found, added, unmatched):
-    """Say plainly whether the whole board made it in.
-
-    A board that quietly comes up three games short is the worst outcome
-    here — the user enters picks in Splash off this list. The board states
-    its own size, so compare against it and name the codes that didn't land
-    rather than leaving a shortfall to be noticed on Saturday."""
-    want = expected_games(text)
-    stray = list(dict.fromkeys(u for u in unmatched if code_like(u)))
-    if want and found < want:
-        msg = f"Board says {want} games — only matched {found} ({added} new)."
-        if stray:
-            msg += "  Couldn't place: " + ", ".join(stray[:12]) + "."
-        st.warning(msg + "  Add the rest under More → All games, and tell "
-                   "Claude which codes missed.")
-    elif want and found > want:
-        st.warning(f"Matched {found} games but the board lists {want} — "
-                   f"check More → All games for one that isn't yours.")
-    elif want:
-        st.success(f"Got all {want} games on the board — {added} new.")
-    else:
-        st.success(f"Found {found} game(s), added {added} new.")
-    if unmatched:
-        with st.expander(f"{len(unmatched)} line(s) of page text ignored"):
-            st.caption("Kickoff times, records and the rest of the page land "
-                       "here. If a real game is missing, add it under "
-                       "More → All games.")
-            st.write("\n".join(f"- {u}" for u in unmatched[:60]))
-
-# An iOS Shortcut can hand the whole board over in the URL: it reads the
-# rendered text straight off the Splash page in Safari (real text, no OCR)
-# and opens the app with ?games=<encoded>. Same matcher as a manual paste.
-_shared = st.query_params.get("games")
-if _shared:
-    st.query_params.clear()          # so a refresh doesn't re-import
-    _matched, _unmatched = match_paste_lines(_shared, games)
-    _added = sum(add_to_pool(g, i) for i, (_l, g) in enumerate(_matched, 1))
-    if _added:
-        save(conn)
-    # Stash rather than render: adding games triggers a rerun, which would
-    # wipe the message before it could be read.
-    st.session_state["import_note"] = (_shared, len(_matched), _added, _unmatched)
-    if _added:
-        st.rerun()
-
-_note = st.session_state.pop("import_note", None)
-if _note:
-    report_import(*_note)
-
-with st.expander("➕ Load this week's games", expanded=not slate_games):
-    st.caption("Run the Load into Picks shortcut on the Splash board in "
-               "Safari — it copies the page — then paste here. The whole "
-               "page text is what it wants; it sorts out the games itself "
-               "and tells you if any are missing.")
-    with st.form("import_form"):
-        paste = st.text_area("Game list", height=140, label_visibility="collapsed",
-                             placeholder="Ohio State vs Texas\nPackers vs Vikings\n…")
-        submitted = st.form_submit_button("Add these games")
-    if submitted and paste.strip():
-        matched, unmatched = match_paste_lines(paste, games)
-        added = sum(add_to_pool(g, i) for i, (_line, g) in enumerate(matched, 1))
-        if added:
-            save(conn)
-            st.session_state["import_note"] = (paste, len(matched), added, unmatched)
-            st.rerun()
-        report_import(paste, len(matched), added, unmatched)
-
-# ─────────────────────────────────────────────
-# THE PICK LIST — the whole point of the app
-# ─────────────────────────────────────────────
-if not slate_games:
-    st.info("Load this week's games above to get started.")
-else:
-    unpicked = [g for g in slate_games if g["event_id"] not in picks_by_id
-                and not is_locked(g["date"]) and recommend(g)[0]]
-    if unpicked:
-        if st.button(f"✅ Pick all {len(unpicked)} games for me", type="primary",
-                     width="stretch"):
-            for g in unpicked:
-                side, _p = recommend(g)
-                opp = g["away"] if side is g["home"] else g["home"]
-                upsert_pick(conn, cur_season, cur_week, g, side, opp, PICK_TYPE)
-            save(conn)
-            st.rerun()
-
-    # Six "worth flipping" games is a list, not a decision — rank them and
-    # name the two or three actually worth taking.
-    _tendency = field_tendency(list(pd.read_sql_query(
-        "SELECT mkt_prob, pct FROM field_picks WHERE season=?",
-        conn, params=(cur_season,)).itertuples(index=False, name=None)))
-    flip_ranked = rank_flips([g for g in slate_games if worth_flipping(g)], _tendency)
-    take = recommended_flips(flip_ranked)
-    take_ids = {g["event_id"] for _sc, g, _dog in take}
-    # The standouts, up top, each tagged with its number in the list below —
-    # so the week's decisions are visible at a glance without pulling those
-    # games out of order. The number is the bridge between the two.
-    def _num(g):
-        return f"{slate_num[g['event_id']]}. "
-
-    if take:
-        lead = "Flip this one" if len(take) == 1 else f"Flip these {len(take)}"
-        st.markdown(f"### 🔄 {lead}")
-        for _sc, g, dog in take:
-            fav = g["home"] if dog is g["away"] else g["away"]
-            dp = dog_prob(g)
-            odds = f" — {dp:.0%} to win" if dp is not None else ""
-            crowd = ""
-            exp = expected_field_share(g, _tendency) if _tendency else None
-            if exp is not None and exp >= 0.7:
-                crowd = f", and ~{exp:.0%} of the league will be on {fav['name']}"
-            st.markdown(f"<div class='standout'><span class='pick-num'>{_num(g)}</span>"
-                        f"<span class='pick-team'>{dog['name']}</span>"
-                        f"<span class='pick-opp'> over {fav['name']}{odds}{crowd}"
-                        f"</span></div>", unsafe_allow_html=True)
-        st.caption("The closest games on your card. Taking the underdog here "
-                   "costs almost nothing over a season but separates you from "
-                   "everyone riding the chalk this week. Everything else: "
-                   "leave it alone.")
-    elif flip_ranked:
-        st.caption("No flip worth making this week — every close game is still "
-                   "leaning the favorite's way. Ride the chalk.")
-
-    rest = [g for _sc, g, _dog in flip_ranked if g["event_id"] not in take_ids]
-    if rest:
-        st.caption("Also close, but still leaning the favorite: "
-                   + ", ".join(f"{_num(g)}{favorite_side(g)[1]['name']}"
-                               for g in rest if favorite_side(g)[1]))
-
-    # Kickoff order — the same order the Splash page lists them in, so both
-    # can be scrolled together. Flips are called out by the block above and
-    # by each card's chip; they don't need to be hoisted out of position.
-    for g in slate_games:
-        eid = g["event_id"]
-        r = picks_by_id.get(eid)
-        rec_side, rec_p = recommend(g)
-        locked = is_locked(g["date"])
-        flip = worth_flipping(g)
-
-        if r is not None:
-            pick_abbr = r["pick_abbr"]
-            picked = g["home"] if pick_abbr == g["home"]["abbr"] else g["away"]
-            other = g["away"] if picked is g["home"] else g["home"]
-            headline = (f"<span class='pick-team'>{picked['name']}</span>"
-                        f"<span class='pick-opp'> over {other['name']}</span>")
-            p_for_pick = None
-            hp, ap = fair_probs(g)
-            if hp is not None:
-                p_for_pick = hp if picked is g["home"] else ap
-            if not pd.isna(r["result"]):
-                sub = {"W": "✅ Won", "L": "❌ Lost", "P": "Push"}.get(r["result"], "")
-                if not pd.isna(r["final_score"]):
-                    sub += f" · {r['final_score']}"
-            else:
-                sub = confidence_word(p_for_pick)
-                if show_numbers and p_for_pick is not None:
-                    sub += f" · {p_for_pick:.0%}"
-        else:
-            picked = other = None
-            headline = (f"<span class='pick-none'>No pick yet</span>"
-                        f"<span class='pick-opp'> — {g['away']['name']} at {g['home']['name']}</span>")
-            if g["completed"]:
-                sub = "Missed — game already final"
-            else:
-                sub = confidence_word(rec_p)
-                if rec_side:
-                    sub = f"Suggested: {rec_side['name']} · {sub}"
-
-        # The chip names the alternative — "worth flipping" alone doesn't
-        # say flip to WHAT, which is the only thing you need to know here.
-        chips = ""
-        alt = other if r is not None else (favorite_side(g)[1] or g["away"])
-        take_this = eid in take_ids
-        if take_this and alt:
-            chips += f"<span class='chip chip-flip'>🔄 FLIP TO {alt['name'].upper()}</span>"
-        elif flip and alt:
-            chips += "<span class='chip chip-close'>close game</span>"
-        if flip and alt:
-            # Two cached API calls per game — worth it for the handful of
-            # close games, not for all 32 on every rerun.
-            try:
-                fpi_side, fpi_gap = market_vs_model(g)
-            except Exception:
-                fpi_side = fpi_gap = None
-            if fpi_side is not None and fpi_gap and fpi_gap >= EDGE_MIN:
-                chips += (f"<span class='chip chip-edge'>📈 FPI likes "
-                          f"{fpi_side['name']}</span>")
-        if r is not None and rec_side and pick_abbr != rec_side["abbr"] and not flip:
-            chips += "<span class='chip chip-risk'>⚠️ risky change</span>"
-        when = "Final" if g["completed"] else kickoff_local(g["date"])
-        if locked and not g["completed"]:
-            when += " · 🔒 locked"
-
-        # What the league did with this game, once Splash has revealed it.
-        if r is not None and picked is not None:
-            mine = field_share(field, g, picked)
-            if mine is not None:
-                crowd = ("with the crowd" if mine >= 0.6 else
-                         "against the crowd" if mine <= 0.35 else "a split")
-                sub += f" · {mine:.0%} of the league had them, {crowd}"
-
-        # A flip candidate should explain itself without being tapped.
-        if flip and not g["completed"]:
-            dp = dog_prob(g)
-            if dp is not None and alt:
-                sub += f" · {alt['name']} {dp:.0%} to win"
-
-        # The board number makes a card findable on the Splash page at a
-        # glance — and makes it obvious if the import skipped something.
-        num = f"<span class='pick-num'>{slate_num[eid]}.</span> "
-        st.markdown(f"""
-<div class='pick-card'>
-  <div class='pick-line'>{num}{headline}{chips}</div>
-  <div class='pick-sub'>{sub} · {when}</div>
-</div>""", unsafe_allow_html=True)
-
-        if g["completed"]:
-            continue
-        can_change = (not locked) or edit_locked
-
-        def switch_button(container, key_suffix=""):
-            """Change this pick. Visible on flip candidates; tucked inside
-            Details everywhere else — the app already decided those."""
-            if r is not None:
-                if container.button(f"Switch to {other['name']}",
-                                    key=f"sw_{eid}{key_suffix}",
-                                    disabled=not can_change, width="stretch"):
-                    upsert_pick(conn, cur_season, cur_week, g, other, picked, PICK_TYPE)
-                    save(conn)
-                    st.rerun()
-            else:
-                b1, b2 = container.columns(2)
-                for col, side in ((b1, g["away"]), (b2, g["home"])):
-                    if col.button(side["abbr"], key=f"pk_{eid}_{side['abbr']}{key_suffix}",
-                                  disabled=not can_change, width="stretch"):
-                        opp = g["home"] if side is g["away"] else g["away"]
-                        upsert_pick(conn, cur_season, cur_week, g, side, opp, PICK_TYPE)
-                        save(conn)
-                        st.rerun()
-
-        if take_this:
-            switch_button(st.container())
-        with st.expander("Details"):
-            if not take_this:
-                switch_button(st.container(), "_d")
-            if flip:
-                try:
-                    summary = fetch_summary(eid, g.get("league", "CFB"))
-                except requests.RequestException:
-                    summary = None
-                for ln in why_text(g, summary):
-                    st.markdown(f"- {ln}")
-            render_stats(g)
-
-    # ── Copy into Splash ──
+# ── the list to type into Splash ────────────────────────────────────────
+if not entry:
     st.divider()
-    st.markdown("### Enter in Splash")
-    picked_games = [g for g in slate_games if g["event_id"] in picks_by_id]
-    unentered = sum(1 for eid in slate_ids
-                    if eid in picks_by_id and not picks_by_id[eid].get("entered_in_splash"))
-    if not picked_games:
-        st.caption("Make your picks above and the list to copy shows up here.")
+    st.markdown("**Enter these in Splash**")
+    last = events.get((picks[-1].away, picks[-1].home)) if picks else None
+    tb = model.tiebreaker(last)
+    st.code(view.copy_list(numbered, tb), language=None)
+    if tb:
+        st.caption(f"Tiebreaker {tb} is the Vegas total on the last game.")
+    if st.button("Save these as this week's proposal", width="stretch"):
+        store.save_proposals(conn, SEASON, week,
+                             [(p.away, p.home, p.team, p.basis)
+                              for p in picks if p.team])
+        save()
+        st.success("Saved. Paste your entry back once they're in Splash.")
+
+# ── how it actually went ────────────────────────────────────────────────
+with st.expander("How the week went"):
+    if not entry:
+        st.caption("Paste your entry once the picks are in Splash.")
     else:
-        tb_row = conn.execute("SELECT value FROM tiebreaker WHERE season=? AND week=?",
-                              (cur_season, cur_week)).fetchone()
-        tb_saved = tb_row[0] if tb_row else None
-        # Numbered by position on the board, not by position in this list:
-        # number 7 here is the board's 7th game, so the two can be worked
-        # down together. A gap in the numbers is an unpicked game, which is
-        # worth seeing rather than smoothing over.
-        lines = [f"{slate_num[g['event_id']]:2d}. "
-                 f"{picks_by_id[g['event_id']]['pick_name']} over "
-                 f"{picks_by_id[g['event_id']]['opp_name']}"
-                 for g in picked_games]
-        if tb_saved is not None:
-            lines.append(f"Tiebreaker: {tb_saved}")
-        st.code("\n".join(lines), language=None)
-
-        # The pool's tiebreaker is the board's last game — the last one in
-        # the list, since the list is in kickoff order.
-        tb_game = next((g for g in reversed(slate_games) if g["over_under"]), None)
-        if tb_game:
-            st.caption(f"💡 Vegas expects about **{tb_game['over_under']}** total points "
-                       f"in {tb_game['name']} — a good tiebreaker guess.")
-        t1, t2 = st.columns([2, 1])
-        tb_default = (int(round(float(tb_game["over_under"]))) if tb_game and tb_saved is None
-                      else int(tb_saved) if tb_saved is not None else 44)
-        tb_new = t1.number_input("Tiebreaker (total points)", 0, 200, tb_default)
-        if t2.button("Save", width="stretch"):
-            conn.execute("INSERT INTO tiebreaker (season, week, value) VALUES (?,?,?) "
-                         "ON CONFLICT(season, week) DO UPDATE SET value=excluded.value",
-                         (cur_season, cur_week, int(tb_new)))
-            save(conn)
-            st.rerun()
-        if unentered:
-            st.warning(f"{unentered} pick(s) not marked as entered in Splash.")
-            if st.button("✅ I entered them all in Splash", width="stretch"):
-                conn.execute("UPDATE picks SET entered_in_splash=1 WHERE season=? AND week=?",
-                             (cur_season, cur_week))
-                save(conn)
-                st.rerun()
-        else:
-            st.success("All picks entered in Splash.")
-
-# ─────────────────────────────────────────────
-# MORE — everything that isn't picking this week
-# ─────────────────────────────────────────────
-st.divider()
-with st.expander("More — results, all games, stats"):
-    t_res, t_field, t_all, t_season = st.tabs(
-        ["This week's results", "The field", "All games", "Season"])
-
-    with t_field:
-        st.caption("Splash shows how the whole league picked once the deadline "
-                   "passes — the **Pick Distribution** page. Paste it here. "
-                   "A weekly prize is won against these people, not against "
-                   "the spread, so this is the number that decides which "
-                   "coin flips are worth taking.")
-        with st.form("field_form"):
-            fpaste = st.text_area("Pick distribution", height=140,
-                                  label_visibility="collapsed",
-                                  placeholder="Paste the Pick Distribution page…")
-            fsub = st.form_submit_button("Load the league's picks")
-        if fsub and fpaste.strip():
-            fmatched, funmatched = match_distribution(fpaste, games)
-            if fmatched:
-                save_distribution(fmatched)
-                save(conn)
-            st.success(f"Read the league's picks for {len(fmatched)} game(s).")
-            if funmatched:
-                st.warning("Couldn't place: " + ", ".join(funmatched[:10]))
-            if fmatched:
-                st.rerun()
-
+        missing = [k for k, (t, _r) in entry.items() if t is None]
+        if missing:
+            st.error(f"{len(missing)} game(s) with no pick: "
+                     + ", ".join(f"{a} @ {h}" for a, h in missing))
         if field:
-            mine_rows = []
-            for g in slate_games:
-                r = picks_by_id.get(g["event_id"])
-                if r is None:
-                    continue
-                picked = g["home"] if r["pick_abbr"] == g["home"]["abbr"] else g["away"]
-                shr = field_share(field, g, picked)
-                if shr is None:
-                    continue
-                mine_rows.append((g, r, picked, shr))
-            if mine_rows:
-                contrarian = [m for m in mine_rows if m[3] <= 0.35]
-                withchalk = [m for m in mine_rows if m[3] >= 0.6]
-                st.markdown(f"**{len(mine_rows)} of your picks matched up "
-                            f"against the league.**")
-                # Only graded games can say whether being different paid.
-                done = [m for m in mine_rows if not pd.isna(m[1]["result"])]
-                if done:
-                    gained = [m for m in done if m[1]["result"] == "W" and m[3] <= 0.5]
-                    cost = [m for m in done if m[1]["result"] == "L" and m[3] <= 0.5]
-                    safe_loss = [m for m in done if m[1]["result"] == "L" and m[3] >= 0.6]
-                    st.markdown(
-                        f"- **{len(gained)}** win(s) the league mostly missed "
-                        f"— that is where ground is made up\n"
-                        f"- **{len(cost)}** loss(es) taken against the crowd "
-                        f"— the expensive kind\n"
-                        f"- **{len(safe_loss)}** loss(es) the crowd took too "
-                        f"— these cost you nothing in the standings")
-                st.caption(f"{len(contrarian)} pick(s) against the crowd, "
-                           f"{len(withchalk)} with it.")
-                for g, r, picked, shr in sorted(mine_rows, key=lambda m: m[3]):
-                    mark = ("✅" if r["result"] == "W" else
-                            "❌" if r["result"] == "L" else "·")
-                    st.markdown(f"{mark} **{picked['name']}** — {shr:.0%} of the "
-                                f"league <span class='pick-sub'>{g['name']}</span>",
-                                unsafe_allow_html=True)
-        else:
-            st.caption("Nothing loaded yet for this week.")
-
-    with t_res:
-        if pick_rows.empty:
-            st.caption("No picks yet this week.")
-        else:
-            if st.button("Update results"):
-                changed = 0
-                for _, row in pick_rows.iterrows():
-                    res, score = grade_pick(row, games_by_id.get(row["event_id"]))
-                    if res:
-                        conn.execute("UPDATE picks SET result=?, final_score=? "
-                                     "WHERE season=? AND week=? AND event_id=?",
-                                     (res, score, cur_season, cur_week, row["event_id"]))
-                        changed += 1
-                if changed:
-                    save(conn)
-                st.rerun()
-            graded = pick_rows[pick_rows["result"].notna()]
-            if len(graded):
-                w = (graded["result"] == "W").sum()
-                l = (graded["result"] == "L").sum()
-                st.markdown(f"### {w}–{l} this week")
-            shown = pick_rows[["pick_name", "opp_name", "result", "final_score"]].copy()
-            shown.columns = ["Pick", "Over", "W/L", "Final"]
-            st.dataframe(shown, hide_index=True, width="stretch")
-            rm = st.selectbox("Remove a pick", ["—"] + [f"{r['pick_name']} over {r['opp_name']}"
-                                                        for _, r in pick_rows.iterrows()])
-            if rm != "—" and st.button("Remove"):
-                target = pick_rows[pick_rows.apply(
-                    lambda r: f"{r['pick_name']} over {r['opp_name']}" == rm, axis=1)]
-                for _, r in target.iterrows():
-                    conn.execute("DELETE FROM picks WHERE season=? AND week=? AND event_id=?",
-                                 (cur_season, cur_week, r["event_id"]))
-                save(conn)
-                st.rerun()
-
-    with t_all:
-        st.caption("Every game this week — add any the import missed.")
-        q = st.text_input("Search team", placeholder="e.g. Michigan")
-        shown = games
-        if q.strip():
-            ql = q.strip().lower()
-            shown = [g for g in games
-                     if ql in g["home"]["name"].lower() or ql in g["away"]["name"].lower()
-                     or ql in g["home"]["abbr"].lower() or ql in g["away"]["abbr"].lower()]
-        for g in sorted(shown, key=lambda g: g["date"])[:60]:
-            in_slate = g["event_id"] in slate_ids
-            c1, c2 = st.columns([4, 1])
-            c1.markdown(f"**{g['away']['name']}** at **{g['home']['name']}** "
-                        f"<span class='pick-sub'>{g['league']} · {kickoff_local(g['date'])}</span>",
-                        unsafe_allow_html=True)
-            if in_slate:
-                if c2.button("Remove", key=f"rm_{g['event_id']}", width="stretch"):
-                    conn.execute("DELETE FROM slate WHERE season=? AND week=? AND event_id=?",
-                                 (cur_season, cur_week, g["event_id"]))
-                    save(conn)
-                    st.rerun()
-            elif c2.button("Add", key=f"ad_{g['event_id']}", width="stretch"):
-                add_to_pool(g)
-                save(conn)
-                st.rerun()
-
-    with t_season:
-        all_rows = pd.read_sql_query(
-            "SELECT * FROM picks WHERE season=? ORDER BY week, kickoff", conn, params=(cur_season,))
-        if all_rows.empty:
-            st.caption("No picks recorded yet this season.")
-        else:
-            graded = all_rows[all_rows["result"].notna()]
-            w = (graded["result"] == "W").sum()
-            l = (graded["result"] == "L").sum()
-            c1, c2 = st.columns(2)
-            c1.metric("Season record", f"{w}–{l}")
-            c2.metric("Win %", f"{w / (w + l):.0%}" if (w + l) else "—")
-            by_week = (graded.groupby("week")["result"]
-                       .apply(lambda s: f"{(s == 'W').sum()}–{(s == 'L').sum()}")
-                       .rename("record").reset_index())
-            if len(by_week):
-                st.dataframe(by_week, hide_index=True, width="stretch")
-
-conn.close()
+            alone = [(k, t) for k, (t, r) in entry.items()
+                     if t and (field.get(k) or {}).get(t, 1) <= 0.35]
+            lost_alone = [k for k, t in alone if entry[k][1] == "L"]
+            st.markdown(
+                f"- **{len(alone)}** pick(s) against the crowd, "
+                f"**{len(lost_alone)}** of them lost — those are the "
+                f"expensive ones\n"
+                f"- losses the crowd shared cost you nothing in the standings")
+        props = {(a, h): (t, b) for a, h, t, b in conn.execute(
+            "SELECT away_code, home_code, team, basis FROM proposal "
+            "WHERE season=?", (SEASON,))}
+        winners = {}
+        for (a, h), (t, r) in store.week_entry(conn, SEASON, week).items():
+            if t and r in ("W", "L"):
+                winners[(a, h)] = t if r == "W" else (h if t == a else a)
+        rep = model.advice_report(props, entry, winners)
+        st.markdown(f"**{rep.verdict}**")

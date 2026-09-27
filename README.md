@@ -1,125 +1,72 @@
 # 🏈 Gridiron Picks
 
-Personal helper for a weekly college football pick 'em league that runs on
-Splash Sports. Pulls live FBS games, lines, and analytics from ESPN's free
-APIs (no key needed), tracks the manager's weekly pool, helps decide picks,
-and grades the results.
+Personal helper for the Cherry Football Pool — a weekly CFB/NFL pick 'em
+run on Splash Sports, 38 entries, weekly prize plus season places.
 
 Live app: https://shuggs-picks.streamlit.app
 
-## Weekly routine
+## How a week goes
 
-1. **Load the games** — run the *Load into Picks* shortcut on the Splash
-   board in Safari and paste into *Load this week's games*. The app reports
-   what it found against the game count the board prints, so a short import
-   says so.
-2. **Tap "Pick all N games for me"** — every game is picked for you using
-   the devigged betting line (the best public predictor there is).
-3. **Look at the 🔄 games** — the headline at the top names them, and each
-   one carries its chip in the list. They're the near coin flips where
-   taking the underdog costs almost nothing on the season but separates you
-   from the chalk crowd on the week. Tap **Details** for the case in plain
-   English: the line, ESPN's model, recent form, injuries. Flip 2–3 of them.
-   A change anywhere else gets an ⚠️ risky change flag.
-4. **Copy into Splash** — cards and the numbered list both run in **kickoff
-   order**, the same order Splash lists the board in, numbered to match, so
-   you can work down the app and the Splash page together; the tiebreaker is
-   pre-filled with the Vegas total of the last game. Hit *I entered them all*
-   when done.
-5. Picks **lock Saturday noon ET** (or kickoff if earlier). Results,
-   season record and the full game list live under **More**.
+1. **Paste the board.** Run the *Load into Picks* shortcut on the Splash
+   page in Safari, paste into the app. Any of the four pages works — the
+   board, your entry, Pick Distribution, or the standings — and it works
+   out which is which.
+2. **Read the card.** Every game, in kickoff order, numbered to match
+   Splash. The flips it would make are called out at the top.
+3. **Type them into Splash**, off the numbered list at the bottom.
+4. **Paste your entry back.** That is how the app learns what you
+   actually did, and it brings Splash's own results with it.
+5. **Paste Pick Distribution** once the deadline passes, to see where you
+   stood against the field.
 
-## The field
+The app never holds your picks. Splash does. There is nothing to tick off
+in two places.
 
-A weekly prize is won against the other entries, not against the spread.
-Splash shows how everyone picked once the deadline passes, on its **Pick
-Distribution** page — paste that into **More → The field** and the app
-records it.
+## Why it is built this way
 
-What it does with it:
+Splash defines the week; ESPN only decorates it. Earlier versions had
+that backwards — ESPN decided which games existed and the pasted board
+tried to match into it — which lost games whenever Splash spelled a team
+differently (JAC for JAX, WAS for WSH, LA for LAR) and invented games
+when codes collided across leagues. Now a game that cannot be matched to
+ESPN keeps its place with no line, because a missing line is cosmetic and
+a missing game is not.
 
-- Each card says what share of the league had your pick, and whether that
-  puts you with the crowd or against it.
-- **More → The field** separates your losses into the ones the crowd took
-  too (which cost nothing in the standings) and the ones you took alone
-  (the expensive kind) — and the wins the crowd missed, which is the only
-  place ground is actually made up.
-- Over time it learns how much chalkier the league is than the betting
-  line, and leans flip recommendations toward games the crowd will pile
-  into. This one needs several weeks before it can tell two coin flips
-  apart — every flip candidate sits in the same range of the curve, so
-  early on it has nothing to separate them with.
-
-## The numbers
-
-**FPI** (ESPN's Football Power Index) is the app's second opinion: a
-net-points rating — how many points a team beats an average opponent by on
-a neutral field — that carries preseason priors, so it means something in
-September when box-score stats are a two-game sample against nobody. The
-app converts the FPI gap (plus home field: 2.6 pts college, 2.0 NFL) into a
-win probability and compares it to the betting line. A gap of 6+ points of
-win probability earns a **📈 FPI likes X** flag: a real reason to flip,
-not a hunch.
-
-**EPA** (expected points added per game, offense and defense) comes from
-the same source and is the best single efficiency measure available here.
-
-**Tap Stats on any game** for points/game, yards/game, yards per pass and
-per rush attempt, third-down %, red-zone TD %, turnover margin and defensive
-sacks. Every number is labeled with the season and games it's drawn from —
-ESPN's current-season box scores aren't populated this early, so those fall
-back to last season and say so. Turnover margin regresses hard; treat it as
-luck, not skill.
-
-**The betting line still decides the default pick** — it is the best single
-predictor available. FPI, EPA and the box score are there to tell you when
-it might be wrong.
-
-## Importing the board
-
-An iOS Shortcut copies the board out of Safari in one tap — see
-**docs/ios-shortcut.md** — then you paste it into *Load this week's games*.
-A raw dump of the whole page is exactly what it wants; it finds the games
-itself, and it checks what it found against the game count the board
-prints, so a short import says so instead of passing quietly.
-
-## Automation (GitHub Actions)
-
-- **keep-awake.yml** — visits the app every 2h so Streamlit Cloud never
-  puts it to sleep.
-- **pick-reminder.yml** — Saturday ~9 AM ET ntfy push if pool games are
-  unpicked, not yet entered in Splash, or the tiebreaker is unsaved. Silent
-  when everything's done.
-- **lock-watch.yml** — every 3h, for games that kick *before* Saturday noon
-  and so lock at kickoff. Pushes when one is 2–5 hours out and still
-  unpicked; the window is as wide as the schedule, so each game is flagged
-  once. Silent about the noon deadline, which is the reminder's job.
-- **results-recap.yml** — Saturday night + Sunday morning ntfy push with the
-  week's record.
-
-Notifications need an `NTFY_TOPIC` repo Actions secret (Settings → Secrets
-and variables → Actions) matching the topic subscribed to in the
-[ntfy](https://ntfy.sh) app.
-
-## Persistence
-
-`football_picks.db` (SQLite) is committed to this repo: the app pulls it on
-server boot and pushes it back after every save, so picks survive Streamlit
-Cloud's ephemeral filesystem. Configure in the Streamlit app's Secrets:
-
-```toml
-GITHUB_TOKEN = "github_pat_…"   # fine-grained PAT, Contents read/write on this repo
-GITHUB_REPO  = "Shugg41/gridiron-picks"
+```
+gridiron/
+  splash.py   the five Splash pages
+  espn.py     odds, FPI, team stats — enrichment only
+  model.py    probabilities, confidence, flips, the strategy dial
+  store.py    schema, migration, GitHub sync
+  view.py     cards and formatting
+streamlit_app.py   wiring only
 ```
 
-Without secrets the app still works, local-only.
+## The strategy dial
 
-## Run locally
+The weekly prize is winner-take-all; the season pays several places. So
+the only question is whether a paying season finish is still reachable:
+points behind the cutoff, divided by weeks left. Under a point a week is
+noise in a thirty-game week, so the app plays chalk plus two or three
+genuine coin flips. Beyond that, with the season gone, it hunts a weekly
+win with five or six contrarian picks. The header always says which and
+why.
 
-```bash
-pip install -r requirements.txt
-streamlit run streamlit_app.py
-```
+Flips go to the closest games, and once the field is known, to the
+closest games the crowd is most piled against — a coin flip nobody else
+is fading buys no separation.
+
+## Notifications (ntfy, via GitHub Actions)
+
+- **lock-watch** — every 3h, for games kicking before Saturday noon,
+  which lock at kickoff. This is the one that catches a Thursday nighter.
+- **pick-reminder** — Saturday morning, if no entry has been pasted or a
+  game has no pick.
+- **results-recap** — the week's record, from Splash's grading.
+- **keep-awake** — every 2h so Streamlit Cloud never sleeps.
+
+Needs an `NTFY_TOPIC` repo Actions secret matching the topic subscribed
+to in the [ntfy](https://ntfy.sh) app.
 
 ## Tests
 
@@ -127,9 +74,28 @@ streamlit run streamlit_app.py
 ./tests/run.sh
 ```
 
-No network: ESPN is faked with fixtures. `test_notify.py` covers the lock
-maths and every push; `test_import.py` covers loading the board, which is
-where the real bugs have been; `test_render.py` drives the actual screen
-through Streamlit's AppTest for ordering, numbering and grading. Fixtures
-are anchored to "next Saturday" — never hard-code a date, or every game
-reads as locked and the suite lies.
+No network. `tests/fixtures/` holds verbatim copies of real Splash pages,
+because every parser bug this project has had came from writing against a
+remembered shape rather than the real one.
+
+## Persistence
+
+`football_picks.db` lives in this repo: Streamlit Cloud has no disk that
+survives a restart. Two writers are assumed — the app, and Claude in a
+session — so the store re-pulls when the remote file has moved and
+refuses a push that would overwrite the other's work. Configure in the
+app's Secrets:
+
+```toml
+GITHUB_TOKEN = "github_pat_…"   # fine-grained PAT, Contents read/write
+GITHUB_REPO  = "Shugg41/gridiron-picks"
+```
+
+Without them the app still runs, local only.
+
+## Run locally
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```

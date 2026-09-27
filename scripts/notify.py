@@ -54,43 +54,57 @@ def send(title, message, tags="football"):
         print(f"ntfy: {r.status}")
 
 
-def latest_week(conn, table):
+def latest_week(conn, table="game"):
     row = conn.execute(
         f"SELECT season, week FROM {table} ORDER BY season DESC, week DESC LIMIT 1"
     ).fetchone()
     return (row[0], row[1]) if row else (None, None)
 
 
+def has_table(conn, name):
+    return bool(conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+        (name,)).fetchone())
+
+
 def remind(conn):
-    season, week = latest_week(conn, "slate")
+    """Saturday morning, before the noon deadline.
+
+    Picks live in Splash now, not here, so the app cannot know whether
+    they were entered — only whether the entry has been pasted back. That
+    is the thing to nag about, and the message says so, because a nag you
+    cannot silence is one you learn to ignore.
+    """
+    season, week = latest_week(conn)
     if not season:
-        print("No slate recorded — nothing to remind about.")
+        print("No games recorded — nothing to remind about.")
         return
-    slate_ids = {r[0] for r in conn.execute(
-        "SELECT event_id FROM slate WHERE season=? AND week=?", (season, week))}
-    picks = {r[0]: r[1] for r in conn.execute(
-        "SELECT event_id, entered_in_splash FROM picks WHERE season=? AND week=?",
-        (season, week))}
-    unpicked = len(slate_ids - set(picks))
-    unentered = sum(1 for eid in slate_ids if eid in picks and not picks[eid])
-    # The tiebreaker is its own prize-deciding field and is easy to forget —
-    # the app pre-fills a suggestion but it still has to be saved. Only raise
-    # it while something else is outstanding, though: the app cannot see
-    # Splash, and "I entered them all" is the user saying they are finished.
-    # Nagging past that point is crying wolf about a box already ticked.
-    no_tb = (unpicked or unentered) and conn.execute(
-        "SELECT COUNT(*) FROM tiebreaker WHERE season=? AND week=?",
-        (season, week)).fetchone()[0] == 0
-    if not unpicked and not unentered:
-        print(f"Week {week}: all {len(slate_ids)} picks made and entered. Silent.")
+    total = conn.execute("SELECT COUNT(*) FROM game WHERE season=? AND week=?",
+                         (season, week)).fetchone()[0]
+    picked = conn.execute(
+        "SELECT COUNT(*) FROM entry WHERE season=? AND week=? AND team IS NOT NULL",
+        (season, week)).fetchone()[0]
+    missing = conn.execute(
+        "SELECT COUNT(*) FROM entry WHERE season=? AND week=? AND team IS NULL",
+        (season, week)).fetchone()[0]
+    no_tb = conn.execute(
+        "SELECT COUNT(*) FROM tiebreak WHERE season=? AND week=? "
+        "AND guess IS NOT NULL", (season, week)).fetchone()[0] == 0
+
+    if not picked:
+        send("Picks lock at noon!",
+             f"Week {week}: {total} games on the board and no entry pasted "
+             f"yet. If they are already in Splash, paste your entry to stop "
+             f"this reminder.", tags="alarm_clock,football")
         return
     bits = []
-    if unpicked:
-        bits.append(f"{unpicked} game(s) still unpicked")
-    if unentered:
-        bits.append(f"{unentered} pick(s) not entered in Splash")
+    if missing:
+        bits.append(f"{missing} game(s) with no pick")
     if no_tb:
-        bits.append("no tiebreaker saved")
+        bits.append("no tiebreaker")
+    if not bits:
+        print(f"Week {week}: {picked} picks in, nothing to say. Silent.")
+        return
     send("Picks lock at noon!", f"Week {week}: " + " and ".join(bits) + ".",
          tags="alarm_clock,football")
 
@@ -119,68 +133,61 @@ EARLY_WARN_MAX = timedelta(hours=5)
 
 
 def locksoon(conn, now=None):
-    """Nag about games that lock BEFORE the Saturday noon deadline.
+    """Games that lock BEFORE the Saturday noon deadline.
 
-    A Thursday night game locks at kickoff, and the Saturday morning
-    reminder is far too late for it — that game is simply gone. Only early
-    kickoffs are considered here; the noon deadline is `remind`'s job, and
-    handling them separately keeps the two from doubling up."""
+    A Thursday night game locks at kickoff, and the Saturday reminder is
+    far too late for it. This cost a real game in week four, which is
+    why it exists.
+    """
     now = now or datetime.now(timezone.utc)
-    season, week = latest_week(conn, "slate")
+    season, week = latest_week(conn)
     if not season:
-        print("No slate recorded — nothing to watch.")
+        print("No games recorded — nothing to watch.")
         return
-    picks = {r[0]: r[1] for r in conn.execute(
-        "SELECT event_id, entered_in_splash FROM picks WHERE season=? AND week=?",
-        (season, week))}
+    picked = {(a, h) for a, h in conn.execute(
+        "SELECT away_code, home_code FROM entry WHERE season=? AND week=? "
+        "AND team IS NOT NULL", (season, week))}
     due, soonest = [], None
-    for eid, matchup, kickoff in conn.execute(
-            "SELECT event_id, matchup, kickoff FROM slate WHERE season=? AND week=?",
-            (season, week)):
+    for away, home, kickoff in conn.execute(
+            "SELECT away_code, home_code, kickoff FROM game "
+            "WHERE season=? AND week=?", (season, week)):
         lock, noon = lock_time(kickoff)
         if not lock or lock >= noon:
             continue                       # locks at the normal deadline
         if not EARLY_WARN_MIN <= lock - now <= EARLY_WARN_MAX:
             continue
-        if eid not in picks:
-            due.append(f"{matchup} — no pick")
-        elif not picks[eid]:
-            due.append(f"{matchup} — not entered in Splash")
-        else:
+        if (away, home) in picked:
             continue
+        due.append(f"{away} @ {home}")
         soonest = lock if soonest is None else min(soonest, lock)
     if not due:
         print("No early game needs attention right now. Silent.")
         return
     hrs = max(1, round((soonest - now).total_seconds() / 3600))
     send(f"Early game locks in ~{hrs}h",
-         f"Week {week}: " + "; ".join(due), tags="alarm_clock,football")
+         f"Week {week}: no pick yet on " + "; ".join(due),
+         tags="alarm_clock,football")
 
 
 def recap(conn):
-    """Report the week's record from results the APP already graded.
+    """The week's record, from the results Splash graded.
 
-    ESPN returns 403 to GitHub's runners, so this script cannot fetch
-    scores itself. The Streamlit app grades finished games on every load
-    (and keep-awake loads it every 2 hours), so the database is the
-    source of truth here.
+    ESPN returns 403 to GitHub's runners, so nothing here can fetch a
+    score. It does not need to: pasting the entry brings Splash's own
+    grading with it.
     """
-    season, week = latest_week(conn, "picks")
+    season, week = latest_week(conn)
     if not season:
-        print("No picks recorded — nothing to recap.")
+        print("No games recorded — nothing to recap.")
         return
-    rows = conn.execute(
-        "SELECT result FROM picks WHERE season=? AND week=?", (season, week)).fetchall()
-    results = [r[0] for r in rows]
-    w = results.count("W")
-    l = results.count("L")
-    p = results.count("P")
-    done = w + l + p
-    if not done:
+    rows = [r[0] for r in conn.execute(
+        "SELECT result FROM entry WHERE season=? AND week=?", (season, week))]
+    w, l = rows.count("W"), rows.count("L")
+    if not (w + l):
         print("Nothing graded yet — staying quiet.")
         return
-    left = len(results) - done
-    msg = f"Week {week}: {w}-{l}" + (f"-{p}" if p else "")
+    left = len([r for r in rows if r is None])
+    msg = f"Week {week}: {w}-{l}"
     msg += f" so far, {left} game(s) left." if left else " final."
     send("Pick results", msg)
 
