@@ -61,6 +61,12 @@ CREATE TABLE IF NOT EXISTS field (
     team TEXT NOT NULL, picks INTEGER, pct REAL, mkt_prob REAL,
     PRIMARY KEY (season, week, away_code, home_code, team)
 );
+CREATE TABLE IF NOT EXISTS field_card (
+    season INTEGER NOT NULL, week INTEGER NOT NULL,
+    entrant TEXT NOT NULL,
+    away_code TEXT NOT NULL, home_code TEXT NOT NULL, team TEXT,
+    PRIMARY KEY (season, week, entrant, away_code, home_code)
+);
 CREATE TABLE IF NOT EXISTS standing (
     season INTEGER NOT NULL, week INTEGER,
     name TEXT NOT NULL, entry_name TEXT NOT NULL,
@@ -167,6 +173,39 @@ def save_field(conn, season, week, rows):
             "picks=excluded.picks, pct=excluded.pct, "
             "mkt_prob=COALESCE(excluded.mkt_prob, field.mkt_prob)",
             (season, week, away, home, team, picks, pct, mkt))
+
+
+def save_field_cards(conn, season, week, cards):
+    """Every rival's whole card, not just the per-side totals.
+
+    Percentages say how many took a side; they cannot say WHO, and who is
+    the question when a weekly prize goes to one entry. Simulating the
+    week needs each rival's card so that all of them can be scored
+    against the same drawn outcome — entries in a pick 'em pool move
+    together, and losing that correlation would invent separation that
+    does not exist.
+
+    cards: {entrant: {(away, home): team}}
+    """
+    for entrant, card in cards.items():
+        for (away, home), team in card.items():
+            conn.execute(
+                "INSERT INTO field_card (season, week, entrant, away_code, "
+                "home_code, team) VALUES (?,?,?,?,?,?) "
+                "ON CONFLICT(season, week, entrant, away_code, home_code) "
+                "DO UPDATE SET team=excluded.team",
+                (season, week, entrant, away, home, team))
+
+
+def week_field_cards(conn, season, week):
+    """{entrant: {(away, home): team}} for everyone but me."""
+    out = {}
+    for entrant, away, home, team in conn.execute(
+            "SELECT entrant, away_code, home_code, team FROM field_card "
+            "WHERE season=? AND week=?", (season, week)):
+        if team:
+            out.setdefault(entrant, {})[(away, home)] = team
+    return out
 
 
 def save_standings(conn, season, week, rows):

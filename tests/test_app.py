@@ -188,6 +188,17 @@ lost = [h for _n, _t, h in cards(at) if "card lost" in h]
 assert (len(won), len(lost)) == (4, 3), (len(won), len(lost))
 print(f"{len(won)} won, {len(lost)} lost carried over from Splash OK")
 
+# ── the simulation, now that the field is loaded ───────────────────────
+import sqlite3 as _sq2                                         # noqa: E402
+_d = _sq2.connect(os.path.join(WORK, "football_picks.db"))
+n_rivals = _d.execute("SELECT COUNT(DISTINCT entrant) FROM field_card "
+                      "WHERE season=2026 AND week=4").fetchone()[0]
+assert n_rivals == 3, f"rival cards not stored: {n_rivals}"   # 4 entries, minus me
+sim = " ".join(m.value for m in at.markdown)
+assert "correct is the middle of it" in sim, "no score range rendered"
+assert "to win outright" in sim, "no odds against the field"
+print(f"simulation runs against {n_rivals} stored rival cards OK")
+
 # ── the field, and what being alone cost ────────────────────────────────
 review = " ".join(m.value for m in at.markdown)
 assert "against the crowd" in review, "the field summary never rendered"

@@ -19,7 +19,7 @@ import os
 
 import streamlit as st
 
-from gridiron import espn, model, splash, store, view
+from gridiron import espn, model, simulate, splash, store, view
 
 DB = os.path.join(os.path.dirname(__file__), "football_picks.db")
 SEASON = 2026
@@ -229,6 +229,9 @@ with st.expander("Paste from Splash", expanded=not games):
                     rows.append({"away_code": a, "home_code": h, "team": team,
                                  "result": {"W": "W", "L": "L"}.get(state)})
                 store.save_entry(conn, SEASON, wk, rows)
+            store.save_field_cards(conn, SEASON, wk,
+                                   simulate.rivals_from_matrix(board_games,
+                                                               entries))
             dist = splash.distribution_from_matrix(board_games, entries)
             store.save_field(conn, SEASON, wk, [
                 (board_games[i][0], board_games[i][1], side[0], side[1],
@@ -293,6 +296,41 @@ for n, p in numbered:
     st.markdown(view.card(n, p, g, entry.get((p.away, p.home)) if entry else None,
                           show_pct=show_pct),
                 unsafe_allow_html=True)
+
+# ── how the week is likely to go ────────────────────────────────────────
+with st.expander("Odds this week"):
+    probs = simulate.probabilities(linked, picks)
+    my_card = {(p.away, p.home): p.team for p in picks if p.team}
+    if entry:                       # once entered, simulate what I really have
+        my_card = {k: t for k, (t, _r) in entry.items() if t}
+    rivals = store.week_field_cards(conn, SEASON, week)
+
+    out = simulate.simulate(my_card, probs, rivals, trials=4000)
+    st.markdown(
+        f"**{out.mean:.1f}** correct is the middle of it — four weeks in "
+        f"five you land between **{out.p10}** and **{out.p90}**.")
+
+    if rivals:
+        st.markdown(
+            f"Against the **{len(rivals)}** other entries: "
+            f"**{out.win:.0%}** to win outright"
+            + (f", **{out.tie:.0%}** to tie at the top" if out.tie else "")
+            + f", **{out.top3:.0%}** to finish top three.")
+        flipped, chalk = simulate.what_flips_are_worth(picks, probs, rivals,
+                                                       trials=4000)
+        if flipped.mean != chalk.mean or flipped.any_win != chalk.any_win:
+            st.caption(
+                f"The flips cost {chalk.mean - flipped.mean:+.2f} in expected "
+                f"score and move your chance of finishing first from "
+                f"{chalk.any_win:.0%} to {flipped.any_win:.0%}. That trade is "
+                f"the whole argument for making them — if it ever reads the "
+                f"wrong way round, stop flipping.")
+    else:
+        st.caption("Paste the **Picks by Week** page once the deadline "
+                   "passes and this turns into real odds of winning the "
+                   "week. That page carries every entry's card, which is "
+                   "what the simulation needs — percentages cannot say who "
+                   "is on which side, and who is the question.")
 
 # ── the list to type into Splash ────────────────────────────────────────
 if not entry:
