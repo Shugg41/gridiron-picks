@@ -99,9 +99,52 @@ def probe(league="nfl", season=2026, week=5):
             print("\n".join("      " + line for line in shape(first)))
 
 
+def probe_direct(league="nfl", season=2026, week=5):
+    """Can odds be fetched straight from an event id?
+
+    Walking weeks -> events -> event -> odds is three requests a game, and
+    thirty-one games a page is not viable. If the direct path works it is
+    one request per game, cached, and only for the games where movement
+    actually changes a decision.
+    """
+    print(f"\n{'=' * 70}\nDIRECT ODDS PATH ({league})\n{'=' * 70}")
+    try:
+        listing = get(f"{CORE}/{league}/seasons/{season}/types/2/weeks/{week}/"
+                      f"events?limit=1")
+        ref = listing["items"][0]["$ref"]
+        eid = ref.rstrip("?").rstrip("/").split("/")[-1].split("?")[0]
+    except Exception as exc:
+        print(f"could not get an event id: {type(exc).__name__}")
+        return
+    print(f"event id: {eid}")
+    url = f"{CORE}/{league}/events/{eid}/competitions/{eid}/odds"
+    try:
+        odds = get(url)
+    except Exception as exc:
+        print(f"DIRECT PATH FAILED {type(exc).__name__}: {exc}")
+        return
+    items = odds.get("items") or []
+    print(f"DIRECT PATH WORKS — {len(items)} provider(s)")
+    if items:
+        first = items[0]
+        home = first.get("homeTeamOdds") or {}
+        print(f"  provider: {(first.get('provider') or {}).get('name')}")
+        print(f"  details: {first.get('details')!r}")
+        for sub in ("open", "current"):
+            ps = ((home.get(sub) or {}).get("pointSpread") or {})
+            print(f"  home {sub} pointSpread: {ps.get('american')!r} "
+                  f"(keys {sorted(ps)})")
+        print(f"  home favorite flag: {home.get('favorite')!r}")
+
+
 if __name__ == "__main__":
     for lg in ("nfl", "college-football"):
         try:
             probe(lg)
         except Exception as exc:
             print(f"{lg}: probe blew up: {type(exc).__name__}: {exc}")
+    for lg in ("nfl", "college-football"):
+        try:
+            probe_direct(lg)
+        except Exception as exc:
+            print(f"{lg}: direct probe blew up: {type(exc).__name__}: {exc}")
