@@ -16,10 +16,11 @@ which is also what keeps the page quick, since thirty games of buttons is
 thirty ways to trigger a rerun.
 """
 import os
+from datetime import datetime as _dt, timezone as _tz
 
 import streamlit as st
 
-from gridiron import espn, model, simulate, splash, store, view
+from gridiron import espn, model, simulate, splash, store, view, watch
 
 DB = os.path.join(os.path.dirname(__file__), "football_picks.db")
 SEASON = 2026
@@ -324,6 +325,67 @@ for n, p in numbered:
     st.markdown(view.card(n, p, g, entry.get((p.away, p.home)) if entry else None,
                           show_pct=show_pct),
                 unsafe_allow_html=True)
+
+# ── has anything moved on a game already picked ────────────────────────
+def check_for_changes():
+    """Compare each picked, unlocked game against how it looked last time.
+
+    This runs in the app rather than a GitHub Action because ESPN refuses
+    the runners on the summary endpoint where injuries live, while the
+    app is served both. Keep-awake loads the page every two hours, so
+    that is the polling loop — no scheduler of its own.
+
+    Only picked games that can still be changed are considered: an alert
+    about a game you cannot do anything about is noise, and noise is how
+    a useful alert gets ignored.
+    """
+    if not entry:
+        return []
+    seen = watch.previous(conn, SEASON, week)
+    changes, touched = [], False
+    for g in games:
+        key = (g["away_code"], g["home_code"])
+        if not (entry.get(key) or (None,))[0]:
+            continue
+        if view.locks_in(g["kickoff"]) == "locked":
+            continue
+        event = events.get(key)
+        if not event:
+            continue
+        try:
+            summary = espn.summary(event["event_id"], event["league"])
+        except Exception:
+            summary = None
+        now = watch.snapshot(event, summary)
+        if not now:
+            continue
+        changes += watch.compare(seen.get(key), now, *key)
+        watch.record(conn, SEASON, week, key[0], key[1], now,
+                     when=str(_dt.now(_tz.utc)))
+        touched = True
+    if touched:
+        conn.commit()
+    return changes
+
+
+moves = check_for_changes()
+if moves:
+    st.warning("**Since you picked:**\n\n"
+               + "\n".join(f"- {c}" for c in moves))
+    topic = secret("NTFY_TOPIC")
+    pushed_key = f"pushed:{week}:" + "|".join(str(c) for c in moves)
+    if topic and st.session_state.get("last_push") != pushed_key:
+        try:
+            import urllib.request
+            req = urllib.request.Request(
+                f"https://ntfy.sh/{topic}",
+                data=("\n".join(str(c) for c in moves)).encode(),
+                headers={"Title": "Something moved on a game you picked",
+                         "Tags": "warning,football"})
+            urllib.request.urlopen(req, timeout=10)
+            st.session_state["last_push"] = pushed_key
+        except Exception:
+            pass                      # a failed push must never break the page
 
 # ── how the week is likely to go ────────────────────────────────────────
 with st.expander("Odds this week"):

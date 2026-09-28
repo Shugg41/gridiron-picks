@@ -56,6 +56,40 @@ Flips go to the closest games, and once the field is known, to the
 closest games the crowd is most piled against — a coin flip nobody else
 is fading buys no separation.
 
+## What it works out for you
+
+**Odds this week.** The card is played out four thousand times against
+the other entries' actual cards, so you get a chance of winning the week
+rather than an expected score. Everyone is scored against the same drawn
+outcome each trial, because a pick 'em pool is thirty-one games where
+nearly everyone takes the same favorites — treating entries as
+independent would invent separation and overstate your chances badly.
+Needs the Picks by Week page, which is the only one carrying every
+entry's card.
+
+**What the flips are worth.** The proposed card and pure chalk, played
+against the same field and the same outcomes. Flipping gives up a little
+expected score to buy a real chance of finishing alone at the top, and
+the app prints that trade every week. If it ever reads the wrong way
+round, stop flipping.
+
+**Line movement.** ESPN's core API carries the opening line as well as
+the current one. The crowd piles onto favorites, so a favorite getting
+cheaper since it opened is usually sharper money on the other side — a
+flip where the line has come toward the dog gets a note saying the money
+agrees, and one where it has gone the other way gets told to think
+again. Shown rather than scored into the ranking: there is no evidence
+yet on what it should be worth, and a made-up weight would only hide the
+guess.
+
+**Late changes.** Between picking and the deadline, a line moves or a
+quarterback lands on the injury report. Each picked, unlocked game is
+compared against how it last looked, and anything real gets a push. Half
+a point is noise; a point or more, a flipped favorite, or players added
+to the report are not. This runs inside the app because ESPN refuses
+GitHub's runners on the injuries endpoint — keep-awake's two-hourly load
+is the polling loop.
+
 ## Notifications (ntfy, via GitHub Actions)
 
 - **lock-watch** — every 3h, for games kicking before Saturday noon,

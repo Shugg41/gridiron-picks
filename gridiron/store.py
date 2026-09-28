@@ -79,6 +79,12 @@ CREATE TABLE IF NOT EXISTS tiebreak (
     guess INTEGER, actual INTEGER,
     PRIMARY KEY (season, week)
 );
+CREATE TABLE IF NOT EXISTS watch (
+    season INTEGER NOT NULL, week INTEGER NOT NULL,
+    away_code TEXT NOT NULL, home_code TEXT NOT NULL,
+    line REAL, fav TEXT, injuries INTEGER, seen_at TEXT,
+    PRIMARY KEY (season, week, away_code, home_code)
+);
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
 """
 
