@@ -27,7 +27,10 @@ import os
 import sqlite3
 import time
 
-import requests
+try:
+    import requests
+except ImportError:          # the notifier runs on a bare GitHub runner
+    requests = None          # with no pip install, and sync is optional there
 
 API = "https://api.github.com"
 
@@ -226,7 +229,7 @@ class Sync:
 
     @property
     def enabled(self):
-        return bool(self.repo and self.token)
+        return bool(self.repo and self.token and requests)
 
     def _headers(self):
         return {"Authorization": f"Bearer {self.token}",

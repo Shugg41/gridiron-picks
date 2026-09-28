@@ -65,6 +65,54 @@ def db():
     return store.connect(":memory:")
 
 
+def test_opens_a_database_that_predates_the_new_tables():
+    """The bug this shipped with, reproduced.
+
+    The committed database is whatever the app last pushed. Right after a
+    schema change that is a file with only the OLD tables in it, and
+    notify.py opened it with raw sqlite3 and queried `game` — so the lock
+    watcher died every three hours with "no such table: game".
+
+    The earlier tests all passed because the test helper built the schema
+    itself. That is the gap: they constructed the world instead of using
+    the entry point production uses. This one goes through open_db().
+    """
+    import sqlite3
+    import tempfile
+
+    path = tempfile.mktemp(suffix=".db")
+    legacy = sqlite3.connect(path)
+    legacy.executescript("""
+        CREATE TABLE slate (season INTEGER, week INTEGER, event_id TEXT,
+                            matchup TEXT);
+        CREATE TABLE picks (season INTEGER, week INTEGER, event_id TEXT,
+                            matchup TEXT, pick_abbr TEXT, result TEXT);
+        INSERT INTO slate VALUES (2026,4,'1','ATL @ GB'),(2026,4,'2','MISS @ FLA');
+        INSERT INTO picks VALUES (2026,4,'2','MISS @ FLA','MISS','L');
+    """)
+    legacy.commit()
+    legacy.close()
+
+    real_db = notify.DB_PATH
+    notify.DB_PATH = path
+    try:
+        conn = notify.open_db()                   # must not raise
+        SENT.clear()
+        notify.locksoon(conn)                     # the call that was dying
+        notify.remind(conn)
+        notify.recap(conn)
+        # and the legacy rows came across rather than being ignored
+        assert conn.execute("SELECT COUNT(*) FROM game").fetchone()[0] == 2
+        assert conn.execute("SELECT COUNT(*) FROM entry").fetchone()[0] == 1
+    finally:
+        notify.DB_PATH = real_db
+        os.unlink(path)
+    print("opens a database that predates the new tables OK")
+
+
+test_opens_a_database_that_predates_the_new_tables()
+
+
 def add(conn, away, home, kickoff=None, picked=None, result=None,
         entered=False, week=4):
     conn.execute("INSERT INTO game (season, week, away_code, home_code, kickoff) "

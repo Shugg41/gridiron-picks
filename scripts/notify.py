@@ -27,6 +27,25 @@ ET = ZoneInfo("America/New_York")
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "football_picks.db")
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from gridiron import store                                    # noqa: E402
+
+
+def open_db():
+    """Open through the store rather than raw sqlite3.
+
+    The tables are created by the store, and the committed database is
+    whatever the app last pushed — which, right after a schema change, is
+    a file predating the new tables entirely. Opening it raw meant
+    querying a table that did not exist, and the lock watcher died every
+    three hours on exactly that. Going through the store creates the
+    schema and carries the legacy rows over, so the notifier stands on
+    its own rather than waiting for the app to push first.
+    """
+    conn = store.connect(DB_PATH)
+    store.migrate_legacy(conn)
+    return conn
+
 
 def header_safe(text):
     """HTTP headers are latin-1 only. An emoji in the title raises
@@ -199,7 +218,7 @@ def main():
     if not os.path.exists(DB_PATH):
         print("No picks DB in repo yet — nothing to do.")
         return
-    conn = sqlite3.connect(DB_PATH)
+    conn = open_db()
     {"remind": remind, "locksoon": locksoon, "recap": recap}[mode](conn)
 
 
