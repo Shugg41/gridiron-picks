@@ -162,6 +162,52 @@ got = {g.away_code: (ev or {}).get("event_id") for g, ev in espn.link(asked, two
 assert got == {"LAC": "lac", "LA": "lar"}, got
 print("exact spellings win their event before guesses OK")
 
+# ── line movement, against the payload shape CI actually returned ──────
+# Notre Dame at North Carolina, week 5: opened ND -24.5, now ND -21. The
+# home side's handicap went +24.5 -> +21, so the market came toward UNC.
+REAL = {"items": [{
+    "provider": {"name": "Draft Kings"},
+    "details": "ND -21",
+    "homeTeamOdds": {
+        "favorite": False,
+        "open": {"favorite": False,
+                 "pointSpread": {"alternateDisplayValue": "+24.5",
+                                 "american": "+24.5"}},
+        "current": {"pointSpread": {"alternateDisplayValue": "+21",
+                                    "american": "+21"}}},
+    "awayTeamOdds": {
+        "favorite": True,
+        "open": {"favorite": True,
+                 "pointSpread": {"american": "-24.5"}},
+        "current": {"pointSpread": {"american": "-21"}}}}]}
+
+pts, toward = espn.movement(REAL, "UNC", "ND")
+assert pts == 3.5 and toward == "UNC", (pts, toward)
+
+# Alabama at Mississippi State: opened ALA -3, now ALA -6. Home handicap
+# +3 -> +6, so the market went the other way, toward the favorite.
+OTHER = {"items": [{"homeTeamOdds": {
+    "open": {"pointSpread": {"american": "+3"}},
+    "current": {"pointSpread": {"american": "+6"}}}}]}
+pts, toward = espn.movement(OTHER, "MSST", "ALA")
+assert pts == 3.0 and toward == "ALA", (pts, toward)
+print("line movement reads the real payload, both directions OK")
+
+# a line that never moved is not a move, and neither is a missing opener
+assert espn.movement({"items": [{"homeTeamOdds": {
+    "open": {"pointSpread": {"american": "-3"}},
+    "current": {"pointSpread": {"american": "-3"}}}}]}, "H", "A") == (None, None)
+assert espn.movement({"items": [{"homeTeamOdds": {
+    "current": {"pointSpread": {"american": "-3"}}}}]}, "H", "A") == (None, None)
+assert espn.movement({"items": []}, "H", "A") == (None, None)
+assert espn.movement({}, "H", "A") == (None, None)
+assert espn.movement(None, "H", "A") == (None, None)
+# half a point of drift is noise, not a signal
+assert espn.movement({"items": [{"homeTeamOdds": {
+    "open": {"pointSpread": {"american": "+3"}},
+    "current": {"pointSpread": {"american": "+3.2"}}}}]}, "H", "A") == (None, None)
+print("no move, no opener, and noise all report nothing OK")
+
 # ── the cache is a cache, and can be emptied ────────────────────────────
 calls = []
 espn.clear_cache()

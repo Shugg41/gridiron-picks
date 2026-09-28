@@ -180,6 +180,63 @@ def _spread(details):
     return m.group(1), float(m.group(2))
 
 
+# ── line movement ───────────────────────────────────────────────────────
+def odds_history(event_id, league, ttl=3600):
+    """The opening and current line for one game.
+
+    Only the core API carries an opening line; the scoreboard gives the
+    current one alone. Confirmed from CI before this was written — the
+    direct competition path works, so it is one request per game rather
+    than walking week -> events -> event -> odds at three.
+    """
+    def build():
+        path = CORE_PATH[league]
+        return _get(f"{CORE}/{path}/events/{event_id}/competitions/"
+                    f"{event_id}/odds")
+    return cached(ttl, ("odds_history", league, event_id), build)
+
+
+def _point_spread(block):
+    """ESPN prints the handicap as a signed string from that team's own
+    point of view: "+24.5" means getting 24.5, "-21" means laying 21."""
+    ps = ((block or {}).get("pointSpread") or {})
+    raw = ps.get("american")
+    if raw is None:
+        return None
+    try:
+        return float(str(raw).replace("+", ""))
+    except ValueError:
+        return None
+
+
+def movement(payload, home_code, away_code):
+    """How far the line has moved since it opened, and toward whom.
+
+    A line drifting toward the underdog is money disagreeing with the
+    public, which is the interesting direction: the crowd piles onto
+    favorites, so a favorite getting cheaper is usually sharper money
+    taking the other side.
+
+    Returns (points, team_code) or (None, None) when there is nothing to
+    compare — plenty of games never move, and a game with no opening
+    price is not a game that moved zero.
+    """
+    items = (payload or {}).get("items") or []
+    if not items:
+        return None, None
+    home = items[0].get("homeTeamOdds") or {}
+    opened = _point_spread(home.get("open"))
+    now = _point_spread(home.get("current"))
+    if opened is None or now is None:
+        return None, None
+    # The home handicap shrinking means the market came toward the home
+    # side; growing means it went the other way.
+    shift = opened - now
+    if abs(shift) < 0.25:
+        return None, None
+    return abs(shift), (home_code if shift > 0 else away_code)
+
+
 # ── matching a Splash game to an ESPN event ─────────────────────────────
 def _norm(s):
     s = re.sub(r"[^a-z0-9& ]", " ", (s or "").lower())

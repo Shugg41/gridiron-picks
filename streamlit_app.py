@@ -281,11 +281,39 @@ if not games:
     st.info("Paste this week's board to get started.")
     st.stop()
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def movement_for(event_id, league, home, away):
+    """Only the core API carries an opening line, and it is one request
+    per game — so this is asked only for the handful of games where the
+    answer could change a decision, and cached for an hour."""
+    try:
+        return espn.movement(espn.odds_history(event_id, league), home, away)
+    except Exception:
+        return None, None
+
+
 flips = [(n, p) for n, p in numbered if p.flipped]
 if flips and not entry:
     st.markdown(f"**Flip {'this one' if len(flips) == 1 else f'these {len(flips)}'}**")
     for n, p in flips:
         st.markdown(view.standout(n, p), unsafe_allow_html=True)
+        ev = events.get((p.away, p.home))
+        if not ev:
+            continue
+        pts, toward = movement_for(ev["event_id"], ev["league"], p.home, p.away)
+        if not pts:
+            continue
+        # Which way the money went is the part worth saying out loud: the
+        # crowd piles onto favorites, so a favorite getting cheaper is
+        # usually sharper money taking the side you are considering.
+        if toward == p.team:
+            st.caption(f"    ↳ the line has moved **{pts:g} points toward "
+                       f"{toward}** since it opened — money agreeing with "
+                       f"this flip.")
+        else:
+            st.caption(f"    ↳ the line has moved **{pts:g} points toward "
+                       f"{toward}** since it opened — money going the other "
+                       f"way. Worth a second thought.")
     st.caption("The closest games on the card. Taking the underdog costs "
                "almost nothing over a season and is the only thing that "
                "separates you from everyone riding the chalk.")
