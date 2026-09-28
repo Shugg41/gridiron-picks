@@ -1,98 +1,107 @@
 #!/usr/bin/env python3
-"""Hunt for two data sources the app doesn't have yet:
+"""Dump the shape of ESPN's odds payloads, from CI.
 
-  1. PUBLIC PICK PERCENTAGES — what everyone else picked. In a weekly-prize
-     pool this is the real edge: an underdog is only worth taking if the
-     field is piled on the favorite. Splash's on-board percentages turn out
-     to be win probabilities, not pick distribution, so we need another
-     source. ESPN's Pick'em (gambit) API is the main candidate.
-  2. OPENING LINES — open vs current shows where money moved. If ESPN won't
-     serve it, the fallback is sampling the line ourselves every few hours.
+This sandbox cannot reach ESPN, and GitHub's runners are refused by
+site.api while being served by sports.core.api. So before a parser is
+written against an endpoint it gets probed here, and the parser is
+written against what actually came back — every parser bug this project
+has had came from writing against a remembered shape.
 
-Established constraints: site.api.espn.com 403s GitHub runners;
-sports.core.api.espn.com does not. So try core first, and try the others
-through a real browser, which has worked before where urllib was refused.
+The question this one is asking: does a provider carry an OPENING line
+as well as the current one? A line that has moved toward the underdog
+since it opened is sharp money disagreeing with the public, which is a
+real flip signal — but only if ESPN actually serves it.
+
+Run via .github/workflows/data-probe.yml (workflow_dispatch), read logs.
 """
 import json
-import urllib.error
+import sys
 import urllib.request
 
 CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
-UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
 
 
-def get(url, label):
+def get(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "gridiron-probe"})
+    with urllib.request.urlopen(req, timeout=25) as r:
+        return json.load(r)
+
+
+def shape(obj, path="", depth=0, out=None):
+    """Keys, types and a sample value — the structure, not the data."""
+    out = [] if out is None else out
+    if depth > 4:
+        return out
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            here = f"{path}.{k}" if path else k
+            if isinstance(v, (dict, list)):
+                out.append(f"{here}: {type(v).__name__}({len(v)})")
+                shape(v, here, depth + 1, out)
+            else:
+                out.append(f"{here} = {v!r}"[:160])
+    elif isinstance(obj, list) and obj:
+        shape(obj[0], f"{path}[0]", depth + 1, out)
+    return out
+
+
+def probe(league="nfl", season=2026, week=5):
+    print(f"\n{'=' * 70}\n{league.upper()} week {week}\n{'=' * 70}")
+
+    events_url = (f"{CORE}/{league}/seasons/{season}/types/2/weeks/{week}/"
+                  f"events?limit=5")
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
-            return json.load(r)
-    except urllib.error.HTTPError as e:
-        print(f"    HTTP {e.code}  [{label}]")
-    except Exception as e:
-        print(f"    {type(e).__name__}  [{label}]")
-    return None
+        events = get(events_url)
+    except Exception as exc:
+        print(f"events: FAILED {type(exc).__name__}: {exc}")
+        return
+    refs = [e["$ref"] for e in events.get("items", [])][:2]
+    print(f"events: {events.get('count')} total, probing {len(refs)}")
+
+    for ref in refs:
+        try:
+            event = get(ref)
+        except Exception as exc:
+            print(f"  event FAILED {type(exc).__name__}")
+            continue
+        print(f"\n--- {event.get('name')} ({event.get('date')}) ---")
+        comps = event.get("competitions") or []
+        if not comps:
+            continue
+        odds_ref = (comps[0].get("odds") or {}).get("$ref")
+        if not odds_ref:
+            print("  no odds ref on this competition")
+            continue
+        try:
+            odds = get(odds_ref)
+        except Exception as exc:
+            print(f"  odds FAILED {type(exc).__name__}")
+            continue
+        items = odds.get("items") or []
+        print(f"  odds providers: {len(items)}")
+        if not items:
+            continue
+        first = items[0]
+        print(f"  provider: {(first.get('provider') or {}).get('name')}")
+        for key in ("details", "overUnder", "spread", "overOdds", "underOdds"):
+            if key in first:
+                print(f"    {key} = {first[key]!r}")
+        for side in ("homeTeamOdds", "awayTeamOdds"):
+            block = first.get(side) or {}
+            print(f"    {side}: {sorted(block)}")
+            for sub in ("open", "current", "close"):
+                if sub in block:
+                    print(f"      {sub}: {json.dumps(block[sub])[:220]}")
+        for sub in ("open", "current", "close"):
+            if sub in first:
+                print(f"    {sub}: {json.dumps(first[sub])[:300]}")
+        if "--full" in sys.argv:
+            print("\n".join("      " + line for line in shape(first)))
 
 
-def banner(t):
-    print("\n" + "=" * 72 + f"\n{t}\n" + "=" * 72)
-
-
-# ── 1. find a live event id via the core API (site API is blocked here) ──
-banner("find an upcoming event id from the core API")
-EVENT = {}
-for league in ("nfl", "college-football"):
-    wk = get(f"{CORE}/{league}/seasons/2026/types/2/weeks/4/events?limit=5", f"{league} week events")
-    if wk and wk.get("items"):
-        ref = wk["items"][0]["$ref"].replace("http://", "https://")
-        ev = get(ref, "event detail")
-        if ev:
-            EVENT[league] = ev.get("id")
-            print(f"  {league}: event {ev.get('id')} — {ev.get('shortName', ev.get('name'))}")
-
-# ── 2. opening lines on the core odds endpoint ──
-banner("OPENING LINES — core odds endpoint")
-for league, eid in EVENT.items():
-    comp = get(f"{CORE}/{league}/events/{eid}/competitions/{eid}/odds", f"{league} odds")
-    if not comp:
-        continue
-    for item in (comp.get("items") or [])[:2]:
-        prov = (item.get("provider") or {}).get("name", "?")
-        keys = sorted(item.keys())
-        print(f"\n  [{league}] provider={prov}")
-        print(f"    keys: {keys}")
-        for k in ("open", "current", "close", "spread", "overUnder", "details"):
-            if k in item:
-                print(f"    {k} = {json.dumps(item[k])[:260]}")
-
-# ── 3. public pick percentages — ESPN Pick'em (gambit) and friends ──
-banner("PUBLIC PICK % — candidate endpoints")
-CANDIDATES = [
-    ("gambit nfl propositions",
-     "https://gambit-api.fantasy.espn.com/apis/v1/propositions?challengeId=nfl-pigskin-pickem-2026&platform=chui&view=chui_default"),
-    ("gambit cfb propositions",
-     "https://gambit-api.fantasy.espn.com/apis/v1/propositions?challengeId=college-football-pickem-2026&platform=chui&view=chui_default"),
-    ("gambit challenge list",
-     "https://gambit-api.fantasy.espn.com/apis/v1/challenges?platform=chui&view=chui_default"),
-    ("core nfl predictor",
-     f"{CORE}/nfl/events/{EVENT.get('nfl')}/competitions/{EVENT.get('nfl')}/predictor"
-     if EVENT.get("nfl") else None),
-    ("core nfl probabilities",
-     f"{CORE}/nfl/events/{EVENT.get('nfl')}/competitions/{EVENT.get('nfl')}/probabilities?limit=1"
-     if EVENT.get("nfl") else None),
-]
-for label, url in CANDIDATES:
-    if not url:
-        continue
-    print(f"\n  -- {label}")
-    d = get(url, label)
-    if d:
-        print(f"     OK top-level keys: {list(d)[:14]}")
-        blob = json.dumps(d)
-        for word in ("percent", "pickPercent", "picksCount", "consensus", "votes"):
-            if word.lower() in blob.lower():
-                i = blob.lower().index(word.lower())
-                print(f"     >>> contains '{word}': ...{blob[max(0,i-120):i+200]}...")
-                break
-        else:
-            print(f"     no pick-percentage fields; sample: {blob[:300]}")
-print("\nPROBE COMPLETE")
+if __name__ == "__main__":
+    for lg in ("nfl", "college-football"):
+        try:
+            probe(lg)
+        except Exception as exc:
+            print(f"{lg}: probe blew up: {type(exc).__name__}: {exc}")

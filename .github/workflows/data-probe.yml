@@ -10,11 +10,8 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
-      - name: Install Playwright
-        run: |
-          pip install --quiet playwright
-          python -m playwright install --with-deps chromium
+      # stdlib only: the point is to learn what a plain client is served
       - run: python scripts/probe_espn.py
