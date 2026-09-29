@@ -18,11 +18,15 @@ ENTRY = open(os.path.join(HERE, "fixtures", "entry_week4.txt")).read()
 DIST = open(os.path.join(HERE, "fixtures", "distribution_week4.txt")).read()
 STAND = open(os.path.join(HERE, "fixtures", "standings_week4.txt")).read()
 MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
+BOARD = open(os.path.join(HERE, "fixtures", "board_week5.txt")).read()
 
 # ── which page is this? ─────────────────────────────────────────────────
 assert splash.sniff(ENTRY) == "entry", splash.sniff(ENTRY)
 assert splash.sniff(DIST) == "distribution", splash.sniff(DIST)
 assert splash.sniff(STAND) == "standings", splash.sniff(STAND)
+# The board reached the app unrecognised once, an hour before a deadline,
+# because every marker sniff knew about belonged to some other page.
+assert splash.sniff(BOARD) == "board", splash.sniff(BOARD)
 assert splash.sniff(MATRIX) == "picks_by_week", splash.sniff(MATRIX)
 # every page carries the same nav bar, so the nav must not decide it
 for page in (ENTRY, DIST, STAND):
@@ -181,15 +185,83 @@ assert (h_code, h_n) == ("GB", 2), dist[0]        # two took GB, one missed
 assert a_n + h_n == len(entries) - 1, "the missing pick must not be counted"
 print("distribution derived from the matrix OK")
 
+# ── the board: the only page that exists before the deadline ───────────
+b = splash.parse_board(BOARD)
+assert b.expected == 36, b.expected
+assert len(b.games) == 36, f"{len(b.games)} of the page's own 36"
+assert b.tiebreaker is None, "an empty total-score box is not a guess of 0"
+
+pairs = [(g.away_code, g.home_code) for g in b.games]
+assert len(set(pairs)) == 36, "a game was read twice"
+# the last game is printed again under the Tiebreaker heading, and that
+# copy must not become a 37th game
+assert pairs.count(("ATL", "NO")) == 1
+
+first, last = b.games[0], b.games[-1]
+assert (first.away, first.away_code) == ("Steelers", "PIT")
+assert (first.home, first.home_code) == ("Browns", "CLE")
+assert (first.day, first.kickoff) == ("Thursday, Oct 1", "Thu 8:15pm")
+assert (last.away_code, last.home_code) == ("ATL", "NO"), "NO is New Orleans"
+assert last.day == "Monday, Oct 5"
+
+by = {(g.away_code, g.home_code): g for g in b.games}
+# a ranked team carries an extra "#7ranked #7" line before its code, on
+# one side or both or neither
+assert by[("ALA", "MSST")].away == "Alabama"          # both ranked
+assert by[("AUB", "TENN")].home == "Tennessee"        # home only
+assert by[("WASH", "USC")].away == "Washington"       # home only, again
+assert by[("PIT", "CLE")].away == "Steelers"          # neither
+# a team name can itself look like a code, so names are never code-tested
+assert by[("BYU", "TCU")].away == "BYU"
+assert by[("SJSU", "HAW")].home == "Hawai'i"
+# CIN is Cincinnati in one game and the Bengals in another the same week
+assert ("CIN", "ARIZ") in by and ("JAC", "CIN") in by
+assert not any(g.points is not None or g.final for g in b.games), \
+    "nothing on the board has been played yet"
+print("the board parses, all 36, ranks and repeats and all OK")
+
+# ── the board dates its own games ──────────────────────────────────────
+# Without this the card sorts on the text "Mon 8:15pm", which puts Monday
+# third (Fri, Mon, Sat, Sun, Thu), and nothing can tell that a Thursday
+# game locks at kickoff rather than at Saturday noon.
+iso = [g.kickoff_iso for g in b.games]
+assert all(iso), f"{sum(1 for x in iso if not x)} games never got a date"
+assert iso == sorted(iso), "the board is not in kickoff order"
+assert by[("PIT", "CLE")].kickoff_iso == "2026-10-02T00:15Z", \
+    by[("PIT", "CLE")].kickoff_iso        # Thu 8:15pm ET is Friday in UTC
+assert by[("ATL", "NO")].kickoff_iso == "2026-10-06T00:15Z"
+# a game whose printed weekday has rolled past the day header's
+assert by[("SJSU", "HAW")].kickoff_iso.startswith("2026-10-04T04:00")
+# the year is nowhere near the day headers; it comes off the lock line
+assert splash._board_year(BOARD) == 2026
+assert splash._board_year("no lock line here") is None
+assert splash._board_kickoff("Saturday, Oct 3", "Sat 12:00pm", None) == ""
+assert splash._board_kickoff("", "Sat 12:00pm", 2026) == ""
+print("every game on the board is dated, and in order OK")
+
+# a board with games missing says so, rather than looking complete
+short = BOARD[:BOARD.index("Saturday, Oct 3")] + BOARD[BOARD.index("Tiebreaker"):]
+sb = splash.parse_board(short)
+assert sb.expected == 36 and len(sb.games) == 4, len(sb.games)
+print("a part-copied board keeps its stated count OK")
+
+# the entry page must not be dragged into the board parser, and the board
+# must not parse as an entry — the app tries both and takes the larger
+assert len(splash.parse_board(ENTRY).games) < len(splash.parse_entry(ENTRY).games)
+assert len(splash.parse_entry(BOARD).games) < len(splash.parse_board(BOARD).games)
+print("board and entry pages stay told apart OK")
+
 # ── nothing here may raise on junk ──────────────────────────────────────
 for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
              DIST[:80], "FINAL\nFINAL\nFINAL"):
     splash.parse_entry(junk)
+    splash.parse_board(junk)
     splash.parse_distribution(junk)
     splash.parse_standings(junk)
     splash.parse_picks_by_week(junk)
     splash.sniff(junk)
 assert splash.parse_entry("").games == []
+assert splash.parse_board("").games == []
 assert splash.parse_distribution("") == []
 assert splash.parse_standings("") == ([], 0)
 assert splash.parse_picks_by_week("") == ([], [])

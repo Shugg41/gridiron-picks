@@ -8,9 +8,10 @@ Live app: https://shuggs-picks.streamlit.app
 ## How a week goes
 
 1. **Paste the board.** Run the *Load into Picks* shortcut on the Splash
-   page in Safari, paste into the app. Any of the four pages works — the
-   board, your entry, Pick Distribution, or the standings — and it works
-   out which is which.
+   page in Safari, paste into the app. Any of the five pages works — the
+   board, your entry, Pick Distribution, Picks by Week, or the standings
+   — and it works out which is which. The board states its own game
+   count, so a short paste is reported rather than accepted.
 2. **Read the card.** Every game, in kickoff order, numbered to match
    Splash. The flips it would make are called out at the top.
 3. **Type them into Splash**, off the numbered list at the bottom.
@@ -72,6 +73,13 @@ against the same field and the same outcomes. Flipping gives up a little
 expected score to buy a real chance of finishing alone at the top, and
 the app prints that trade every week. If it ever reads the wrong way
 round, stop flipping.
+
+**Kickoff times without ESPN.** The board prints a day header and a
+clock, and the lock line carries the year, so every game is dated from
+the paste alone. That is what orders the card and what makes a Thursday
+nighter lock at kickoff instead of at Saturday noon — none of it waits on
+an ESPN match, because the game that fails to match is exactly the one
+that would otherwise sort by the text "Mon 8:15pm" and never warn.
 
 **Line movement.** ESPN's core API carries the opening line as well as
 the current one. The crowd piles onto favorites, so a favorite getting

@@ -162,6 +162,23 @@ got = {g.away_code: (ev or {}).get("event_id") for g, ev in espn.link(asked, two
 assert got == {"LAC": "lac", "LA": "lar"}, got
 print("exact spellings win their event before guesses OK")
 
+# ── the same code, two leagues, one week ───────────────────────────────
+# Week 5 has the Bengals hosting Jacksonville and the Bearcats visiting
+# Arizona, so CIN is on the board twice meaning two different teams.
+# This is the shape that used to invent a phantom game.
+both_cin = [event("bengals", ("JAX", "Jacksonville", "Jaguars"),
+                  ("CIN", "Cincinnati", "Bengals")),
+            event("bearcats", ("CIN", "Cincinnati", "Bearcats"),
+                  ("ARIZ", "Arizona", "Wildcats"), "CFB")]
+board = [splash.Game(away_code="CIN", home_code="ARIZ",
+                     away="Cincinnati", home="Arizona"),
+         splash.Game(away_code="JAC", home_code="CIN",
+                     away="Jaguars", home="Bengals")]
+cin = {(g.away_code, g.home_code): (ev or {}).get("event_id")
+       for g, ev in espn.link(board, both_cin)}
+assert cin == {("CIN", "ARIZ"): "bearcats", ("JAC", "CIN"): "bengals"}, cin
+print("one code, two leagues, two right answers OK")
+
 # ── line movement, against the payload shape CI actually returned ──────
 # Notre Dame at North Carolina, week 5: opened ND -24.5, now ND -21. The
 # home side's handicap went +24.5 -> +21, so the market came toward UNC.

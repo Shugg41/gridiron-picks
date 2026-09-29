@@ -15,7 +15,13 @@ testable against the real pages saved in tests/fixtures.
 """
 import re
 from dataclasses import dataclass, field as _field
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+from zoneinfo import ZoneInfo
+
+# Splash prints its times in the viewer's zone, and the viewer is in the
+# East — the same zone the noon deadline is quoted in.
+ET = ZoneInfo("America/New_York")
 
 # Page furniture that shows up where a team code would. "NO" is absent on
 # purpose — that is New Orleans.
@@ -34,6 +40,8 @@ _KICK = re.compile(r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+"
                    r"(?:([A-Z][a-z]{2})\s+(\d{1,2})\s+)?(\d{1,2}):(\d{2})\s*(am|pm)$",
                    re.I)
 _STATUS = re.compile(r"^(FINAL|LIVE\b.*|Q[1-4]\b.*|HALF.*|OT.*)$", re.I)
+_RECORD = re.compile(r"^\d{1,2}-\d{1,2}(?:-\d{1,2})?$")
+_RANKED = re.compile(r"^#\d{1,2}ranked\b")
 _SCORELINE = re.compile(r"^(.+?)\s+(\d+)\s+@\s+(.+?)\s+(\d+)$")
 _MONTHS = {m: i for i, m in enumerate(
     ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -62,6 +70,7 @@ class Game:
     home_code: str = ""
     day: str = ""                       # "Saturday, Sep 26" as printed
     kickoff: str = ""                   # "Sun 4:05pm" as printed
+    kickoff_iso: str = ""               # the same instant, when datable
     status: str = ""                    # FINAL / LIVE Q2 6:38 / ""
     away_score: Optional[int] = None
     home_score: Optional[int] = None
@@ -105,6 +114,7 @@ class Entry:
     rank: Optional[int] = None
     points: Optional[int] = None
     tiebreaker: Optional[int] = None
+    expected: Optional[int] = None      # the count the page states itself
     unparsed: list = _field(default_factory=list)
 
 
@@ -224,6 +234,145 @@ def _game_from(lines, code_at, day):
     return Game(away=away, home=home, away_code=away_code, home_code=home_code,
                 day=day, kickoff=kickoff, status=status,
                 away_score=away_score, home_score=home_score)
+
+
+def parse_board(text):
+    """Read the pick sheet itself — the page you make the picks on.
+
+    It is the only page that exists before a deadline, and it is shaped
+    unlike the entry page: no scores, no status, and the two team codes
+    are not adjacent because each one is followed by that team's record.
+
+        Steelers          <- away name
+        Browns            <- home name
+        Thu 8:15pm        <- kickoff
+        #7ranked #7       <- only for a ranked team
+        PIT               <- away code
+        2-1               <- away record
+        CLE               <- home code
+        2-1               <- home record
+
+    So this anchors on the kickoff line: it is the one line every game
+    has exactly once, it sits between the names and the codes, and it
+    cannot be confused with either. Reading out from it in both
+    directions is what makes the optional rank lines harmless.
+
+    The page also states its own game count ("/36 picks made"), which is
+    kept on `expected` so a short parse can be reported as one rather
+    than quietly accepted — a board that loses games is the bug this
+    project keeps having.
+    """
+    lines = [l.strip() for l in text.splitlines()]
+    entry = Entry(expected=_board_size(text))
+    # Below the tiebreaker heading the last game is printed again, this
+    # time followed by the total-score box rather than by codes.
+    stop = next((n for n, l in enumerate(lines)
+                 if l.lower().startswith("tiebreaker")), len(lines))
+    year = _board_year(text)
+    day = ""
+    i = 0
+    while i < stop:
+        line = lines[i]
+        if _DAY.match(line):
+            day = line
+            i += 1
+            continue
+        if _KICK.match(line) and i >= 2:
+            g, after = _board_game(lines, i, day, stop, year)
+            if g:
+                entry.games.append(g)
+                i = after
+                continue
+        i += 1
+
+    for n in range(stop, len(lines)):
+        if lines[n].lower().startswith("combined total score"):
+            for m in range(n + 1, min(n + 4, len(lines))):
+                v = _int(lines[m])
+                if v is not None:
+                    # zero is the empty box, not a guess of nil-nil
+                    entry.tiebreaker = v or None
+                    break
+            break
+    return entry
+
+
+def _board_game(lines, kick_at, day, stop, year=None):
+    """Build a game from the kickoff line at `kick_at`.
+
+    Returns (game, index_after) or (None, _) when the shape does not hold
+    — a game that does not parse cleanly is left out rather than guessed
+    at, and `expected` will show that it went missing.
+    """
+    away, home = lines[kick_at - 2], lines[kick_at - 1]
+    for name in (away, home):
+        if (not name or _DAY.match(name) or _KICK.match(name)
+                or _RECORD.match(name) or _RANKED.match(name)):
+            return None, kick_at
+    # Team names can themselves look like codes — BYU plays TCU — so the
+    # names are not checked against is_code, only the codes are.
+    j = kick_at + 1
+    side = []
+    for _ in range(2):
+        if j < stop and _RANKED.match(lines[j]):
+            j += 1
+        if j >= stop or not is_code(lines[j]):
+            return None, kick_at
+        code = lines[j]
+        j += 1
+        if j < stop and _RECORD.match(lines[j]):
+            j += 1                          # the record, when shown
+        side.append(code)
+    return Game(away=away, home=home, away_code=side[0], home_code=side[1],
+                day=day, kickoff=lines[kick_at],
+                kickoff_iso=_board_kickoff(day, lines[kick_at], year)), j
+
+
+def _board_year(text):
+    """The year, which the day headers leave out and the lock line states:
+    "Picks lock: / Sat, Oct 3, 2026, 12:00 PM"."""
+    m = re.search(r"picks lock:?\s*\n?[^\n]*?(20\d{2})", text, re.I)
+    return int(m.group(1)) if m else None
+
+
+def _board_kickoff(day, kick, year):
+    """Turn "Thursday, Oct 1" and "Thu 8:15pm" into a real instant.
+
+    Worth doing even though ESPN also carries kickoff times, because
+    everything that matters before a deadline hangs off this: the card is
+    ordered by it, and a Thursday game locks at kickoff rather than at
+    Saturday noon. Depending on an ESPN match for that means a game that
+    failed to match sorts by the text "Mon 8:15pm", which puts Monday
+    third, and never warns that it is about to lock.
+    """
+    d, k = _DAY.match(day or ""), _KICK.match(kick or "")
+    if not d or not k or not year:
+        return ""
+    month = _MONTHS.get(d.group(2))
+    if not month:
+        return ""
+    hour = int(k.group(4)) % 12 + (12 if k.group(6).lower() == "pm" else 0)
+    try:
+        dt = datetime(year, month, int(d.group(3)), hour, int(k.group(5)),
+                      tzinfo=ET)
+    except ValueError:
+        return ""
+    # The header and the kickoff line each name a weekday. When they
+    # disagree the game has crossed midnight, so the kickoff line wins.
+    want = k.group(1)[:3].lower()
+    for shift in (0, 1, -1):
+        if (dt + timedelta(days=shift)).strftime("%a").lower() == want:
+            dt += timedelta(days=shift)
+            break
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
+
+
+def _board_size(text):
+    """The game count the board prints about itself: "0 /36 picks made"."""
+    m = re.search(r"/\s*(\d+)\s*\n\s*picks made", text, re.I)
+    if not m:
+        m = re.search(r"(\d+)\s+picks made", text, re.I)
+    return int(m.group(1)) if m else None
 
 
 def parse_distribution(text):
@@ -444,6 +593,10 @@ def sniff(text):
         return "distribution"
     if "view picks" in t or "rank:" in t:
         return "entry"
-    if re.search(r"\d+\s+games?\b", t):
+    # The board last: it is the page with the fewest markers of its own,
+    # and "picks made" also appears on the entry page as "All picks
+    # made", which is why that test has to have run first.
+    if ("pick straight up" in t or "picks lock:" in t or "picks made" in t
+            or re.search(r"\d+\s+games?\b", t)):
         return "board"
     return None

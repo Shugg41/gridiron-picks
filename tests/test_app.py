@@ -22,6 +22,7 @@ ROOT = os.path.dirname(HERE)
 MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
 STAND = open(os.path.join(HERE, "fixtures", "standings_week4.txt")).read()
 ENTRY = open(os.path.join(HERE, "fixtures", "entry_week4.txt")).read()
+BOARD = open(os.path.join(HERE, "fixtures", "board_week5.txt")).read()
 
 # ── a fake ESPN, covering the fixture's games ───────────────────────────
 TEAMS = {
@@ -204,14 +205,44 @@ review = " ".join(m.value for m in at.markdown)
 assert "against the crowd" in review, "the field summary never rendered"
 print("field review renders OK")
 
-# ── a week with no entry yet shows the list to type into Splash ─────────
+# ── a fresh week starts from the board, before anything is picked ──────
+# The real Week 5 board, through the real app: recognise the page, parse
+# it, store it, draw it. It failed at the first of those once, live, an
+# hour before a deadline, so the whole path is under test and not just
+# the parser.
 at2 = run()
-at2 = paste(at2, ENTRY, week=5)      # same parser, a week with no results
-boom(at2, "after a fresh week")
+at2 = paste(at2, BOARD, week=5)
+boom(at2, "after the board")
+assert any("36 games loaded" in x.value for x in at2.success), \
+    [x.value for x in at2.success] + [w.value for w in at2.warning]
+
 at2 = run()
+boom(at2, "on the new week")
 weeks = at2.selectbox[0]
 assert "Week 5" in weeks.options and "Week 4" in weeks.options, weeks.options
-print("a second week is selectable OK")
+fresh = cards(at2)
+# ESPN here is still week 4's slate, so most of these match nothing — and
+# every one of them still has to be on the screen, in the right place.
+assert len(fresh) == 36, f"the board lost or invented games: {len(fresh)}"
+assert [n for n, _t, _h in fresh] == list(range(1, 37))
+assert not any("card won" in h or "card lost" in h for _n, _t, h in fresh), \
+    "nothing on a fresh board has been graded"
+
+_d5 = _sq.connect(os.path.join(WORK, "football_picks.db"))
+k5 = [k for (k,) in _d5.execute(
+    "SELECT kickoff FROM game WHERE season=2026 AND week=5 "
+    "ORDER BY COALESCE(kickoff,'9999'), seq")]
+assert len(k5) == 36 and all(k5), "a game was stored with no kickoff"
+assert k5 == sorted(k5) and k5[0].startswith("2026-10-02"), k5[:2]
+assert k5[-1].startswith("2026-10-06"), k5[-1]     # Monday night, last
+# and that date is what makes the Thursday game lock at kickoff rather
+# than at Saturday noon, with no ESPN match anywhere in sight
+from gridiron import view                                      # noqa: E402
+assert view.lock_time(k5[0]).isoformat().startswith("2026-10-02T00:15"), \
+    view.lock_time(k5[0])
+assert view.lock_time(k5[-1]).isoformat().startswith("2026-10-03T16:00"), \
+    view.lock_time(k5[-1])
+print(f"the real Week 5 board: {len(fresh)} cards, dated and in order OK")
 
 # ── ESPN being unreachable must not cost a single game ──────────────────
 def dead(url, params=None, **kw):

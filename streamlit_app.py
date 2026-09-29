@@ -197,7 +197,14 @@ def load_paste(text, wk):
     kind = splash.sniff(text)
 
     if kind in ("board", "entry"):
-        parsed = splash.parse_entry(text)
+        # The board and the entry page are shaped differently — the board
+        # has records between the two codes and no scores at all — so try
+        # the board parser first and fall back, rather than trusting the
+        # sniff to have got it right. Whichever sees more games wins.
+        parsed = splash.parse_board(text)
+        other = splash.parse_entry(text)
+        if len(other.games) > len(parsed.games):
+            parsed = other
         store.save_games(conn, SEASON, wk, parsed.games)
         rows = [{"away_code": g.away_code, "home_code": g.home_code,
                  "team": g.picked,
@@ -208,7 +215,14 @@ def load_paste(text, wk):
         if parsed.tiebreaker is not None:
             store.upsert(conn, "tiebreak", {"season": SEASON, "week": wk},
                          {"guess": parsed.tiebreaker})
-        return "ok", f"Week {wk}: {len(parsed.games)} games loaded."
+        note = f"Week {wk}: {len(parsed.games)} games loaded."
+        if parsed.expected and parsed.expected != len(parsed.games):
+            # The board states its own count, so a short parse can say so
+            # instead of looking like a complete week.
+            return "warn", (f"{note}  The page says {parsed.expected} — "
+                            f"{parsed.expected - len(parsed.games)} did not "
+                            f"parse. Paste the whole page, not a selection.")
+        return "ok", note
 
     if kind == "picks_by_week":
         board_games, entries = splash.parse_picks_by_week(text)

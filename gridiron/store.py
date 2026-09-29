@@ -157,7 +157,12 @@ def save_games(conn, season, week, games, links=None):
                 "away_code": g.away_code, "home_code": g.home_code},
                {"away": g.away or None, "home": g.home or None, "seq": i,
                 "day": g.day or None,
-                "kickoff": (ev or {}).get("date") or g.kickoff or None,
+                # ESPN's timestamp first, then the one derived from the
+                # board, and only then the text Splash printed — which
+                # sorts "Mon" before "Thu" and cannot be locked against.
+                "kickoff": ((ev or {}).get("date")
+                            or getattr(g, "kickoff_iso", "")
+                            or g.kickoff or None),
                 "espn_id": (ev or {}).get("event_id"),
                 "status": g.status or None,
                 "away_score": g.away_score, "home_score": g.home_score},
