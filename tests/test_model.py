@@ -109,6 +109,28 @@ assert len(picks) == len(linked), "every game must get a pick slot"
 by = {(p.away, p.home): p for p in picks}
 assert by[("MIA", "BUF")].team == "BUF" and by[("MIA", "BUF")].basis == "line"
 assert by[("SEA", "SF")].team == "SF"
+# ── the pick is said in Splash's spelling, not ESPN's ─────────────────
+# ESPN calls South Carolina SC and Splash calls them SCAR. The pick was
+# being written down as SC: a code that appears nowhere on the board,
+# so the field's share of it was always None, the advice tracker could
+# never match it against the entry, and the list the user types from
+# named a team Splash does not use.
+crossed = [(game("UK", "SCAR"), ev("UK", "SC", details="SC -7")),
+           (game("LA", "PHI"), ev("LAR", "PHI", details="LAR -3"))]
+xp = {(p.away, p.home): p for p in model.propose(crossed,
+                                                 strat=model.Strategy())}
+assert xp[("UK", "SCAR")].team == "SCAR", xp[("UK", "SCAR")].team
+assert xp[("UK", "SCAR")].other == "UK"
+assert xp[("LA", "PHI")].team == "LA", xp[("LA", "PHI")].team
+assert xp[("LA", "PHI")].other == "PHI"
+
+# and the field's share is found, which it never was while the pick
+# was named in the other vocabulary
+xfield = {("UK", "SCAR"): {"SCAR": 0.8, "UK": 0.2}}
+xf = model.propose(crossed, field=xfield, strat=model.Strategy())[0]
+assert xf.field_on_team == 0.8, xf.field_on_team
+print("picks are named the way Splash names them OK")
+
 # a game with no odds gets no pick, and is not quietly dropped
 assert by[("ZZZ", "QQQ")].team is None and by[("ZZZ", "QQQ")].basis == "none"
 

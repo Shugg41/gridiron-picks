@@ -142,6 +142,28 @@ class Pick:
         return self.basis == "flip"
 
 
+def _board_codes(game, event, fav, dog):
+    """Say the pick in Splash's spelling, not ESPN's.
+
+    favorite() answers with ESPN's abbreviation, and everything
+    downstream keys on the board's: the list the user types into
+    Splash, the field's shares, and the entry the advice tracker scores
+    against. ESPN says SC where Splash says SCAR, so a pick on South
+    Carolina was written down as a team that appears nowhere on the
+    board — unmatchable by the tracker, and a code the user would have
+    to translate by eye.
+
+    Only which side is needed, never a name lookup: link() pairs away
+    with away and home with home, so the correspondence is already
+    settled by the time this runs.
+    """
+    if not fav:
+        return None, None
+    if fav == (event.get("home") or {}).get("abbr"):
+        return game.home_code, game.away_code
+    return game.away_code, game.home_code
+
+
 def propose(linked, field=None, strat=None):
     """Pick every game, then flip the best few underdogs.
 
@@ -156,6 +178,7 @@ def propose(linked, field=None, strat=None):
     picks = []
     for game, event in linked:
         fav, dog, p = favorite(event)
+        fav, dog = _board_codes(game, event, fav, dog)
         shares = field.get((game.away_code, game.home_code)) or {}
         picks.append(Pick(away=game.away_code, home=game.home_code,
                           team=fav, other=dog,
