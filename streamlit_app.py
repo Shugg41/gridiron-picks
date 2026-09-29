@@ -42,13 +42,20 @@ import gridiron
 _MODULES = ("splash", "espn", "store", "model", "simulate", "view",
             "watch", "ingest")
 _seen = getattr(gridiron, "_mtimes", None)
-if _seen is None:
+# The first version of this recorded mtimes and reloaded nothing on the
+# first pass, which is precisely the case it exists for: the container
+# that has the stale module is the one whose old script never recorded
+# anything. So the first pass reloads unconditionally. On a genuinely
+# fresh container that is one wasted reload of eight small modules
+# before any cache has been filled; on a stale one it is the fix.
+_first = _seen is None
+if _first:
     _seen = gridiron._mtimes = {}
 for _name in _MODULES:
     try:
         _mod = importlib.import_module(f"gridiron.{_name}")
         _when = os.path.getmtime(_mod.__file__)
-        if _seen.get(_name, _when) != _when:
+        if _first or _seen.get(_name) != _when:
             importlib.reload(_mod)
         _seen[_name] = _when
     except Exception:

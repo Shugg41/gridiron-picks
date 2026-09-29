@@ -356,6 +356,21 @@ try:
     assert hasattr(_live, "shipped_after_start"), \
         "a rerun did not pick the new code up"
     assert _live.shipped_after_start() == 42
+
+    # And the case that actually took the app down: the container is
+    # stale AND has no recorded mtimes, because the script that would
+    # have recorded them is the old one. The first version of this fix
+    # recorded and reloaded nothing, so it did not fix anything.
+    import gridiron                                            # noqa: E402
+    delattr(gridiron, "_mtimes")
+    with open(_path, "w") as fh:
+        fh.write(_original + "\n\ndef shipped_while_stale():\n    return 7\n")
+    assert not hasattr(_live, "shipped_while_stale")
+    at6 = run()
+    boom(at6, "on the first rerun after a deploy")
+    assert hasattr(_live, "shipped_while_stale"), \
+        "the first rerun after a deploy did not reload a stale module"
+    assert _live.shipped_while_stale() == 7
 finally:
     with open(_path, "w") as fh:
         fh.write(_original)

@@ -39,13 +39,19 @@ jobs:
               print(f"--- {label} ---")
               print("url:  ", page.url)
               print("title:", page.title())
+              # Read every frame, not just the top one. The app's content
+              # lives in a child frame, so the top body is always empty —
+              # which made every dump so far useless at the moment it was
+              # most needed.
               for f in page.frames:
                   print("frame:", f.url[:120])
-              try:
-                  body = re.sub(r"\s+", " ", page.locator("body").inner_text())[:400]
-                  print("body: ", body)
-              except Exception as e:
-                  print("body read failed:", e)
+                  try:
+                      body = re.sub(r"\s+", " ",
+                                    f.locator("body").inner_text())[:600]
+                      if body.strip():
+                          print("  body:", body)
+                  except Exception as e:
+                      print("  body read failed:", type(e).__name__)
 
           # A crashed Streamlit app still renders stAppViewContainer, so
           # "it rendered" is not "it works" — this ping went green while
@@ -55,8 +61,11 @@ jobs:
           def broken(page):
               for frame in page.frames:
                   try:
-                      if frame.locator('[data-testid="stException"]').count():
+                      exc = frame.locator('[data-testid="stException"]')
+                      if exc.count():
                           dump(page, "app is showing an exception")
+                          print("exception text:",
+                                re.sub(r"\s+", " ", exc.first.inner_text())[:800])
                           return True
                       hit = frame.get_by_text(
                           re.compile("this app has encountered an error", re.I))
