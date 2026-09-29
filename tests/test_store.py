@@ -94,6 +94,41 @@ me_row = conn.execute("SELECT rank, points, tie_diff FROM standing "
 assert me_row == ("16", 63, 21), me_row
 print("field and standings store OK")
 
+# ── the upsert helper, and the NULL that broke it ──────────────────────
+u = store.connect(":memory:")
+u.executescript("CREATE TABLE t (a TEXT, b TEXT, v TEXT, PRIMARY KEY (a, b));")
+assert store.upsert(u, "t", {"a": "1", "b": "x"}, {"v": "first"}) == 1
+assert store.upsert(u, "t", {"a": "1", "b": "x"}, {"v": "second"}) == 0
+assert u.execute("SELECT COUNT(*), v FROM t").fetchone() == (1, "second")
+
+# a NULL key has to match, which "=" never does. Season-long standings
+# are stored with no week, so with "=" the update always missed, the
+# insert always ran, and because NULLs do not collide in a primary key
+# the rows piled up silently on every paste.
+assert store.upsert(u, "t", {"a": "2", "b": None}, {"v": "one"}) == 1
+assert store.upsert(u, "t", {"a": "2", "b": None}, {"v": "two"}) == 0
+rows = u.execute("SELECT COUNT(*) FROM t WHERE a='2'").fetchone()[0]
+assert rows == 1, f"a NULL key duplicated the row {rows} times"
+
+# `keep` protects an existing value from being blanked by a new NULL
+store.upsert(u, "t", {"a": "3", "b": "y"}, {"v": "kept"})
+store.upsert(u, "t", {"a": "3", "b": "y"}, {"v": None}, keep=("v",))
+assert u.execute("SELECT v FROM t WHERE a='3'").fetchone()[0] == "kept"
+store.upsert(u, "t", {"a": "3", "b": "y"}, {"v": None})
+assert u.execute("SELECT v FROM t WHERE a='3'").fetchone()[0] is None
+print("upsert helper OK, including NULL keys")
+
+# and the real case it was hiding: standings pasted twice
+srows2, _ = splash.parse_standings(STAND)
+conn3, path3 = fresh()
+store.save_standings(conn3, 2026, None, srows2)
+store.save_standings(conn3, 2026, None, srows2)
+n = conn3.execute("SELECT COUNT(*) FROM standing").fetchone()[0]
+assert n == len(srows2), f"re-pasting standings duplicated: {n} rows"
+me2 = conn3.execute("SELECT COUNT(*) FROM standing WHERE me=1").fetchone()[0]
+assert me2 == 1, f"{me2} rows claim to be me"
+print("standings can be pasted twice without duplicating OK")
+
 # ── migrating the old tables ────────────────────────────────────────────
 old, old_path = fresh()
 old.executescript("""
@@ -201,7 +236,7 @@ assert bad.remote() == (None, None)
 assert bad.reason == "401 Bad credentials", bad.reason
 print("a rejected token says why OK")
 
-for p in (path, path2, old_path, other_path):
+for p in (path, path2, old_path, other_path, path3):
     if os.path.exists(p):
         os.unlink(p)
 print("\nALL STORE TESTS PASS")

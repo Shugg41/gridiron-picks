@@ -101,10 +101,44 @@ def meta_get(conn, key, default=None):
     return row[0] if row else default
 
 
+def upsert(conn, table, keys, values, keep=()):
+    """Write a row whether or not it is already there, without UPSERT.
+
+    SQLite's ON CONFLICT ... DO UPDATE needs 3.24 and a conflict target
+    that lines up exactly with a constraint. Both held locally and
+    something about them did not hold on Streamlit Cloud, where the real
+    message is redacted — so rather than guess which of seven upserts
+    broke, none of them use it. An UPDATE followed by an INSERT works
+    everywhere and reads better anyway.
+
+    The WHERE uses `IS` rather than `=` because it has to match NULLs:
+    season-long standings are stored with no week, and `week = NULL` is
+    never true. With `=` the UPDATE always missed, the INSERT always ran,
+    and since NULLs do not collide in a primary key the rows quietly
+    piled up on every paste.
+
+    keys   : {column: value} identifying the row
+    values : {column: value} to write
+    keep   : columns where an existing value survives a new NULL
+    """
+    sets, params = [], []
+    for col, val in values.items():
+        sets.append(f"{col}=COALESCE(?, {col})" if col in keep else f"{col}=?")
+        params.append(val)
+    where = " AND ".join(f"{k} IS ?" for k in keys)
+    cur = conn.execute(f"UPDATE {table} SET {', '.join(sets)} WHERE {where}",
+                       params + list(keys.values()))
+    if cur.rowcount:
+        return 0
+    cols = list(keys) + list(values)
+    conn.execute(f"INSERT INTO {table} ({', '.join(cols)}) "
+                 f"VALUES ({', '.join('?' * len(cols))})",
+                 list(keys.values()) + list(values.values()))
+    return 1
+
+
 def meta_set(conn, key, value):
-    conn.execute("INSERT INTO meta (key, value) VALUES (?,?) "
-                 "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
-                 (key, str(value)))
+    upsert(conn, "meta", {"key": key}, {"value": str(value)})
 
 
 # ── writing a week ──────────────────────────────────────────────────────
@@ -118,23 +152,17 @@ def save_games(conn, season, week, games, links=None):
     n = 0
     for i, g in enumerate(games, 1):
         ev = (links or {}).get(i - 1)
-        conn.execute(
-            "INSERT INTO game (season, week, away_code, home_code, away, home, "
-            "seq, day, kickoff, espn_id, status, away_score, home_score) "
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) "
-            "ON CONFLICT(season, week, away_code, home_code) DO UPDATE SET "
-            "away=excluded.away, home=excluded.home, seq=excluded.seq, "
-            "day=excluded.day, "
-            "kickoff=COALESCE(excluded.kickoff, game.kickoff), "
-            "espn_id=COALESCE(excluded.espn_id, game.espn_id), "
-            "status=COALESCE(excluded.status, game.status), "
-            "away_score=COALESCE(excluded.away_score, game.away_score), "
-            "home_score=COALESCE(excluded.home_score, game.home_score)",
-            (season, week, g.away_code, g.home_code, g.away or None,
-             g.home or None, i, g.day or None,
-             (ev or {}).get("date") or g.kickoff or None,
-             (ev or {}).get("event_id"), g.status or None,
-             g.away_score, g.home_score))
+        upsert(conn, "game",
+               {"season": season, "week": week,
+                "away_code": g.away_code, "home_code": g.home_code},
+               {"away": g.away or None, "home": g.home or None, "seq": i,
+                "day": g.day or None,
+                "kickoff": (ev or {}).get("date") or g.kickoff or None,
+                "espn_id": (ev or {}).get("event_id"),
+                "status": g.status or None,
+                "away_score": g.away_score, "home_score": g.home_score},
+               keep=("kickoff", "espn_id", "status", "away_score",
+                     "home_score"))
         n += 1
     return n
 
@@ -147,13 +175,11 @@ def save_entry(conn, season, week, games):
     missing picks, which is how one went unnoticed for a week.
     """
     for g in games:
-        conn.execute(
-            "INSERT INTO entry (season, week, away_code, home_code, team, result) "
-            "VALUES (?,?,?,?,?,?) "
-            "ON CONFLICT(season, week, away_code, home_code) DO UPDATE SET "
-            "team=excluded.team, result=COALESCE(excluded.result, entry.result)",
-            (season, week, g["away_code"], g["home_code"],
-             g.get("team"), g.get("result")))
+        upsert(conn, "entry",
+               {"season": season, "week": week,
+                "away_code": g["away_code"], "home_code": g["home_code"]},
+               {"team": g.get("team"), "result": g.get("result")},
+               keep=("result",))
 
 
 def save_proposals(conn, season, week, picks):
@@ -161,24 +187,20 @@ def save_proposals(conn, season, week, picks):
     is the only way to answer whether the advice is any good."""
     now = time.strftime("%Y-%m-%dT%H:%M:%S")
     for away, home, team, basis in picks:
-        conn.execute(
-            "INSERT INTO proposal (season, week, away_code, home_code, team, "
-            "basis, created_at) VALUES (?,?,?,?,?,?,?) "
-            "ON CONFLICT(season, week, away_code, home_code) DO UPDATE SET "
-            "team=excluded.team, basis=excluded.basis",
-            (season, week, away, home, team, basis, now))
+        upsert(conn, "proposal",
+               {"season": season, "week": week,
+                "away_code": away, "home_code": home},
+               {"team": team, "basis": basis, "created_at": now})
 
 
 def save_field(conn, season, week, rows):
     """rows: [(away, home, team, picks, pct, mkt_prob)]"""
     for away, home, team, picks, pct, mkt in rows:
-        conn.execute(
-            "INSERT INTO field (season, week, away_code, home_code, team, "
-            "picks, pct, mkt_prob) VALUES (?,?,?,?,?,?,?,?) "
-            "ON CONFLICT(season, week, away_code, home_code, team) DO UPDATE SET "
-            "picks=excluded.picks, pct=excluded.pct, "
-            "mkt_prob=COALESCE(excluded.mkt_prob, field.mkt_prob)",
-            (season, week, away, home, team, picks, pct, mkt))
+        upsert(conn, "field",
+               {"season": season, "week": week, "away_code": away,
+                "home_code": home, "team": team},
+               {"picks": picks, "pct": pct, "mkt_prob": mkt},
+               keep=("mkt_prob",))
 
 
 def save_field_cards(conn, season, week, cards):
@@ -195,12 +217,10 @@ def save_field_cards(conn, season, week, cards):
     """
     for entrant, card in cards.items():
         for (away, home), team in card.items():
-            conn.execute(
-                "INSERT INTO field_card (season, week, entrant, away_code, "
-                "home_code, team) VALUES (?,?,?,?,?,?) "
-                "ON CONFLICT(season, week, entrant, away_code, home_code) "
-                "DO UPDATE SET team=excluded.team",
-                (season, week, entrant, away, home, team))
+            upsert(conn, "field_card",
+                   {"season": season, "week": week, "entrant": entrant,
+                    "away_code": away, "home_code": home},
+                   {"team": team})
 
 
 def week_field_cards(conn, season, week):
@@ -215,15 +235,15 @@ def week_field_cards(conn, season, week):
 
 
 def save_standings(conn, season, week, rows):
+    """Season-long standings are stored with week NULL, which is why the
+    upsert helper matches keys with IS rather than =."""
     for r in rows:
-        conn.execute(
-            "INSERT INTO standing (season, week, name, entry_name, rank, points, "
-            "wins, losses, tie_diff, me) VALUES (?,?,?,?,?,?,?,?,?,?) "
-            "ON CONFLICT(season, week, name, entry_name) DO UPDATE SET "
-            "rank=excluded.rank, points=excluded.points, wins=excluded.wins, "
-            "losses=excluded.losses, tie_diff=excluded.tie_diff, me=excluded.me",
-            (season, week, r.name, r.entry, str(r.rank), r.points, r.wins,
-             r.losses, r.tie_diff, 1 if r.me else 0))
+        upsert(conn, "standing",
+               {"season": season, "week": week, "name": r.name,
+                "entry_name": r.entry},
+               {"rank": str(r.rank), "points": r.points, "wins": r.wins,
+                "losses": r.losses, "tie_diff": r.tie_diff,
+                "me": 1 if r.me else 0})
 
 
 # ── reading a week ──────────────────────────────────────────────────────

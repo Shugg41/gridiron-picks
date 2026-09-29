@@ -80,14 +80,12 @@ def compare(before, now, away, home):
 def record(conn, season, week, away, home, snap, when=None):
     if not snap:
         return
-    conn.execute(
-        "INSERT INTO watch (season, week, away_code, home_code, line, fav, "
-        "injuries, seen_at) VALUES (?,?,?,?,?,?,?,?) "
-        "ON CONFLICT(season, week, away_code, home_code) DO UPDATE SET "
-        "line=excluded.line, fav=excluded.fav, injuries=excluded.injuries, "
-        "seen_at=excluded.seen_at",
-        (season, week, away, home, snap.get("line"), snap.get("fav"),
-         snap.get("injuries"), when))
+    from . import store
+    store.upsert(conn, "watch",
+                 {"season": season, "week": week,
+                  "away_code": away, "home_code": home},
+                 {"line": snap.get("line"), "fav": snap.get("fav"),
+                  "injuries": snap.get("injuries"), "seen_at": when})
 
 
 def previous(conn, season, week):

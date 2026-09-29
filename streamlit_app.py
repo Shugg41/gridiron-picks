@@ -16,6 +16,7 @@ which is also what keeps the page quick, since thirty games of buttons is
 thirty ways to trigger a rerun.
 """
 import os
+import sqlite3
 from datetime import datetime as _dt, timezone as _tz
 
 import streamlit as st
@@ -185,10 +186,84 @@ def _match_pair(games, a, b):
     return None
 
 
+def load_paste(text, wk):
+    """Route a pasted page to its parser and store what came back.
+
+    Returns (level, message) rather than drawing anything, so the caller
+    can catch a failure and SHOW it. Streamlit redacts the message of an
+    uncaught exception — from a phone that reads as "an error occurred,
+    see the logs", which is no use at all an hour before a deadline.
+    """
+    kind = splash.sniff(text)
+
+    if kind in ("board", "entry"):
+        parsed = splash.parse_entry(text)
+        store.save_games(conn, SEASON, wk, parsed.games)
+        rows = [{"away_code": g.away_code, "home_code": g.home_code,
+                 "team": g.picked,
+                 "result": None if g.points is None else
+                 ("W" if g.points else "L")} for g in parsed.games]
+        if any(r["team"] for r in rows):
+            store.save_entry(conn, SEASON, wk, rows)
+        if parsed.tiebreaker is not None:
+            store.upsert(conn, "tiebreak", {"season": SEASON, "week": wk},
+                         {"guess": parsed.tiebreaker})
+        return "ok", f"Week {wk}: {len(parsed.games)} games loaded."
+
+    if kind == "picks_by_week":
+        board_games, entries = splash.parse_picks_by_week(text)
+        store.save_games(conn, SEASON, wk,
+                         [splash.Game(away_code=a, home_code=h)
+                          for a, h in board_games])
+        mine = next((e for e in entries if e.me), None)
+        if mine:
+            store.save_entry(conn, SEASON, wk, [
+                {"away_code": a, "home_code": h,
+                 "team": (mine.picks[i] if i < len(mine.picks) else (None,))[0],
+                 "result": {"W": "W", "L": "L"}.get(
+                     mine.picks[i][1] if i < len(mine.picks) else "")}
+                for i, (a, h) in enumerate(board_games)])
+        store.save_field_cards(conn, SEASON, wk,
+                               simulate.rivals_from_matrix(board_games, entries))
+        dist = splash.distribution_from_matrix(board_games, entries)
+        store.save_field(conn, SEASON, wk, [
+            (board_games[i][0], board_games[i][1], side[0], side[1], side[2],
+             None)
+            for i in range(len(board_games)) for side in dist[i]])
+        missed = sum(1 for p in (mine.picks if mine else []) if p[0] is None)
+        note = f"Week {wk}: {len(board_games)} games, {len(entries)} entries."
+        if missed:
+            note += f"  {missed} game(s) you never picked."
+        return "ok", note
+
+    if kind == "distribution":
+        rows = splash.parse_distribution(text)
+        saved = 0
+        for (ca, na, pa), (cb, nb, pb) in rows:
+            key = _match_pair(games, ca, cb)
+            if not key:
+                continue
+            store.save_field(conn, SEASON, wk,
+                             [(key[0], key[1], ca, na, pa, None),
+                              (key[0], key[1], cb, nb, pb, None)])
+            saved += 1
+        return "ok", f"Field loaded for {saved} of {len(rows)} games."
+
+    if kind == "standings":
+        rows, size = splash.parse_standings(text)
+        store.save_standings(conn, SEASON, None, rows)
+        me = next((r for r in rows if r.me), None)
+        return "ok", (f"Standings loaded — {len(rows)} of {size} entries"
+                      + (f", you are {me.rank} on {me.points}." if me else "."))
+
+    return "warn", ("Couldn't tell which page that is — paste the whole page "
+                    "rather than a selection.")
+
+
 # ── the paste bar ───────────────────────────────────────────────────────
 with st.expander("Paste from Splash", expanded=not games):
-    st.caption("Any of the four pages — the board, your entry, Pick "
-               "Distribution, or the standings. It works out which is "
+    st.caption("Any of the pages — the board, your entry, Picks by Week, "
+               "Pick Distribution, or the standings. It works out which is "
                "which. Text only: run the shortcut and paste.")
     with st.form("paste", clear_on_submit=True):
         text = st.text_area("Paste", height=150, label_visibility="collapsed")
@@ -196,85 +271,21 @@ with st.expander("Paste from Splash", expanded=not games):
                              value=int(week or 1), step=1)
         go = st.form_submit_button("Load it", type="primary")
     if go and text.strip():
-        kind = splash.sniff(text)
-        wk = int(wk)
-        if kind == "board" or kind == "entry":
-            parsed = splash.parse_entry(text)
-            store.save_games(conn, SEASON, wk, parsed.games)
-            rows = [{"away_code": g.away_code, "home_code": g.home_code,
-                     "team": g.picked,
-                     "result": None if g.points is None else
-                     ("W" if g.points else "L")} for g in parsed.games]
-            if any(r["team"] for r in rows):
-                store.save_entry(conn, SEASON, wk, rows)
-            if parsed.tiebreaker is not None:
-                conn.execute("INSERT INTO tiebreak (season, week, guess) "
-                             "VALUES (?,?,?) ON CONFLICT(season, week) "
-                             "DO UPDATE SET guess=excluded.guess",
-                             (SEASON, wk, parsed.tiebreaker))
-            save()
-            st.session_state["note"] = (
-                "ok", f"Week {wk}: {len(parsed.games)} games loaded.")
+        try:
+            level, message = load_paste(text, int(wk))
+            if level == "ok":
+                save()
+            st.session_state["note"] = (level, message)
             st.rerun()
-
-        elif kind == "picks_by_week":
-            board_games, entries = splash.parse_picks_by_week(text)
-            gobjs = [splash.Game(away_code=a, home_code=h) for a, h in board_games]
-            store.save_games(conn, SEASON, wk, gobjs)
-            mine = next((e for e in entries if e.me), None)
-            if mine:
-                rows = []
-                for i, (a, h) in enumerate(board_games):
-                    team, state = (mine.picks[i] if i < len(mine.picks)
-                                   else (None, "open"))
-                    rows.append({"away_code": a, "home_code": h, "team": team,
-                                 "result": {"W": "W", "L": "L"}.get(state)})
-                store.save_entry(conn, SEASON, wk, rows)
-            store.save_field_cards(conn, SEASON, wk,
-                                   simulate.rivals_from_matrix(board_games,
-                                                               entries))
-            dist = splash.distribution_from_matrix(board_games, entries)
-            store.save_field(conn, SEASON, wk, [
-                (board_games[i][0], board_games[i][1], side[0], side[1],
-                 side[2], None)
-                for i in range(len(board_games)) for side in dist[i]])
-            save()
-            missed = sum(1 for p in (mine.picks if mine else []) if p[0] is None)
-            note = f"Week {wk}: {len(board_games)} games, {len(entries)} entries."
-            if missed:
-                note += f"  {missed} game(s) you never picked."
-            st.session_state["note"] = ("ok", note)
-            st.rerun()
-
-        elif kind == "distribution":
-            rows = splash.parse_distribution(text)
-            saved = 0
-            for (ca, na, pa), (cb, nb, pb) in rows:
-                key = _match_pair(games, ca, cb)
-                if not key:
-                    continue
-                store.save_field(conn, SEASON, wk,
-                                 [(key[0], key[1], ca, na, pa, None),
-                                  (key[0], key[1], cb, nb, pb, None)])
-                saved += 1
-            save()
-            st.session_state["note"] = (
-                "ok", f"Field loaded for {saved} of {len(rows)} games.")
-            st.rerun()
-
-        elif kind == "standings":
-            rows, size = splash.parse_standings(text)
-            store.save_standings(conn, SEASON, None, rows)
-            save()
-            me = next((r for r in rows if r.me), None)
-            st.session_state["note"] = (
-                "ok", f"Standings loaded — {len(rows)} of {size} entries"
-                + (f", you are {me.rank} on {me.points}." if me else "."))
-            st.rerun()
-        else:
-            st.session_state["note"] = (
-                "warn", "Couldn't tell which page that is — paste the whole "
-                        "page rather than a selection.")
+        except Exception as exc:
+            # Show it. A redacted "see the logs" is useless on a phone,
+            # and the paste is the one place a new Splash layout will
+            # surface — the message is the whole diagnosis.
+            conn.rollback()
+            st.error(f"**{type(exc).__name__}**: {exc}")
+            st.caption(f"sqlite {sqlite3.sqlite_version} · page read as "
+                       f"{splash.sniff(text)!r} · {len(text)} characters. "
+                       f"Send me this and I can fix it.")
 
 
 # ── the week ────────────────────────────────────────────────────────────
