@@ -47,6 +47,27 @@ jobs:
               except Exception as e:
                   print("body read failed:", e)
 
+          # A crashed Streamlit app still renders stAppViewContainer, so
+          # "it rendered" is not "it works" — this ping went green while
+          # the app was dead on an AttributeError. Look for the crash
+          # page itself. st.error and st.warning are stAlert, not
+          # stException, so the app's own messages do not trip this.
+          def broken(page):
+              for frame in page.frames:
+                  try:
+                      if frame.locator('[data-testid="stException"]').count():
+                          dump(page, "app is showing an exception")
+                          return True
+                      hit = frame.get_by_text(
+                          re.compile("this app has encountered an error", re.I))
+                      if hit.count():
+                          dump(page, "app is showing the crash page")
+                          return True
+                  except Exception:
+                      pass
+              return False
+
+
           with sync_playwright() as p:
               browser = p.chromium.launch()
               page = browser.new_page()
@@ -80,6 +101,9 @@ jobs:
                                   or frame.locator('[data-testid="stAppViewContainer"]').count()):
                               print("App is up and rendering.")
                               page.wait_for_timeout(15_000)  # hold the session open
+                              if broken(page):
+                                  browser.close()
+                                  sys.exit(1)
                               browser.close()
                               sys.exit(0)
                       except Exception:
