@@ -149,7 +149,18 @@ assert {(x["away_code"], x["home_code"]) for x in got} == {("UNC", "CLEM"),
 assert store.week_entry(old, 2026, 3)[("UNC", "CLEM")] == ("CLEM", "W")
 assert old.execute("SELECT COUNT(*) FROM slate").fetchone()[0] == 3, \
     "the old tables must survive the migration"
-print("legacy migration OK, old tables untouched")
+
+# a week Splash has already defined is left alone. The old tables spell
+# teams ESPN's way, so merging the two sources does not overwrite — it
+# duplicates, which is how week 4 came to hold 38 games in a 31-game
+# week, seven of them second copies under a different spelling.
+old.execute("DELETE FROM game")
+old.execute("DELETE FROM entry")
+store.save_games(old, 2026, 3, [splash.Game(away_code="UNC", home_code="CLEM")])
+g2, p2 = store.migrate_legacy(old)
+assert (g2, p2) == (0, 0), (g2, p2)
+assert len(store.week_games(old, 2026, 3)) == 1, store.week_games(old, 2026, 3)
+print("legacy migration OK, old tables untouched, Splash never overwritten")
 
 # ── sync: the two-writer problem ────────────────────────────────────────
 class FakeGitHub:

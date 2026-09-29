@@ -424,17 +424,27 @@ def migrate_legacy(conn):
     rows that can be mapped confidently come across, and nothing is
     deleted — the old tables stay until the new ones have been checked
     against the live app.
+
+    A week that already has games is left alone. The old tables were
+    built from ESPN, so they spell teams ESPN's way — LAR, JAX, WSH,
+    TA&M — where Splash says LA, JAC, WAS, TAMU. Merging the two sources
+    into one week does not overwrite, it duplicates: seven extra games
+    appeared in week 4 that way, each one a second copy of a game
+    already there under the other spelling. Splash defines the week, so
+    once it has spoken the legacy rows have nothing to add.
     """
     have = {r[0] for r in conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table'")}
     if "slate" not in have or "picks" not in have:
         return 0, 0
+    already = {(s, w) for s, w in conn.execute(
+        "SELECT DISTINCT season, week FROM game")}
 
     games = picks = 0
     for season, week, matchup, eid in conn.execute(
             "SELECT season, week, matchup, event_id FROM slate"):
         codes = _codes(matchup)
-        if not codes:
+        if not codes or (season, week) in already:
             continue
         away, home = codes
         conn.execute(
@@ -445,7 +455,7 @@ def migrate_legacy(conn):
     for season, week, matchup, pick, result in conn.execute(
             "SELECT season, week, matchup, pick_abbr, result FROM picks"):
         codes = _codes(matchup)
-        if not codes:
+        if not codes or (season, week) in already:
             continue
         away, home = codes
         conn.execute(

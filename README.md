@@ -40,6 +40,7 @@ gridiron/
   model.py    probabilities, confidence, flips, the strategy dial
   store.py    schema, migration, GitHub sync
   view.py     cards and formatting
+  ingest.py   a pasted page in, a database write out
 streamlit_app.py   wiring only
 ```
 
@@ -109,6 +110,25 @@ is the polling loop.
 
 Needs an `NTFY_TOPIC` repo Actions secret matching the topic subscribed
 to in the [ntfy](https://ntfy.sh) app.
+
+## Loading a page from outside the app
+
+```bash
+python3 scripts/load.py 5 board.txt
+python3 scripts/load.py 4 matrix.txt standings.txt
+```
+
+Same function the paste bar calls (`gridiron/ingest.py`), so the two
+cannot drift. It is for the cases the app cannot cover: a page it will
+not parse, a week backfilled after the fact, or a page that arrived as
+an image and had to be transcribed.
+
+Weeks 3-5 are already loaded. Week 3 came from the old ESPN-keyed
+tables; weeks 4 and 5 came from Splash pages. Those two sources must
+never be merged into one week — the old tables spell teams ESPN's way
+(LAR, JAX, WSH, TA&M) where Splash says LA, JAC, WAS, TAMU, so merging
+does not overwrite, it duplicates. `migrate_legacy` now skips any week
+Splash has already defined.
 
 ## Tests
 
