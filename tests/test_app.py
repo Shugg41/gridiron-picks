@@ -332,4 +332,42 @@ assert any("week 4" in m for m in msg), msg
 assert games_in_week(5) == before5, "an old page overwrote the current week"
 print("a page pasted under the wrong week goes where the page says OK")
 
+# ── a deploy that adds a function must not break the page ──────────────
+# Streamlit Cloud re-reads the main script on every rerun but keeps
+# imported packages in sys.modules, so the new script can end up
+# calling the old module. That took the live app down on an
+# AttributeError the first time it happened.
+#
+# This has to modify the module the app genuinely imports — a copy in
+# the temp directory is not on its path and would prove nothing — so
+# the file is put back in a finally.
+import gridiron.store as _live                                 # noqa: E402
+
+_path = _live.__file__
+_original = open(_path).read()
+try:
+    with open(_path, "w") as fh:
+        fh.write(_original + "\n\ndef shipped_after_start():\n    return 42\n")
+    assert not hasattr(_live, "shipped_after_start"), \
+        "the loaded module already has it, so this proves nothing"
+
+    at5 = run()
+    boom(at5, "after a module changed under a running app")
+    assert hasattr(_live, "shipped_after_start"), \
+        "a rerun did not pick the new code up"
+    assert _live.shipped_after_start() == 42
+finally:
+    with open(_path, "w") as fh:
+        fh.write(_original)
+    import importlib                                           # noqa: E402
+    importlib.reload(_live)
+assert open(_path).read() == _original, "the source file was not restored"
+# reload() re-executes a module into its existing namespace, so it adds
+# and updates but never removes. A deploy that deletes or renames a
+# function would leave the old one reachable until the container
+# restarts — fine for adding, worth knowing before relying on it.
+assert hasattr(_live, "shipped_after_start"), \
+    "reload has started deleting attributes; the comment above is stale"
+print("a module changed under a running app is reloaded OK")
+
 print("\nALL APP TESTS PASS")

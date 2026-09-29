@@ -15,11 +15,46 @@ No per-game controls. Splash holds the picks, this holds the reasoning —
 which is also what keeps the page quick, since thirty games of buttons is
 thirty ways to trigger a rerun.
 """
+import importlib
 import os
 import sqlite3
 from datetime import datetime as _dt, timezone as _tz
 
 import streamlit as st
+
+import gridiron
+
+# Streamlit Cloud re-reads THIS file on every rerun but leaves already
+# imported packages sitting in sys.modules. So a push that adds a
+# function to gridiron/ can leave the new script calling the old
+# module, and the page that worked a minute ago dies on an
+# AttributeError with the message redacted. It did exactly that.
+#
+# Reloading only what has actually changed keeps the normal path free:
+# espn holds its odds cache at module level, and reloading it on every
+# rerun would throw that away and refetch, which is the slowness this
+# rebuild was meant to fix. reload() re-executes a module in place, so
+# every existing reference to it — including the ones inside ingest —
+# picks the new code up without being reloaded itself.
+#
+# Dependency order matters only for the modules that bind names at
+# import time, so leaf modules come first and ingest last.
+_MODULES = ("splash", "espn", "store", "model", "simulate", "view",
+            "watch", "ingest")
+_seen = getattr(gridiron, "_mtimes", None)
+if _seen is None:
+    _seen = gridiron._mtimes = {}
+for _name in _MODULES:
+    try:
+        _mod = importlib.import_module(f"gridiron.{_name}")
+        _when = os.path.getmtime(_mod.__file__)
+        if _seen.get(_name, _when) != _when:
+            importlib.reload(_mod)
+        _seen[_name] = _when
+    except Exception:
+        # A file caught mid-deploy is not worth taking the page down
+        # for; the next rerun tries again.
+        pass
 
 from gridiron import espn, ingest, model, simulate, splash, store, view, watch
 
