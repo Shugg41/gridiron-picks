@@ -22,6 +22,24 @@ def _match_pair(games, a, b):
 
 
 def load(conn, season, week, text):
+    """Store a pasted page, under the week the page itself names.
+
+    The week only falls back to the one asked for when the page does
+    not say. Otherwise an old page pasted without changing the week box
+    — which defaults to the current week — files its games under this
+    week, and nothing downstream can tell that it happened.
+    """
+    stated = splash.week_of(text)
+    moved = ""
+    if stated and stated != week:
+        moved = (f"  The page says week {stated}, not {week}, so it went "
+                 f"in as week {stated}.")
+        week = stated
+    level, message = _load(conn, season, week, text)
+    return level, message + moved
+
+
+def _load(conn, season, week, text):
     """Route a pasted page to its parser and store what came back.
 
     Returns (level, message) rather than drawing anything, so the caller

@@ -12,6 +12,8 @@ import shutil
 import sys
 import tempfile
 
+import sqlite3 as _sq
+
 import requests
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -122,6 +124,14 @@ def boom(at, label):
         sys.exit(1)
 
 
+def games_in_week(week):
+    db = _sq.connect(os.path.join(WORK, "football_picks.db"))
+    n = db.execute("SELECT COUNT(*) FROM game WHERE season=2026 AND week=?",
+                   (week,)).fetchone()[0]
+    db.close()
+    return n
+
+
 def cards(at):
     out = []
     for m in at.markdown:
@@ -157,7 +167,6 @@ assert [n for n, _t, _h in rows] == list(range(1, 13))
 
 # and they run in kickoff order, which is the order Splash lists the
 # board — the app and the page have to be scrollable side by side
-import sqlite3 as _sq
 _db = _sq.connect(os.path.join(WORK, "football_picks.db"))
 kicks = [k for (k,) in _db.execute(
     "SELECT kickoff FROM game WHERE season=2026 AND week=4 "
@@ -271,5 +280,18 @@ assert all("No line" in h or "No pick" in h or t for _n, t, h in blind)
 assert any("No lines right now" in c.value for c in at3.caption), \
     [c.value for c in at3.caption]
 print("ESPN down: all 12 games survive, the card is intact OK")
+
+# ── the week box is a default, not an instruction ──────────────────────
+# Pasting an older page without touching the week box would otherwise
+# file its games under the current week, silently. Last, because it
+# deliberately writes an old page's games into the database.
+before5 = games_in_week(5)
+at4 = run()
+at4 = paste(at4, ENTRY, week=5)          # ENTRY is week 4's page
+boom(at4, "after pasting an older page under the wrong week")
+msg = [x.value for x in at4.success] + [x.value for x in at4.warning]
+assert any("week 4" in m for m in msg), msg
+assert games_in_week(5) == before5, "an old page overwrote the current week"
+print("a page pasted under the wrong week goes where the page says OK")
 
 print("\nALL APP TESTS PASS")

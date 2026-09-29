@@ -7,6 +7,15 @@ Live app: https://shuggs-picks.streamlit.app
 
 ## How a week goes
 
+**Use the full page, not the in-game overlay.** The overlay (the one
+starting "Close") keeps the tiebreaker in a form field, and `innerText`
+cannot see a form field, so the total-score guess comes through blank.
+The full page (starting "Back to entries") renders it as text. Both
+parse; only one carries the tiebreaker.
+
+**The week comes off the page, not the box.** Every page names its
+week, so the number box is only a fallback for the pages that do not.
+
 1. **Paste the board.** Run the *Load into Picks* shortcut on the Splash
    page in Safari, paste into the app. Any of the five pages works — the
    board, your entry, Pick Distribution, Picks by Week, or the standings

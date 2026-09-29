@@ -156,6 +156,25 @@ assert [r.points for r in trows] == sorted((r.points for r in trows),
 assert trows[9].entry == "Kylefootball", trows[9]   # not always "Entry #1"
 print("tied placings survive, and so does the user's own row OK")
 
+# ── which week is this page about? ─────────────────────────────────────
+# The week is typed into a box that defaults to the current week, so an
+# old page pasted without changing it would file its games under this
+# one. Every page names its week; the app should read it rather than
+# trust the box.
+assert splash.week_of(BOARD) == 5, splash.week_of(BOARD)
+assert splash.week_of(WEEK1) == 1          # "CFB Week 1", no NFL that week
+assert splash.week_of(ENTRY) == 4
+# WEEK2's picker lists all 22 weeks, so 14 labels are on the page and
+# only the first game's date says which one is on screen
+assert WEEK2.count("CFB Week") > 10, "the fixture lost its week picker"
+assert splash.week_of(WEEK2) == 2, splash.week_of(WEEK2)
+# pages that genuinely do not say, and junk, come back as None
+assert splash.week_of(MATRIX) is None
+assert splash.week_of(TIED) is None        # standings span the season
+assert splash.week_of("") is None
+assert splash.week_of("CFB Week 3\nnot a date range") == 3
+print("the week comes off the page, even with 22 of them listed OK")
+
 # ── what the standings are actually FOR: how alive the season is ────────
 leader = rows[0].points
 gap = leader - me.points

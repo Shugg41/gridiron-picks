@@ -75,10 +75,12 @@ git(theirs, "config", "user.email", "app@test")
 git(theirs, "config", "user.name", "App")
 
 # ── loading without --push touches nothing outside the file ────────────
+# Asked for week 6, handed week 5's board: the page wins, and says so.
 r = load(mine, "6", "-")
 assert r.returncode == 0, r.stderr
 assert "36 games loaded" in r.stdout, r.stdout
-assert games(mine, 6) == 36
+assert "week 5, not 6" in r.stdout, r.stdout
+assert games(mine, 5) == 36 and games(mine, 6) == 0
 assert not git(mine, "log", "origin/main..HEAD", "--oneline"), \
     "a plain load must not commit anything"
 git(mine, "checkout", "--", "football_picks.db")     # put it back
@@ -89,7 +91,7 @@ write(theirs, "app_wrote_this")
 git(theirs, "commit", "-qam", "the app saved")
 git(theirs, "push", "-q")
 
-r = load(mine, "--push", "6", "-")
+r = load(mine, "--push", "5", "-")
 assert r.returncode == 0, r.stdout + r.stderr
 assert "pulled 1 commit" in r.stdout, r.stdout
 assert "pushed" in r.stdout, r.stdout
@@ -98,7 +100,7 @@ check = os.path.join(WORK, "check")
 git(WORK, "clone", "-q", remote, check)
 assert meta(check, "app_wrote_this") == "app_wrote_this", \
     "the app's write was flattened"
-assert games(check, 6) == 36, "the load never reached the remote"
+assert games(check, 5) == 36, "the load never reached the remote"
 print("--push pulls the app's write, then adds to it OK")
 
 # ── both wrote since: refuse, and change nothing ───────────────────────
@@ -109,15 +111,18 @@ git(theirs, "push", "-q")
 write(mine, "claude_wrote_here")
 git(mine, "commit", "-qam", "loaded by hand")
 
-r = load(mine, "--push", "7", "-")
+r = load(mine, "--push", "5", "-")
 assert r.returncode == 1, r.stdout
 assert "diverged" in r.stdout, r.stdout
-assert games(mine, 7) == 0, "it loaded anyway after refusing"
+# it refuses before opening the database, so the file is untouched too
+assert not git(mine, "status", "--porcelain", "--", "football_picks.db"), \
+    "it loaded anyway after refusing"
 
 after = os.path.join(WORK, "after")
 git(WORK, "clone", "-q", remote, after)
 assert meta(after, "app_wrote_again") == "app_wrote_again"
-assert games(after, 7) == 0, "week 7 reached the remote after a refusal"
+assert meta(after, "claude_wrote_here") is None, \
+    "the local commit reached the remote after a refusal"
 print("a diverged repo is refused, and nothing is loaded or lost OK")
 
 # ── re-loading the same page changes nothing at all ────────────────────
@@ -125,7 +130,7 @@ git(mine, "reset", "-q", "--hard", "HEAD~1")
 git(mine, "merge", "-q", "--ff-only", "origin/main", check=False)
 git(mine, "fetch", "-q", "origin", "main")
 git(mine, "merge", "-q", "--ff-only", "origin/main")
-load(mine, "6", "-")
+load(mine, "5", "-")
 assert not git(mine, "status", "--porcelain", "--", "football_picks.db"), \
     "re-loading an identical page rewrote the database"
 print("re-loading the same page is a no-op OK")

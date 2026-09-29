@@ -45,6 +45,9 @@ _RANKED = re.compile(r"^#\d{1,2}ranked\b")
 _POINTS = re.compile(r"^(\d+)\s+points?$", re.I)
 # A tied placing prints with a T in front of it: "T17".
 _RANK = re.compile(r"^(T?)(\d+)$")
+_WEEK_LABEL = re.compile(r"\bCFB Week (\d{1,2})\b")
+_RANGE = re.compile(r"^([A-Z][a-z]{2})\s+(\d{1,2})"
+                    r"(?:\s*-\s*([A-Z][a-z]{2})\s+(\d{1,2}))?$")
 _SCORELINE = re.compile(r"^(.+?)\s+(\d+)\s+@\s+(.+?)\s+(\d+)$")
 _MONTHS = {m: i for i, m in enumerate(
     ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -608,6 +611,60 @@ def distribution_from_matrix(games, entries):
         out.append(((away, tally[away], tally[away] / total),
                     (home, tally[home], tally[home] / total)))
     return out
+
+
+def week_of(text):
+    """Which week is this page about? The page says, so ask it.
+
+    Every page carries its week as a label — "NFL Week 4 | CFB Week 5",
+    or just "CFB Week 1" for a week with no NFL in it — and the CFB
+    number is the one this app counts by. The pick sheet and the
+    single-entry view carry exactly one label, so there is nothing to
+    work out.
+
+    The full page is harder: its week picker lists the whole season, so
+    twenty-two labels are present and only one of them is the week on
+    screen. Each is followed by its date range, though, and the games
+    below carry their own dates, so the first game's day settles it.
+
+    Returns the week number, or None when the page does not say —
+    which includes the bowl weeks, whose labels carry no CFB number.
+
+    Worth having because the alternative is the user typing the week
+    into a box that defaults to the current one. Pasting an old page
+    without changing it would file those games under this week, and
+    nothing downstream could tell.
+    """
+    lines = [l.strip() for l in text.splitlines()]
+    labelled = [(n, int(m.group(1)))
+                for n, l in enumerate(lines)
+                for m in [_WEEK_LABEL.search(l)] if m]
+    if not labelled:
+        return None
+    if len(labelled) == 1:
+        return labelled[0][1]
+
+    first = next((_DAY.match(l) for l in lines if _DAY.match(l)), None)
+    if not first:
+        return None
+    day = (_MONTHS.get(first.group(2)), int(first.group(3)))
+    if not day[0]:
+        return None
+    for n, week in labelled:
+        rng = _RANGE.match(lines[n + 1]) if n + 1 < len(lines) else None
+        if not rng:
+            continue
+        start = (_MONTHS.get(rng.group(1)), int(rng.group(2)))
+        end = ((_MONTHS.get(rng.group(3)), int(rng.group(4)))
+               if rng.group(3) else start)
+        if not start[0] or not end[0]:
+            continue
+        if start <= end:
+            if start <= day <= end:
+                return week
+        elif day >= start or day <= end:    # a range over the new year
+            return week
+    return None
 
 
 def sniff(text):
