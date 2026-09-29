@@ -51,6 +51,14 @@ def load(conn, season, week, text):
         if parsed.tiebreaker is not None:
             store.upsert(conn, "tiebreak", {"season": season, "week": week},
                          {"guess": parsed.tiebreaker})
+        if not parsed.games:
+            # Never report a load that found nothing as a load. A page
+            # whose shape has changed parses to zero games and would
+            # otherwise read as a clean, empty week.
+            return "warn", (f"That looks like a {kind} page but no games "
+                            f"came out of it — {len(text.splitlines())} lines "
+                            f"read. The shape has probably changed; it needs "
+                            f"looking at rather than re-pasting.")
         note = f"Week {week}: {len(parsed.games)} games loaded."
         if parsed.expected and parsed.expected != len(parsed.games):
             # The board states its own count, so a short parse can say so
@@ -80,6 +88,10 @@ def load(conn, season, week, text):
             (board_games[i][0], board_games[i][1], side[0], side[1], side[2],
              None)
             for i in range(len(board_games)) for side in dist[i]])
+        if not board_games:
+            return "warn", ("That looks like a Picks by Week page but no "
+                            "games came out of it — the shape has probably "
+                            "changed.")
         missed = sum(1 for p in (mine.picks if mine else []) if p[0] is None)
         note = f"Week {week}: {len(board_games)} games, {len(entries)} entries."
         if missed:

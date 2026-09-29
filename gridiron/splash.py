@@ -42,6 +42,7 @@ _KICK = re.compile(r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+"
 _STATUS = re.compile(r"^(FINAL|LIVE\b.*|Q[1-4]\b.*|HALF.*|OT.*)$", re.I)
 _RECORD = re.compile(r"^\d{1,2}-\d{1,2}(?:-\d{1,2})?$")
 _RANKED = re.compile(r"^#\d{1,2}ranked\b")
+_POINTS = re.compile(r"^(\d+)\s+points?$", re.I)
 _SCORELINE = re.compile(r"^(.+?)\s+(\d+)\s+@\s+(.+?)\s+(\d+)$")
 _MONTHS = {m: i for i, m in enumerate(
     ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -169,17 +170,18 @@ def parse_entry(text):
             i += 1
             continue
 
-        # a game is two codes in a row, so look for that and read backwards
-        if (is_code(line) and i + 1 < len(lines) and is_code(lines[i + 1])
-                and i >= 3):
-            g = _game_from(lines, i, day)
+        # A game ends in its two codes, so look for that block and read
+        # backwards from it. What sits between and after the codes —
+        # ranks, records, the points trailer — varies by page, so none
+        # of it is assumed.
+        sides = _two_sides(lines, i, tb_at) if is_code(line) and i >= 3 else None
+        if sides:
+            away_code, home_code, after = sides
+            g = _game_from(lines, i, day, away_code, home_code)
             if g:
-                pts = lines[i + 2] if i + 2 < len(lines) else ""
-                if pts in ("0", "1"):
-                    g.points = int(pts)
-                    i += 1
+                g.points, after = _points_at(lines, after)
                 entry.games.append(g)
-                i += 2
+                i = after
                 continue
         i += 1
 
@@ -195,10 +197,11 @@ def parse_entry(text):
     return entry
 
 
-def _game_from(lines, code_at, day):
-    """Build a game from the two code lines at `code_at`, reading back."""
-    away_code, home_code = lines[code_at], lines[code_at + 1]
+def _game_from(lines, code_at, day, away_code, home_code):
+    """Build a game from the codes block at `code_at`, reading back."""
     j = code_at - 1
+    if j >= 0 and _RANKED.match(lines[j]):
+        j -= 1                              # a rank above the first code
     status = ""
     if j >= 0 and _STATUS.match(lines[j]):
         status = lines[j]
@@ -297,6 +300,43 @@ def parse_board(text):
     return entry
 
 
+def _two_sides(lines, i, stop=None):
+    """Read "[#7ranked #7] CODE [2-1]" twice, starting at `i`.
+
+    Every page prints the two teams' codes this way and each shows a
+    different subset of the optional lines: the board has the records
+    and sometimes a rank, week 4's entry page had neither, week 1's had
+    both. Reading the optional parts rather than assuming them is what
+    lets one function serve all three — the alternative is a parser per
+    page, which is how this project got into trouble in the first place.
+
+    Returns (away_code, home_code, index_after) or None.
+    """
+    stop = len(lines) if stop is None else stop
+    j, codes = i, []
+    for _ in range(2):
+        if j < stop and _RANKED.match(lines[j]):
+            j += 1
+        if j >= stop or not is_code(lines[j]):
+            return None
+        codes.append(lines[j])
+        j += 1
+        if j < stop and _RECORD.match(lines[j]):
+            j += 1
+    return codes[0], codes[1], j
+
+
+def _points_at(lines, i):
+    """This entry's score for the game: "1", or "1 points" spelled out."""
+    for n in range(i, min(i + 2, len(lines))):
+        if lines[n] in ("0", "1"):
+            return int(lines[n]), n + 1
+        m = _POINTS.match(lines[n])
+        if m:
+            return int(m.group(1)), n + 1
+    return None, i
+
+
 def _board_game(lines, kick_at, day, stop, year=None):
     """Build a game from the kickoff line at `kick_at`.
 
@@ -311,19 +351,11 @@ def _board_game(lines, kick_at, day, stop, year=None):
             return None, kick_at
     # Team names can themselves look like codes — BYU plays TCU — so the
     # names are not checked against is_code, only the codes are.
-    j = kick_at + 1
-    side = []
-    for _ in range(2):
-        if j < stop and _RANKED.match(lines[j]):
-            j += 1
-        if j >= stop or not is_code(lines[j]):
-            return None, kick_at
-        code = lines[j]
-        j += 1
-        if j < stop and _RECORD.match(lines[j]):
-            j += 1                          # the record, when shown
-        side.append(code)
-    return Game(away=away, home=home, away_code=side[0], home_code=side[1],
+    sides = _two_sides(lines, kick_at + 1, stop)
+    if not sides:
+        return None, kick_at
+    away_code, home_code, j = sides
+    return Game(away=away, home=home, away_code=away_code, home_code=home_code,
                 day=day, kickoff=lines[kick_at],
                 kickoff_iso=_board_kickoff(day, lines[kick_at], year)), j
 

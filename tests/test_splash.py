@@ -19,6 +19,7 @@ DIST = open(os.path.join(HERE, "fixtures", "distribution_week4.txt")).read()
 STAND = open(os.path.join(HERE, "fixtures", "standings_week4.txt")).read()
 MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
 BOARD = open(os.path.join(HERE, "fixtures", "board_week5.txt")).read()
+WEEK1 = open(os.path.join(HERE, "fixtures", "entry_week1.txt")).read()
 
 # ── which page is this? ─────────────────────────────────────────────────
 assert splash.sniff(ENTRY) == "entry", splash.sniff(ENTRY)
@@ -250,6 +251,31 @@ print("a part-copied board keeps its stated count OK")
 assert len(splash.parse_board(ENTRY).games) < len(splash.parse_entry(ENTRY).games)
 assert len(splash.parse_entry(BOARD).games) < len(splash.parse_board(BOARD).games)
 print("board and entry pages stay told apart OK")
+
+# ── the same page, printed three different ways ────────────────────────
+# Week 1's entry page carries the records between the two codes, which
+# week 4's did not, and spells the score as "1 points" rather than "1".
+# It parsed to zero games — and reported that as a clean empty week.
+w1 = splash.parse_entry(WEEK1)
+assert len(w1.games) == 17, len(w1.games)
+assert sum(g.points or 0 for g in w1.games) == 15, "15-2 on the week"
+assert all(g.final and g.points is not None for g in w1.games)
+
+w1by = {(g.away_code, g.home_code): g for g in w1.games}
+# the two that were missed, recovered from the scoreline alone
+assert w1by[("COLO", "GT")].picked == "GT", "Colorado won it 14-13"
+assert w1by[("SJSU", "EMU")].picked == "EMU"
+assert w1by[("TOL", "MSU")].picked == "MSU"
+# ranks appear above either code, or the first one, or neither
+assert w1by[("FRES", "USC")].home == "USC"          # rank on the home side
+assert w1by[("MIA", "STAN")].away == "Miami (FL)"   # rank on the away side
+assert w1by[("BSU", "ORE")].away == "Boise State"   # both ranked
+assert w1by[("M-OH", "PITT")].away == "Miami (OH)"  # a hyphen in the code
+assert w1by[("UNLV", "HAW")].home == "Hawai'i"
+assert w1.games[0].day == "Thursday, Sep 3"
+assert w1.games[-1].day == "Monday, Sep 7"
+assert w1.tiebreaker is None, "the total-score box was left empty"
+print("week 1's entry page — records, ranks, spelled-out points — OK")
 
 # ── nothing here may raise on junk ──────────────────────────────────────
 for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
