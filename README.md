@@ -111,17 +111,29 @@ is the polling loop.
 Needs an `NTFY_TOPIC` repo Actions secret matching the topic subscribed
 to in the [ntfy](https://ntfy.sh) app.
 
-## Loading a page from outside the app
+## Handing a page to Claude instead
 
 ```bash
 python3 scripts/load.py 5 board.txt
-python3 scripts/load.py 4 matrix.txt standings.txt
+python3 scripts/load.py --push 5 -          # page on stdin, committed
+python3 scripts/load.py --push 4 matrix.txt standings.txt
 ```
 
 Same function the paste bar calls (`gridiron/ingest.py`), so the two
-cannot drift. It is for the cases the app cannot cover: a page it will
-not parse, a week backfilled after the fact, or a page that arrived as
-an image and had to be transcribed.
+cannot drift. Paste the page into a session and it gets loaded here —
+including a page the app will not parse, a week backfilled after the
+fact, or a page that arrived as an image, which a session can read and
+the app cannot.
+
+`--push` is the part that matters, because this database lives in the
+repo and a load that is not committed dies with the container. It pulls
+whatever the app has written first and refuses outright if both have
+written since, rather than picking a winner — a binary file has no merge
+and guessing is how a week disappears.
+
+**The app still has to stand alone.** Nothing at noon on a Saturday can
+wait on a session being open, so the paste bar, the card and all four
+alerts work with nobody here.
 
 Weeks 3-5 are already loaded. Week 3 came from the old ESPN-keyed
 tables; weeks 4 and 5 came from Splash pages. Those two sources must
