@@ -172,6 +172,21 @@ def save_games(conn, season, week, games, links=None):
     return n
 
 
+def missing_picks(conn, season, week):
+    """Games Splash has stated outright were never picked.
+
+    Only the Picks by Week page says this; the entry page cannot. A
+    game you did not pick prints there as "0 points", exactly like a
+    game you picked wrong, so reading the entry page back would invent
+    a pick for it — and it would look like an ordinary loss forever
+    after. A recorded row with no team is that statement, and it is not
+    to be overwritten by a page that cannot make it.
+    """
+    return {(a, h) for a, h in conn.execute(
+        "SELECT away_code, home_code FROM entry "
+        "WHERE season=? AND week=? AND team IS NULL", (season, week))}
+
+
 def save_entry(conn, season, week, games):
     """Record what was actually picked, from the Splash entry or matrix.
 

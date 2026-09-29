@@ -69,6 +69,14 @@ missing = [k for k, (team, _r) in ent.items() if team is None]
 assert missing == [("ATL", "GB")], missing
 print("a missing pick is recorded as one, not left out OK")
 
+# and it stays one. The entry page prints an unpicked game as "0
+# points", identical to a game picked wrong, so reading that page back
+# would invent a pick and turn a blank into an ordinary loss.
+assert store.missing_picks(conn, 2026, 4) == {("ATL", "GB")}, \
+    store.missing_picks(conn, 2026, 4)
+assert store.missing_picks(conn, 2026, 9) == set()
+print("a missing pick can be told apart from a wrong one OK")
+
 # ── proposals stay apart from what was entered ──────────────────────────
 store.save_proposals(conn, 2026, 4, [("UCLA", "MD", "UCLA", "line"),
                                      ("ATL", "GB", "GB", "line")])

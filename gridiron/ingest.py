@@ -46,6 +46,13 @@ def load(conn, season, week, text):
                  "team": g.picked,
                  "result": None if g.points is None else
                  ("W" if g.points else "L")} for g in parsed.games]
+        # A pick read off an entry page is inferred from the scoreline;
+        # a pick read off the Picks by Week page is stated. So the
+        # weaker source never overwrites the stronger one where the
+        # stronger one has already spoken.
+        never = store.missing_picks(conn, season, week)
+        rows = [r for r in rows
+                if (r["away_code"], r["home_code"]) not in never]
         if any(r["team"] for r in rows):
             store.save_entry(conn, season, week, rows)
         if parsed.tiebreaker is not None:
