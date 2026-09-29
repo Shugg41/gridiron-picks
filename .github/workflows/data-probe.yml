@@ -15,3 +15,8 @@ jobs:
       - uses: actions/checkout@v4
       # stdlib only: the point is to learn what a plain client is served
       - run: python scripts/probe_espn.py
+      # Separate question, same "probe before you build" rule: can the
+      # scoreboard be asked for a date range, and does site.api answer a
+      # runner at all once it stops announcing itself as a script.
+      - run: python scripts/probe_dates.py
+        if: always()
