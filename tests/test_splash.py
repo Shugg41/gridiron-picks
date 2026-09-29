@@ -20,6 +20,7 @@ STAND = open(os.path.join(HERE, "fixtures", "standings_week4.txt")).read()
 MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
 BOARD = open(os.path.join(HERE, "fixtures", "board_week5.txt")).read()
 WEEK1 = open(os.path.join(HERE, "fixtures", "entry_week1.txt")).read()
+WEEK2 = open(os.path.join(HERE, "fixtures", "entry_week2.txt")).read()
 
 # ── which page is this? ─────────────────────────────────────────────────
 assert splash.sniff(ENTRY) == "entry", splash.sniff(ENTRY)
@@ -276,6 +277,27 @@ assert w1.games[0].day == "Thursday, Sep 3"
 assert w1.games[-1].day == "Monday, Sep 7"
 assert w1.tiebreaker is None, "the total-score box was left empty"
 print("week 1's entry page — records, ranks, spelled-out points — OK")
+
+# ── a week where every game is graded ──────────────────────────────────
+# The only page so far with nothing left to play, so it is the one that
+# proves the pick can be recovered from the scoreline on every game
+# rather than on most of them. It also carries the whole season's week
+# list as furniture above the games, which must not parse as anything.
+assert splash.sniff(WEEK2) == "entry", splash.sniff(WEEK2)
+w2 = splash.parse_entry(WEEK2)
+assert len(w2.games) == 32, len(w2.games)
+assert all(g.final for g in w2.games), "every game was final on this page"
+assert all(g.picked for g in w2.games), "a pick could not be recovered"
+assert sum(g.points or 0 for g in w2.games) == 20, "20-12 on the week"
+assert (w2.rank, w2.points, w2.tiebreaker) == (17, 71, 44), \
+    (w2.rank, w2.points, w2.tiebreaker)
+w2by = {(g.away_code, g.home_code): g for g in w2.games}
+assert w2by[("NE", "SEA")].picked == "SEA"          # Seattle won 13-10
+assert w2by[("SF", "LA")].picked == "LA"            # took the loser
+assert w2by[("OSU", "TEX")].picked == "OSU"         # Texas won it 24-23
+assert w2by[("NO", "DET")].picked == "DET"
+assert len({(g.away_code, g.home_code) for g in w2.games}) == 32
+print("week 2: 32 games, every pick recovered, 20-12 OK")
 
 # ── nothing here may raise on junk ──────────────────────────────────────
 for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
