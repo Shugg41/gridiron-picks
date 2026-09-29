@@ -209,8 +209,9 @@ with st.expander("Paste from Splash", expanded=not games):
     if go and text.strip():
         try:
             level, message = load_paste(text, int(wk))
-            if level == "ok":
-                save()
+            # Sync on a warning too. A partial load is still a load, and
+            # leaving it unpushed means it dies with the container.
+            save()
             st.session_state["note"] = (level, message)
             st.rerun()
         except Exception as exc:

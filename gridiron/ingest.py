@@ -122,8 +122,17 @@ def load(conn, season, week, text):
         rows, size = splash.parse_standings(text)
         store.save_standings(conn, season, None, rows)
         me = next((r for r in rows if r.me), None)
-        return "ok", (f"Standings loaded — {len(rows)} of {size} entries"
-                      + (f", you are {me.rank} on {me.points}." if me else "."))
+        note = f"Standings loaded — {len(rows)} of {size} entries"
+        note += f", you are {me.rank} on {me.points}." if me else "."
+        if not me or len(rows) < size:
+            # The strategy dial reads one row out of this page: yours.
+            # A row that fails to parse takes the dial with it, and the
+            # app would otherwise just say it had loaded the standings.
+            return "warn", (note + "  Your own row is missing."
+                            if not me else
+                            note + f"  {size - len(rows)} row(s) did not "
+                                   f"parse — the page shape may have changed.")
+        return "ok", note
 
     return "warn", ("Couldn't tell which page that is — paste the whole page "
                     "rather than a selection.")

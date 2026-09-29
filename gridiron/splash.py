@@ -43,6 +43,8 @@ _STATUS = re.compile(r"^(FINAL|LIVE\b.*|Q[1-4]\b.*|HALF.*|OT.*)$", re.I)
 _RECORD = re.compile(r"^\d{1,2}-\d{1,2}(?:-\d{1,2})?$")
 _RANKED = re.compile(r"^#\d{1,2}ranked\b")
 _POINTS = re.compile(r"^(\d+)\s+points?$", re.I)
+# A tied placing prints with a T in front of it: "T17".
+_RANK = re.compile(r"^(T?)(\d+)$")
 _SCORELINE = re.compile(r"^(.+?)\s+(\d+)\s+@\s+(.+?)\s+(\d+)$")
 _MONTHS = {m: i for i, m in enumerate(
     ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -438,7 +440,7 @@ def parse_distribution(text):
 
 @dataclass
 class Standing:
-    rank: int = 0
+    rank: str = ""                      # "16", or "T17" when tied
     name: str = ""
     entry: str = ""
     points: int = 0
@@ -480,15 +482,18 @@ def parse_standings(text):
         j = i - 3
         if j >= 0 and len(lines[j]) == 1 and lines[j].isalpha() and lines[j].isupper():
             j -= 1                      # the avatar initial, when present
-        rank = _int(lines[j]) if j >= 0 else None
+        rank = _RANK.match(lines[j]) if j >= 0 else None
         if rank is None:
             continue
         rows.append(Standing(
-            rank=rank, name=name.replace(" You", "").strip(), entry=lines[i - 1],
+            rank=lines[j], name=name.replace(" You", "").strip(), entry=lines[i - 1],
             points=_int(pts), wins=_int(wl.group(1)), losses=_int(wl.group(2)),
             ties=_int(wl.group(3)) or 0, tie_diff=_int(diff),
             me=name.endswith("You") or " You" in name))
-    rows.sort(key=lambda r: r.rank)
+    # Sort on the number, keep the "T" for display: two entries on the
+    # same points share a placing, and dropping the T would print two
+    # seventeenths as though one of them were eighteenth.
+    rows.sort(key=lambda r: int(_RANK.match(r.rank).group(2)))
     size = re.search(r"All entries\s*(\d+)", text)
     return rows, (_int(size.group(1)) if size else len(rows))
 

@@ -115,26 +115,46 @@ print("entry page omits unpicked games — reconcile against the board OK")
 rows, size = splash.parse_standings(STAND)
 assert size == 38, size
 assert len(rows) == 8, len(rows)          # the fixture is trimmed to 8 shapes
-assert [r.rank for r in rows] == sorted(r.rank for r in rows)
+# ranks are kept as printed, so order is checked on the number
+assert ([int(r.rank.lstrip("T")) for r in rows]
+        == sorted(int(r.rank.lstrip("T")) for r in rows))
 
 top = rows[0]
-assert (top.rank, top.name, top.points) == (1, "KB-778", 70), top
+assert (top.rank, top.name, top.points) == ("1", "KB-778", 70), top
 assert (top.wins, top.losses, top.tie_diff) == (70, 20, 18), top
 
 mine = [r for r in rows if r.me]
 assert len(mine) == 1, mine
 me = mine[0]
-assert (me.rank, me.name, me.points) == (16, "MJSMITH1642", 63), me
+assert (me.rank, me.name, me.points) == ("16", "MJSMITH1642", 63), me
 assert me.tie_diff == 21, me
 assert "You" not in me.name, "the marker should be stripped from the name"
 
 # rows with no avatar initial, and the same entrant twice under different
 # entry names — both real shapes on the page, both easy to get wrong
-no_avatar = [r for r in rows if r.rank == 6][0]
+no_avatar = [r for r in rows if r.rank == "6"][0]
 assert no_avatar.name == "Godfather-CFP", no_avatar
 twice = [r for r in rows if r.name == "toddbuckeye"]
 assert len(twice) == 2 and {t.entry for t in twice} == {"Kylefootball", "Toddfootballc"}
 print("standings page OK")
+
+# ── a tied placing prints with a T, and used to vanish ────────────────
+# Two entries level on points share a rank: "T17". The rank was read as
+# an integer, so every tied row was dropped — four of them on the real
+# page, one of which was the user's own, which is the single row the
+# strategy dial reads. It reported "34 of 38" and carried on.
+TIED = open(os.path.join(HERE, "fixtures", "standings_tied.txt")).read()
+trows, tsize = splash.parse_standings(TIED)
+assert (len(trows), tsize) == (38, 38), (len(trows), tsize)
+tme = next(r for r in trows if r.me)
+assert (tme.rank, tme.points, tme.tie_diff) == ("T17", 71, 29), tme
+assert tme.name == "MJSMITH1642" and (tme.wins, tme.losses) == (71, 34)
+assert [r.rank for r in trows[:3]] == ["1", "2", "3"]
+assert [r.rank for r in trows[16:18]] == ["T17", "T17"], "a tie was renumbered"
+assert [r.points for r in trows] == sorted((r.points for r in trows),
+                                           reverse=True), "not in rank order"
+assert trows[9].entry == "Kylefootball", trows[9]   # not always "Entry #1"
+print("tied placings survive, and so does the user's own row OK")
 
 # ── what the standings are actually FOR: how alive the season is ────────
 leader = rows[0].points
