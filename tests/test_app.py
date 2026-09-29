@@ -189,6 +189,13 @@ lost = [h for _n, _t, h in cards(at) if "card lost" in h]
 assert (len(won), len(lost)) == (4, 3), (len(won), len(lost))
 print(f"{len(won)} won, {len(lost)} lost carried over from Splash OK")
 
+# the season line, and the game that was never picked kept visible in it
+season = [m.value for m in at.markdown if "Season " in m.value]
+assert season, "no season record rendered"
+assert "4-3" in season[0], season[0]
+assert "1 never picked" in season[0] and "4-4" in season[0], season[0]
+print("season record shows both the pick record and Splash's OK")
+
 # ── the simulation, now that the field is loaded ───────────────────────
 import sqlite3 as _sq2                                         # noqa: E402
 _d = _sq2.connect(os.path.join(WORK, "football_picks.db"))

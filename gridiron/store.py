@@ -172,6 +172,22 @@ def save_games(conn, season, week, games, links=None):
     return n
 
 
+def season_record(conn, season):
+    """(won, lost, never_picked) across every week loaded.
+
+    The three are kept apart because the pool and the picker want
+    different numbers out of them. Splash scores a game you never
+    picked as a loss — since this season it no longer autopicks the
+    favorite for you — so its record is won-(lost + never). How good
+    the picks were is won-lost, over the games actually picked. Both
+    are true; neither alone is.
+    """
+    row = conn.execute(
+        "SELECT SUM(result='W'), SUM(result='L'), SUM(team IS NULL) "
+        "FROM entry WHERE season=?", (season,)).fetchone()
+    return tuple(int(x or 0) for x in row)
+
+
 def missing_picks(conn, season, week):
     """Games Splash has stated outright were never picked.
 

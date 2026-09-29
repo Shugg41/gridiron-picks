@@ -44,6 +44,20 @@ gridiron/
 streamlit_app.py   wiring only
 ```
 
+## A game you never picked
+
+Splash scores an unpicked game as a loss. It no longer autopicks the
+favorite for you, which used to make a missed game a coin flip you
+mostly won; now it is a certain nought. That raises the stakes on the
+early-lock alert more than anything else here.
+
+It also means two records are true at once, so both are shown: the
+pick record over the games actually picked, and Splash's, which counts
+the blanks as losses. Only the Picks by Week page states that a game
+was never picked — the entry page prints it as "0 points", identical
+to a game picked wrong — so a page that cannot make that distinction
+is never allowed to overwrite one that has.
+
 ## The strategy dial
 
 The weekly prize is winner-take-all; the season pays several places. So

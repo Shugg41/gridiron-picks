@@ -163,6 +163,18 @@ if games:
         bits.append(f"{len(entry) - unpicked} of {len(games)} entered")
     st.markdown(f"<div class='gp-sub'>{' · '.join(bits)}</div>",
                 unsafe_allow_html=True)
+_won, _lost, _never = store.season_record(conn, SEASON)
+if _won or _lost:
+    _pct = 100 * _won / max(1, _won + _lost)
+    _rec = f"Season {_won}-{_lost} ({_pct:.0f}%)"
+    if _never:
+        # Splash scores an unpicked game as a loss now — it no longer
+        # autopicks the favorite — so its number and the pick record
+        # differ, and hiding either one flatters or punishes unfairly.
+        _rec += (f" · {_never} never picked, which Splash counts as "
+                 f"{'a loss' if _never == 1 else 'losses'}: "
+                 f"{_won}-{_lost + _never}")
+    st.markdown(f"<div class='gp-sub'>{_rec}</div>", unsafe_allow_html=True)
 st.markdown(f"<div class='gp-mode'>{strat.why}</div>", unsafe_allow_html=True)
 
 # A successful paste ends in st.rerun(), which wipes anything written

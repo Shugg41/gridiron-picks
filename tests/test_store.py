@@ -77,6 +77,14 @@ assert store.missing_picks(conn, 2026, 4) == {("ATL", "GB")}, \
 assert store.missing_picks(conn, 2026, 9) == set()
 print("a missing pick can be told apart from a wrong one OK")
 
+# the pool and the picker want different numbers out of the same rows
+store.save_entry(conn, 2026, 4, [{"away_code": "AA", "home_code": "BB",
+                                  "team": "AA", "result": "W"}])
+won, lost, never = store.season_record(conn, 2026)
+assert (won, never) == (5, 1), (won, lost, never)   # 4 from the matrix + AA
+assert store.season_record(conn, 1999) == (0, 0, 0)
+print("season record keeps won, lost and never-picked apart OK")
+
 # ── proposals stay apart from what was entered ──────────────────────────
 store.save_proposals(conn, 2026, 4, [("UCLA", "MD", "UCLA", "line"),
                                      ("ATL", "GB", "GB", "line")])

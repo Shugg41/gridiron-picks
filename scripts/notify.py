@@ -184,7 +184,8 @@ def locksoon(conn, now=None):
         return
     hrs = max(1, round((soonest - now).total_seconds() / 3600))
     send(f"Early game locks in ~{hrs}h",
-         f"Week {week}: no pick yet on " + "; ".join(due),
+         f"Week {week}: no pick yet on " + "; ".join(due)
+         + ". An unpicked game is a straight loss now, not an autopick.",
          tags="alarm_clock,football")
 
 
