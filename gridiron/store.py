@@ -218,6 +218,12 @@ def save_entry(conn, season, week, games):
                keep=("result",))
 
 
+def has_proposals(conn, season, week):
+    return bool(conn.execute(
+        "SELECT 1 FROM proposal WHERE season=? AND week=? LIMIT 1",
+        (season, week)).fetchone())
+
+
 def save_proposals(conn, season, week, picks):
     """What the app recommended, kept apart from what was entered — which
     is the only way to answer whether the advice is any good."""

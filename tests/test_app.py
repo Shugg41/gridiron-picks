@@ -40,6 +40,9 @@ TEAMS = {
     "LAC": ("Los Angeles", "Chargers"), "BUF": ("Buffalo", "Bills"),
     "ARI": ("Arizona", "Cardinals"), "SF": ("San Francisco", "49ers"),
     "PHI": ("Philadelphia", "Eagles"), "CHI": ("Chicago", "Bears"),
+    # week 5, so the current week has lines like the live app will
+    "PIT": ("Pittsburgh", "Steelers"), "CLE": ("Cleveland", "Browns"),
+    "DEN": ("Denver", "Broncos"), "NYG": ("New York", "Giants"),
 }
 # away, home, spread, over/under — three deliberately near coin flips
 SLATE = [
@@ -50,6 +53,15 @@ SLATE = [
     ("SEA", "WSH", "SEA -6", None), ("LAC", "BUF", "BUF -5", None),
     ("ARI", "SF", "SF -3", None), ("PHI", "CHI", "PHI -5.5", 44.5),
 ]
+# Week 5 kicks in October, so that week is still open — which is what
+# lets the app record its own advice for it without being asked.
+# Kickoffs match the real board, because ESPN's timestamp is preferred
+# over the one derived from the page and inventing a different one here
+# would only be testing the fake.
+WEEK5 = [("PIT", "CLE", "PIT -5.5", 41.5, "2026-10-02T00:15Z"),
+         ("ARI", "NYG", "ARI -1.5", 42.5, "2026-10-04T17:00Z"),
+         ("LAC", "SEA", "SEA -2.5", 43.5, "2026-10-04T20:25Z"),
+         ("DEN", "SF", "SF -3", 44.5, "2026-10-04T20:25Z")]
 
 
 def _team(code):
@@ -71,6 +83,14 @@ def _events():
                 dict(homeAway="home", score=None, team=_team(h)),
                 dict(homeAway="away", score=None, team=_team(a))],
                 "odds": [odds]}]})
+    for i, (a, h, details, ou, when) in enumerate(WEEK5):
+        out.append({
+            "id": f"w5-{i}", "date": when,
+            "status": {"type": {"completed": False, "shortDetail": ""}},
+            "competitions": [{"competitors": [
+                dict(homeAway="home", score=None, team=_team(h)),
+                dict(homeAway="away", score=None, team=_team(a))],
+                "odds": [{"details": details, "overUnder": ou}]}]})
     return out
 
 
@@ -259,6 +279,24 @@ assert view.lock_time(k5[0]).isoformat().startswith("2026-10-02T00:15"), \
 assert view.lock_time(k5[-1]).isoformat().startswith("2026-10-03T16:00"), \
     view.lock_time(k5[-1])
 print(f"the real Week 5 board: {len(fresh)} cards, dated and in order OK")
+
+# ── the advice records itself ──────────────────────────────────────────
+# It used to need a button press. Miss it and the week's advice is gone
+# for good, and the one thing the user asked to be able to answer — is
+# this working — has nothing to answer with.
+def proposals(week):
+    db = _sq.connect(os.path.join(WORK, "football_picks.db"))
+    n = db.execute("SELECT COUNT(*) FROM proposal WHERE season=2026 "
+                   "AND week=?", (week,)).fetchone()[0]
+    db.close()
+    return n
+
+
+assert proposals(5) > 0, "the week's advice was never recorded"
+# and week 4 is over and already entered, so no advice is invented for
+# it after the fact — that would read as though the app had called it
+assert proposals(4) == 0, "advice was recorded for a week already played"
+print(f"{proposals(5)} proposals recorded, none back-dated OK")
 
 # ── ESPN being unreachable must not cost a single game ──────────────────
 def dead(url, params=None, **kw):

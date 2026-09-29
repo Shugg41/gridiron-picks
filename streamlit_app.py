@@ -379,12 +379,22 @@ if not entry:
     st.code(view.copy_list(numbered, tb), language=None)
     if tb:
         st.caption(f"Tiebreaker {tb} is the Vegas total on the last game.")
-    if st.button("Save these as this week's proposal", width="stretch"):
-        store.save_proposals(conn, SEASON, week,
-                             [(p.away, p.home, p.team, p.basis)
-                              for p in picks if p.team])
+    # Recorded on its own the first time the week is looked at, because
+    # a proposal that depends on remembering to press a button is a
+    # proposal that will be missing on the week it mattered — and then
+    # "is the advice working" has nothing to answer with. The button is
+    # for pinning a later, better version once the lines have moved.
+    _proposed = [(p.away, p.home, p.team, p.basis) for p in picks if p.team]
+    if _proposed and not store.has_proposals(conn, SEASON, week):
+        store.save_proposals(conn, SEASON, week, _proposed)
         save()
-        st.success("Saved. Paste your entry back once they're in Splash.")
+    if st.button("Update the recorded proposal", width="stretch"):
+        store.save_proposals(conn, SEASON, week, _proposed)
+        save()
+        st.success("Updated. Paste your entry back once they're in Splash.")
+    else:
+        st.caption("This week's advice is already recorded, so the tracker "
+                   "can score it later. Update it if the lines have moved.")
 
 # ── how it actually went ────────────────────────────────────────────────
 with st.expander("How the week went"):
