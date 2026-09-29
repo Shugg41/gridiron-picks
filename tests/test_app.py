@@ -385,4 +385,32 @@ assert hasattr(_live, "shipped_after_start"), \
     "reload has started deleting attributes; the comment above is stale"
 print("a module changed under a running app is reloaded OK")
 
+# ── a deploy that replaces the database file ───────────────────────────
+# A deploy checks out a fresh football_picks.db, and the cached
+# connection goes on reading the file it opened — now unlinked. The
+# live app served a week-4, 31-13 season out of a database holding
+# five weeks and 71-33, and no commit could ever reach it.
+_dbp = os.path.join(WORK, "football_picks.db")
+_replacement = os.path.join(WORK, "replacement.db")
+from gridiron import splash as _splash, store as _store          # noqa: E402
+
+_fresh = _store.connect(_replacement)
+_store.save_games(_fresh, 2026, 9,
+                  [_splash.Game(away_code="AAA", home_code="BBB")])
+_fresh.commit()
+_fresh.close()
+os.replace(_replacement, _dbp)          # a new inode, as a checkout gives
+
+at7 = run()
+boom(at7, "after the database file was replaced")
+# The replacement holds one week, so there is no week selector — the
+# header is where it shows. Reading the old file would still say Week 5.
+# match the div, not the stylesheet — the CSS block contains
+# ".gp-head" too, and picking [0] gets you the stylesheet
+head = [m.value for m in at7.markdown if "<div class='gp-head'>" in m.value]
+assert head and "Week 9" in head[0], \
+    f"the app is still reading the file it opened: {head}"
+assert not at7.selectbox, "the replacement has only one week"
+print("a replaced database file is reopened, not read from the grave OK")
+
 print("\nALL APP TESTS PASS")

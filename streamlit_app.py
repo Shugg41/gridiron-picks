@@ -88,17 +88,44 @@ def _sync():
     return store.Sync(secret("GITHUB_REPO"), secret("GITHUB_TOKEN"), db_path=DB)
 
 
+def _db_identity():
+    """Which file, not which contents.
+
+    A deploy replaces football_picks.db with a fresh checkout, and the
+    open connection keeps reading the file it opened — now unlinked, so
+    the app serves a database from whenever the container started and
+    nothing anybody commits ever reaches it. This was live: the page
+    showed week 4 and a 31-13 season out of a database that had five
+    weeks and 71-33 in it.
+
+    Keyed on the inode rather than mtime or size, so the app's own
+    writes — which change contents but not identity — do not cause a
+    pointless reopen on every rerun.
+    """
+    try:
+        st_ = os.stat(DB)
+        return st_.st_dev, st_.st_ino
+    except OSError:
+        return None
+
+
 @st.cache_resource
-def _conn():
+def _conn(identity):
     """Opened through the sync, so a write made outside the running app —
     by Claude, in a session — is picked up instead of ignored until the
-    next restart."""
+    next restart.
+
+    `identity` is unused in the body and must stay spelled without a
+    leading underscore: Streamlit leaves underscore-prefixed arguments
+    out of the cache key, so naming it `_identity` silently disabled
+    the whole mechanism.
+    """
     conn = store.open_synced(DB, _sync())
     store.migrate_legacy(conn)
     return conn
 
 
-sync, conn = _sync(), _conn()
+sync, conn = _sync(), _conn(_db_identity())
 
 
 def save():
@@ -358,7 +385,15 @@ def check_for_changes():
     return changes
 
 
-moves = check_for_changes()
+try:
+    moves = check_for_changes()
+except Exception as _exc:
+    # Late-change alerts are a convenience. Whatever goes wrong in
+    # there, it must not be what stands between the user and the card
+    # an hour before a deadline — which is exactly what it did.
+    moves = []
+    st.caption(f"Late-change watch is off this load "
+               f"({type(_exc).__name__}: {_exc}).")
 if moves:
     st.warning("**Since you picked:**\n\n"
                + "\n".join(f"- {c}" for c in moves))
