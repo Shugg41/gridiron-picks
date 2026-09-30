@@ -62,30 +62,35 @@ def _get(url, params=None, timeout=15):
 ET = ZoneInfo("America/New_York")
 
 
-def window(kickoffs, pad=1):
-    """ESPN's YYYYMMDD-YYYYMMDD range for a set of kickoff timestamps.
+def window(kickoffs, pad=1, cap=10):
+    """The ESPN days a set of kickoffs falls on, as YYYYMMDD strings.
 
-    Built in Eastern rather than UTC, which is the whole point: a
-    Thursday 8:15pm kickoff is stored as Friday 00:15Z, so a range
-    taken straight off the timestamps starts a day late and excludes
-    the game that locks first.
+    Days rather than one range: ESPN answers a hyphenated range with
+    an HTTP error. One call per day is more requests, but they are
+    cached and there are only ever a handful.
 
-    Padded by a day at each end. Extra events cost nothing — link()
-    needs both codes to match and claims each event at most once, so a
-    wider net cannot invent a game — while a range one day short
-    silently drops one.
+    Worked out in Eastern rather than UTC, which is the point of doing
+    it at all. A Thursday 8:15pm kickoff is stored as Friday 00:15Z,
+    so the day taken straight off the timestamp is the wrong day — and
+    the game it loses is the one that locks first.
+
+    Padded by a day at each end, because extra events cost nothing:
+    link() needs both codes to match and claims each event at most
+    once, so a wider net cannot invent a game. `cap` stops a bad
+    kickoff from turning this into a year of requests.
     """
     days = []
     for k in kickoffs:
         try:
             days.append(datetime.fromisoformat(
-                str(k).replace("Z", "+00:00")).astimezone(ET))
+                str(k).replace("Z", "+00:00")).astimezone(ET).date())
         except (ValueError, TypeError):
             continue
     if not days:
-        return None
-    return (f"{(min(days) - timedelta(days=pad)):%Y%m%d}-"
-            f"{(max(days) + timedelta(days=pad)):%Y%m%d}")
+        return []
+    first, last = min(days) - timedelta(days=pad), max(days) + timedelta(days=pad)
+    span = (last - first).days + 1
+    return [f"{first + timedelta(days=n):%Y%m%d}" for n in range(min(span, cap))]
 
 
 def scoreboard(league, dates=None, ttl=900):
@@ -96,10 +101,12 @@ def scoreboard(league, dates=None, ttl=900):
     holds the games that just finished, so a board full of next
     weekend's games matches nothing and every card reads "no line".
 
-    `dates` is ESPN's own YYYYMMDD-YYYYMMDD range, and it is in their
-    local reckoning rather than UTC — a Thursday night game is Friday
-    in UTC, so a range built from stored timestamps misses the game
-    that locks first. The caller pads it.
+    `dates` is a single ESPN day, YYYYMMDD, in their local reckoning
+    rather than UTC — a Thursday night game is Friday in UTC, so a day
+    taken off a stored timestamp is the wrong day. A hyphenated range
+    was tried first and ESPN answers it with an HTTP error, which only
+    the live app could discover: this endpoint refuses GitHub's
+    runners whatever User-Agent they present.
     """
     def build():
         params = {"limit": 400}

@@ -137,7 +137,7 @@ def save():
 
 
 @st.cache_data(ttl=900, show_spinner=False)
-def scoreboard(dates=None):
+def scoreboard(dates=()):
     """Both leagues, and whatever went wrong, as a value.
 
     The failure is returned rather than stashed in session_state: a
@@ -151,18 +151,33 @@ def scoreboard(dates=None):
     shipping it; a union cannot do worse than the default alone, which
     makes that untestability survivable rather than a gamble.
     """
-    windows = [None] if dates is None else [None, dates]
     out, seen, failed = [], set(), []
     for league in ("CFB", "NFL"):
-        for window in windows:
+        got, why = 0, None
+        for day in [None] + list(dates or []):
             try:
-                for event in espn.scoreboard(league, window):
+                for event in espn.scoreboard(league, day):
+                    got += 1
                     if event["event_id"] not in seen:
                         seen.add(event["event_id"])
                         out.append(event)
             except Exception as exc:
-                failed.append(f"{league}: {type(exc).__name__}")
-    return out, ", ".join(sorted(set(failed)))
+                why = why or _why(exc)
+        # Only a league that produced nothing at all is a failure. The
+        # per-day calls are an extra reach for games the default
+        # payload has not got to yet, and one of them failing while
+        # the lines are on screen anyway is not "ESPN unreachable" —
+        # which is exactly what it said, under a card full of odds.
+        if not got and why:
+            failed.append(f"{league}: {why}")
+    return out, ", ".join(failed)
+
+
+def _why(exc):
+    """The status code when there is one — HTTPError alone does not say
+    whether ESPN refused the request or refused the caller."""
+    code = getattr(getattr(exc, "response", None), "status_code", None)
+    return f"{type(exc).__name__}{f' {code}' if code else ''}"
 
 
 # ── loading a week ──────────────────────────────────────────────────────
@@ -185,7 +200,7 @@ standings = [splash.Standing(rank=r[2], name=r[0], entry=r[1], points=r[3],
 strat = model.strategy(standings, max(0, WEEKS_IN_SEASON - (week or 0)))
 
 
-def enrich(games, dates=None):
+def enrich(games, dates=()):
     """Attach an ESPN event to each game, remembering the link.
 
     A game that will not match keeps its place with no odds — the board
@@ -194,7 +209,7 @@ def enrich(games, dates=None):
     """
     if not games:
         return {}
-    events = {e["event_id"]: e for e in scoreboard(dates)[0]}
+    events = {e["event_id"]: e for e in scoreboard(tuple(dates or ()))[0]}
     found, unlinked = {}, []
     for g in games:
         key = (g["away_code"], g["home_code"])
@@ -220,7 +235,7 @@ def enrich(games, dates=None):
     return found
 
 
-_window = espn.window([g["kickoff"] for g in games])
+_window = tuple(espn.window([g["kickoff"] for g in games]))
 events = enrich(games, _window)
 linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
                        away=g["away"] or "", home=g["home"] or ""),

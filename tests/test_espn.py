@@ -234,13 +234,21 @@ print("no move, no opener, and noise all report nothing OK")
 BOARD = open(os.path.join(HERE, "fixtures", "board_week5.txt")).read()
 _kicks = [g.kickoff_iso for g in splash.parse_board(BOARD).games]
 assert min(_kicks).startswith("2026-10-02"), "the fixture changed"
-assert espn.window(_kicks) == "20260930-20261006", espn.window(_kicks)
-assert espn.window(_kicks, pad=0) == "20261001-20261005", \
+# One day per call: ESPN answers a hyphenated range with an HTTP error,
+# which only the live app could find out — it refuses CI whatever
+# User-Agent it presents.
+assert espn.window(_kicks, pad=0) == ["20261001", "20261002", "20261003",
+                                      "20261004", "20261005"], \
     espn.window(_kicks, pad=0)
-# junk in, nothing out — never a range that quietly means "all of time"
-assert espn.window([]) is None
-assert espn.window([None, "", "not a date"]) is None
-assert espn.window(["2026-10-03T16:00Z", "bad"]) == "20261002-20261004"
+assert espn.window(_kicks)[0] == "20260930" and espn.window(_kicks)[-1] == "20261006"
+assert all("-" not in d and len(d) == 8 for d in espn.window(_kicks))
+# junk in, nothing out — never a sweep that quietly means "all of time"
+assert espn.window([]) == []
+assert espn.window([None, "", "not a date"]) == []
+assert espn.window(["2026-10-03T16:00Z", "bad"]) == ["20261002", "20261003",
+                                                     "20261004"]
+# a nonsense kickoff cannot turn this into a year of requests
+assert len(espn.window(["2026-10-03T16:00Z", "2027-10-03T16:00Z"])) == 10
 print("the ESPN window is built in Eastern and padded OK")
 
 # ── asking for a date range ────────────────────────────────────────────
@@ -272,13 +280,13 @@ _real_get, requests.get = requests.get, spy
 espn.clear_cache()
 try:
     espn.scoreboard("NFL")
-    espn.scoreboard("NFL", "20261001-20261006")
-    espn.scoreboard("NFL", "20261001-20261006")     # cached, not refetched
+    espn.scoreboard("NFL", "20261001")
+    espn.scoreboard("NFL", "20261001")              # cached, not refetched
 finally:
     requests.get = _real_get
 assert len(seen_params) == 2, f"the dated call was not cached: {seen_params}"
 assert "dates" not in seen_params[0][1], seen_params[0]
-assert seen_params[1][1]["dates"] == "20261001-20261006", seen_params[1]
+assert seen_params[1][1]["dates"] == "20261001", seen_params[1]
 assert seen_params[0][1]["limit"] == seen_params[1][1]["limit"] == 400
 espn.clear_cache()
 print("the scoreboard can be asked for a date range, and caches per range OK")
