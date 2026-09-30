@@ -101,7 +101,7 @@ def meta_get(conn, key, default=None):
     return row[0] if row else default
 
 
-def upsert(conn, table, keys, values, keep=()):
+def upsert(conn, table, keys, values, keep=(), fallback=None):
     """Write a row whether or not it is already there, without UPSERT.
 
     SQLite's ON CONFLICT ... DO UPDATE needs 3.24 and a conflict target
@@ -117,23 +117,40 @@ def upsert(conn, table, keys, values, keep=()):
     and since NULLs do not collide in a primary key the rows quietly
     piled up on every paste.
 
-    keys   : {column: value} identifying the row
-    values : {column: value} to write
-    keep   : columns where an existing value survives a new NULL
+    keys     : {column: value} identifying the row
+    values   : {column: value} to write
+    keep     : columns where an existing value survives a new NULL
+    fallback : columns with a second-best value, used only when there
+               is neither a new value nor an existing one. Kickoffs
+               need this: the printed "Thu 8:15pm" is worth storing
+               for a game nothing else knows about, and worth nothing
+               at all against a real timestamp, which it would
+               otherwise overwrite — taking the card's ordering and
+               every lock time with it.
     """
+    fallback = fallback or {}
     sets, params = [], []
     for col, val in values.items():
-        sets.append(f"{col}=COALESCE(?, {col})" if col in keep else f"{col}=?")
-        params.append(val)
+        if col in fallback:
+            sets.append(f"{col}=COALESCE(?, {col}, ?)")
+            params += [val, fallback[col]]
+        elif col in keep:
+            sets.append(f"{col}=COALESCE(?, {col})")
+            params.append(val)
+        else:
+            sets.append(f"{col}=?")
+            params.append(val)
     where = " AND ".join(f"{k} IS ?" for k in keys)
     cur = conn.execute(f"UPDATE {table} SET {', '.join(sets)} WHERE {where}",
                        params + list(keys.values()))
     if cur.rowcount:
         return 0
     cols = list(keys) + list(values)
+    fresh = [values[c] if values[c] is not None else fallback.get(c)
+             for c in values]
     conn.execute(f"INSERT INTO {table} ({', '.join(cols)}) "
                  f"VALUES ({', '.join('?' * len(cols))})",
-                 list(keys.values()) + list(values.values()))
+                 list(keys.values()) + fresh)
     return 1
 
 
@@ -157,17 +174,19 @@ def save_games(conn, season, week, games, links=None):
                 "away_code": g.away_code, "home_code": g.home_code},
                {"away": g.away or None, "home": g.home or None, "seq": i,
                 "day": g.day or None,
-                # ESPN's timestamp first, then the one derived from the
-                # board, and only then the text Splash printed — which
-                # sorts "Mon" before "Thu" and cannot be locked against.
+                # ESPN's timestamp, or the one derived from the board.
+                # The text Splash printed is a fallback, never an
+                # overwrite: "Thu 8:15pm" sorts Monday before Saturday
+                # and cannot be locked against, and the pre-deadline
+                # entry page carries it for every game — so allowing it
+                # to win would undo the dating on a whole week.
                 "kickoff": ((ev or {}).get("date")
-                            or getattr(g, "kickoff_iso", "")
-                            or g.kickoff or None),
+                            or getattr(g, "kickoff_iso", "") or None),
                 "espn_id": (ev or {}).get("event_id"),
                 "status": g.status or None,
                 "away_score": g.away_score, "home_score": g.home_score},
-               keep=("kickoff", "espn_id", "status", "away_score",
-                     "home_score"))
+               keep=("espn_id", "status", "away_score", "home_score"),
+               fallback={"kickoff": g.kickoff or None})
         n += 1
     return n
 

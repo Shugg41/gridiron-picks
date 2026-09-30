@@ -236,8 +236,14 @@ def _game_from(lines, code_at, day, away_code, home_code):
     if j < 0:
         return None
     away = lines[j]
-    if not away or not home or is_code(away) and is_code(home):
-        # two codes where the names should be means the walk drifted
+    if not away or not home:
+        return None
+    if (is_code(away) and is_code(home)
+            and (away, home) != (away_code, home_code)):
+        # Two codes where the names should be usually means the walk
+        # drifted into a neighbouring game — but not when they are this
+        # game's own codes, which is simply a team whose name is its
+        # code. BYU played TCU and the whole game went missing.
         return None
     return Game(away=away, home=home, away_code=away_code, home_code=home_code,
                 day=day, kickoff=kickoff, status=status,
@@ -351,7 +357,12 @@ def _board_game(lines, kick_at, day, stop, year=None):
     """
     away, home = lines[kick_at - 2], lines[kick_at - 1]
     for name in (away, home):
-        if (not name or _DAY.match(name) or _KICK.match(name)
+        # "@" is the separator on the pre-deadline entry page, where the
+        # shape is name / @ / name / kickoff. Reading back two lines
+        # lands on it, and taking it as a team name would write "@" over
+        # every away team on the board.
+        if (not name or name in ("@", "-", "vs", "VS")
+                or _DAY.match(name) or _KICK.match(name)
                 or _RECORD.match(name) or _RANKED.match(name)):
             return None, kick_at
     # Team names can themselves look like codes — BYU plays TCU — so the

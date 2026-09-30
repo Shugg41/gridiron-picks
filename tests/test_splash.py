@@ -338,6 +338,29 @@ assert w2by[("NO", "DET")].picked == "DET"
 assert len({(g.away_code, g.home_code) for g in w2.games}) == 32
 print("week 2: 32 games, every pick recovered, 20-12 OK")
 
+# ── a team whose name is its own code ─────────────────────────────────
+# The entry page prints name / @ / name / kickoff / code / code, and a
+# guard rejected "two codes where the names should be" as a drifted
+# walk. BYU played TCU, both names are codes, and the game silently
+# vanished — 35 of 36 with nothing to say which was missing.
+BYU_TCU = "\n".join([
+    "Rank: #17", "Thursday, Oct 1",
+    "Steelers", "@", "Browns", "Thu 8:15pm", "PIT", "CLE",
+    "BYU", "@", "TCU", "Sat 7:00pm", "BYU", "TCU",
+    "Army", "@", "Temple", "Sat 9:00pm", "ARMY", "TEM"])
+bt = splash.parse_entry(BYU_TCU)
+assert len(bt.games) == 3, [(g.away_code, g.home_code) for g in bt.games]
+mid = bt.games[1]
+assert (mid.away, mid.home) == ("BYU", "TCU"), mid
+assert (mid.away_code, mid.home_code) == ("BYU", "TCU")
+# the guard still catches a genuine drift: codes that are not this
+# game's own, where the names should be
+DRIFT = "\n".join([
+    "Rank: #17", "Thursday, Oct 1",
+    "PIT", "@", "CLE", "Thu 8:15pm", "ARMY", "TEM"])
+assert splash.parse_entry(DRIFT).games == [], splash.parse_entry(DRIFT).games
+print("a team whose name is its own code is not mistaken for a drift OK")
+
 # ── nothing here may raise on junk ──────────────────────────────────────
 for junk in ("", "\n\n\n", "no games here", "1\n2\n3\n", ENTRY[:120],
              DIST[:80], "FINAL\nFINAL\nFINAL"):

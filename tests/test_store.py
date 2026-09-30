@@ -53,6 +53,37 @@ again = [g for g in store.week_games(conn, 2026, 4) if g["away_code"] == "ARMY"]
 assert again["espn_id"] == "e99", "a later pass must not blank the ESPN id"
 print("enrichment fills in and is never blanked by a re-paste OK")
 
+# ── a printed kickoff must never overwrite a real one ─────────────────
+# The pre-deadline entry page carries "Thu 8:15pm" for every game and
+# no timestamp at all. Letting that win would have undated a whole
+# week: the card sorts Monday before Saturday on that text, and
+# lock_time cannot parse it, so the early-lock alert for a Thursday
+# nighter simply stops existing.
+k = store.connect(":memory:")
+dated = splash.Game(away_code="PIT", home_code="CLE",
+                    kickoff="Thu 8:15pm", kickoff_iso="2026-10-02T00:15Z")
+store.save_games(k, 2026, 5, [dated])
+assert store.week_games(k, 2026, 5)[0]["kickoff"] == "2026-10-02T00:15Z"
+
+printed = splash.Game(away_code="PIT", home_code="CLE", kickoff="Thu 8:15pm")
+store.save_games(k, 2026, 5, [printed])
+assert store.week_games(k, 2026, 5)[0]["kickoff"] == "2026-10-02T00:15Z", \
+    "the printed time overwrote the timestamp"
+
+# but on a game nothing else knows about, the printed time is better
+# than nothing and is kept
+store.save_games(k, 2026, 5, [splash.Game(away_code="AA", home_code="BB",
+                                          kickoff="Sat 3:30pm")])
+aa = [g for g in store.week_games(k, 2026, 5) if g["away_code"] == "AA"][0]
+assert aa["kickoff"] == "Sat 3:30pm", aa["kickoff"]
+# and a real timestamp arriving later takes over from it
+store.save_games(k, 2026, 5, [splash.Game(away_code="AA", home_code="BB",
+                                          kickoff="Sat 3:30pm",
+                                          kickoff_iso="2026-10-03T19:30Z")])
+aa = [g for g in store.week_games(k, 2026, 5) if g["away_code"] == "AA"][0]
+assert aa["kickoff"] == "2026-10-03T19:30Z", aa["kickoff"]
+print("a printed kickoff fills a gap but never displaces a timestamp OK")
+
 # ── a missing pick is stored as a missing pick ──────────────────────────
 games, entries = splash.parse_picks_by_week(MATRIX)
 mine = [x for x in entries if x.me][0]
