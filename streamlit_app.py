@@ -518,6 +518,25 @@ with st.expander("Odds this week"):
     if entry:                       # once entered, simulate what I really have
         my_card = {k: t for k, (t, _r) in entry.items() if t}
     rivals = store.week_field_cards(conn, SEASON, week)
+    estimated = False
+    if not rivals:
+        # Splash publishes everyone's picks only after the deadline,
+        # which is exactly too late to act on them. Stand the field up
+        # from what this pool has done at similar prices in weeks 1-4
+        # so the question can be asked while the answer still matters.
+        shares = {}
+        for g, ev in linked:
+            key = (g.away_code, g.home_code)
+            share = model.expected_share((ev or {}).get("line"))
+            fav, dog, _p = model.favorite(ev)
+            if share is None or not fav:
+                continue
+            fav, dog = model._board_codes(g, ev, fav, dog)
+            shares[key] = {fav: share, dog: 1 - share}
+        if shares and standings:
+            rivals = simulate.estimated_rivals(
+                shares, max(1, len(standings) - 1))
+            estimated = bool(rivals)
 
     out = simulate.simulate(my_card, probs, rivals, trials=4000)
     st.markdown(
@@ -526,10 +545,24 @@ with st.expander("Odds this week"):
 
     if rivals:
         st.markdown(
-            f"Against the **{len(rivals)}** other entries: "
+            f"Against the **{len(rivals)}** "
+            f"{'estimated' if estimated else 'other'} entries: "
             f"**{out.win:.0%}** to win outright"
             + (f", **{out.tie:.0%}** to tie at the top" if out.tie else "")
             + f", **{out.top3:.0%}** to finish top three.")
+        if estimated:
+            st.caption(
+                f"The field here is estimated, not observed. This pool "
+                f"backs a favorite {model.expected_share(1):.0%} of the "
+                f"time at a point and {model.expected_share(10):.0%} at "
+                f"ten, fitted to 43 of its own games — but the fit misses "
+                f"by {model.FIELD_RMS:.0%} on average, and it cannot "
+                f"foresee the games where the crowd ignores the price "
+                f"altogether, which are the games that win a week. It "
+                f"also draws each entry independently, so it understates "
+                f"how alike the real field is and flatters your chances. "
+                f"Paste **Picks by Week** after the deadline to replace "
+                f"all of this with the actual cards.")
         flipped, chalk = simulate.what_flips_are_worth(picks, probs, rivals,
                                                        trials=4000)
         if flipped.mean != chalk.mean or flipped.any_win != chalk.any_win:

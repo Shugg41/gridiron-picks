@@ -132,6 +132,35 @@ def rivals_from_matrix(games, entries, exclude_me=True):
     return out
 
 
+def estimated_rivals(shares, entries, seed=7):
+    """Invent a field from predicted shares, for use before a deadline.
+
+    Splash publishes everyone's picks only after the deadline, which
+    is exactly too late to act on. This draws each entry's pick from
+    the share the pool is expected to put on each side, so the
+    simulation can run while the picks can still be changed.
+
+    Independent draws per entry. Real entrants have persistent habits
+    — some never leave the chalk, some chase dogs every week — and
+    this cannot know them, so it will understate how alike the field
+    really is and therefore how hard it is to finish alone at the top.
+    Treat the result as the optimistic end of a range, and replace it
+    with the real cards the moment Picks by Week is available.
+    """
+    rng = random.Random(seed)
+    field = {}
+    for i in range(entries):
+        card = {}
+        for key, sides in (shares or {}).items():
+            if len(sides) != 2:
+                continue
+            (a, pa), (b, _pb) = list(sides.items())
+            card[key] = a if rng.random() < pa else b
+        if card:
+            field[f"estimated {i + 1}"] = card
+    return field
+
+
 def what_flips_are_worth(picks, probs, rivals, trials=10000, seed=1):
     """Simulate the same week twice: as proposed, and as pure chalk.
 

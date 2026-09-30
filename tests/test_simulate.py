@@ -11,7 +11,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from gridiron import simulate, splash                          # noqa: E402
+from gridiron import model, simulate, splash                          # noqa: E402
 
 HERE = os.path.dirname(__file__)
 MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
@@ -144,5 +144,41 @@ assert abs(sum(p[("MIA", "BUF")].values()) - 1) < 1e-9
 assert p[("ZZZ", "QQQ")] == {"ZZZ": 0.5, "QQQ": 0.5}, \
     "a game with no line is a coin flip, not an absent game"
 print("probabilities from events OK")
+
+
+# ── a field estimated before the deadline ─────────────────────────────
+# Splash publishes everyone's picks only after picks lock, so without
+# this the one question worth asking cannot be asked while it can
+# still be acted on.
+shares = {("AA", "BB"): {"BB": 0.95, "AA": 0.05},
+          ("CC", "DD"): {"DD": 0.55, "CC": 0.45}}
+field = simulate.estimated_rivals(shares, 37)
+assert len(field) == 37, len(field)
+assert all(len(card) == 2 for card in field.values())
+
+# the drawn shares track the predicted ones, within sampling noise
+on_bb = sum(1 for c in field.values() if c[("AA", "BB")] == "BB") / 37
+on_dd = sum(1 for c in field.values() if c[("CC", "DD")] == "DD") / 37
+assert 0.85 <= on_bb <= 1.0, on_bb
+assert 0.35 <= on_dd <= 0.75, on_dd
+# and it is repeatable, because an estimate that moves every reload is
+# not something anyone can act on
+assert simulate.estimated_rivals(shares, 37) == field
+
+# a game with no usable share is left out rather than guessed
+half = simulate.estimated_rivals({("AA", "BB"): {"BB": 1.0}}, 5)
+assert half == {}, half
+assert simulate.estimated_rivals({}, 5) == {}
+assert simulate.estimated_rivals(None, 5) == {}
+print("a field can be estimated before the deadline OK")
+
+# the curve it rests on, and its stated error
+assert 0.75 < model.expected_share(1) < 0.82, model.expected_share(1)
+assert 0.95 < model.expected_share(14) < 0.99
+assert model.expected_share(None) is None
+# the sign of the line must not matter — a favorite is a favorite
+assert model.expected_share(-7) == model.expected_share(7)
+assert model.FIELD_RMS > 0.1, "the fit is worse than it looks; say so"
+print("the crowd curve is monotone, sign-blind and honest about error OK")
 
 print("\nALL SIMULATE TESTS PASS")

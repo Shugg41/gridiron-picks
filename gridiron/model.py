@@ -8,6 +8,7 @@ and it depends on the standings rather than on any single game.
 
 Nothing here touches the network or the database.
 """
+import math
 from dataclasses import dataclass
 from typing import Optional
 
@@ -169,6 +170,36 @@ def _board_codes(game, event, fav, dog):
 # it break a tie. Two points of win probability: below that the two
 # agree, and the median disagreement across a real slate is under three.
 FPI_AGREES = 0.02
+
+
+# How hard this pool backs a favorite, fitted to 43 of its own games
+# across weeks 1-4: share = logistic(A + B x line).
+#
+# The intercept is the story. A one-point favorite already draws 79% of
+# these thirty-eight entries, and seven points of spread buys only
+# eleven points more. This is a chalky pool and the price barely moves
+# it.
+#
+# FIELD_RMS is the residual spread, and it is large — twelve points
+# against a range of eighteen. The line explains some of what this
+# crowd does and nowhere near all of it: the worst miss was Texas
+# favored by two and a half with the pool 40% on them, forty-three
+# points adrift. Those games are where a week is won, and by
+# definition this cannot see them coming. Any number derived from
+# here should be shown with that admission attached.
+FIELD_A, FIELD_B, FIELD_RMS = 1.138, 0.157, 0.125
+
+
+def expected_share(line):
+    """What fraction of the pool will take the favorite, given a line.
+
+    Before a deadline Splash says nothing about the field, so this
+    stands in for it. Returns None with no line, because a guess with
+    no input is worse than an absence.
+    """
+    if line is None:
+        return None
+    return 1 / (1 + math.exp(-(FIELD_A + FIELD_B * abs(line))))
 
 
 def propose(linked, field=None, strat=None, edge=None):

@@ -130,6 +130,33 @@ Measured on a real slate: 28 games priced, median disagreement 2.7
 points of win probability, 7 games at 5 or more. Mostly the two
 agree, which is the expected and reassuring result.
 
+**The field, before the deadline.** Splash publishes everyone's picks
+only after picks lock, which is exactly too late to act on. So the
+crowd is estimated instead, from a curve fitted to 43 of this pool's
+own games across weeks 1-4:
+
+```
+share on the favorite = logistic(1.138 + 0.157 x line)
+```
+
+The intercept is the finding. A one-point favorite already draws 79%
+of these thirty-eight entries, and seven points of spread buys only
+eleven points more. This pool is chalky and the price barely moves it.
+
+Two admissions travel with every number that comes out of it. The fit
+misses by 12 points on average against a range of 18, so the line
+explains some of what this crowd does and nowhere near all of it —
+the worst miss was Texas favored by two and a half with the pool 40%
+on them. And the simulation draws each entry independently, which
+understates how alike the real field is and therefore flatters the
+chance of finishing alone at the top. Both are said on the page, not
+just here. Pasting Picks by Week after the deadline replaces the
+estimate with the real cards.
+
+It deliberately does **not** feed the flip ranking. Predicted share
+spans 79-97% while a dog's chance spans far more, so it would reorder
+almost nothing while looking like it had.
+
 **Line movement.** ESPN's core API carries the opening line as well as
 the current one. The crowd piles onto favorites, so a favorite getting
 cheaper since it opened is usually sharper money on the other side — a
