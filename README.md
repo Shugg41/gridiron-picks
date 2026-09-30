@@ -32,6 +32,12 @@ week, so the number box is only a fallback for the pages that do not.
 The app never holds your picks. Splash does. There is nothing to tick off
 in two places.
 
+Suggestions do not disappear once an entry exists. Picks often go in
+quickly and get revisited, and the second visit is the one where a line
+has moved and there is still time to act — so the card keeps showing
+the flips, and adds a list of the games where it disagrees with what
+was entered, limited to games that have not locked.
+
 ## Why it is built this way
 
 Splash defines the week; ESPN only decorates it. Earlier versions had

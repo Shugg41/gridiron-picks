@@ -361,8 +361,20 @@ def movement_for(event_id, league, home, away):
         return None, None
 
 
+kick_by = {(g["away_code"], g["home_code"]): g["kickoff"] for g in games}
+
+
+def still_open(key):
+    """A game that can still be changed. Anything else is history."""
+    return view.locks_in(kick_by.get(key)) != "locked"
+
+
 flips = [(n, p) for n, p in numbered if p.flipped]
-if flips and not entry:
+# Shown whether or not an entry exists. Picks often go in fast and get
+# revisited, and hiding the reasoning the moment they are entered makes
+# the second visit useless — which is the visit where a line has moved
+# and there is still time to act on it.
+if flips:
     st.markdown(f"**Flip {'this one' if len(flips) == 1 else f'these {len(flips)}'}**")
     for n, p in flips:
         st.markdown(view.standout(n, p), unsafe_allow_html=True)
@@ -386,6 +398,34 @@ if flips and not entry:
     st.caption("The closest games on the card. Taking the underdog costs "
                "almost nothing over a season and is the only thing that "
                "separates you from everyone riding the chalk.")
+
+# ── where the card and the entry disagree, while there is still time ───
+if entry:
+    changed = []
+    for n, p in numbered:
+        key = (p.away, p.home)
+        mine = (entry.get(key) or (None,))[0]
+        if not mine or not p.team or mine == p.team or not still_open(key):
+            continue
+        changed.append((n, p, mine))
+    if changed:
+        st.markdown(f"**Still worth a look — {len(changed)} "
+                    f"{'game' if len(changed) == 1 else 'games'}**")
+        for n, p, mine in changed:
+            when = view.locks_in(kick_by.get((p.away, p.home)))
+            st.markdown(
+                f"<div class='standout'><span class='num'>{n}.</span> "
+                f"<span class='opp'>you have </span>"
+                f"<span class='team'>{mine}</span>"
+                f"<span class='opp'>, the card says </span>"
+                f"<span class='team'>{p.team}</span>"
+                f"<span class='opp'> — {when}</span></div>"
+                + view.fpi_note(p), unsafe_allow_html=True)
+        st.caption("Only games that have not locked. Splash holds your "
+                   "picks, so changing one means changing it there.")
+    elif any(still_open(k) for k in entry):
+        st.caption("Your entry matches the card on every game that can "
+                   "still be changed.")
 
 show_pct = st.toggle("Show percentages", value=False)
 for n, p in numbered:

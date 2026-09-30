@@ -320,6 +320,7 @@ assert "Flip" in page, "no flips were offered at all"
 assert "FPI rates" in page, f"the second opinion never reached the card"
 assert "NYG" in page, "FPI should have moved the flip onto the Giants"
 print("FPI is fetched, compared and explained on the card OK")
+
 # and it keeps up as lines arrive: a record frozen at the first look
 # would cover the handful of games that had odds on a Tuesday
 _before = proposals(5)
@@ -336,6 +337,31 @@ assert proposals(5) == _before, \
 # it after the fact — that would read as though the app had called it
 assert proposals(4) == 0, "advice was recorded for a week already played"
 print(f"{proposals(5)} proposals recorded, none back-dated OK")
+
+# ── the card keeps talking after the picks are in ─────────────────────
+# Picks go in fast and get revisited, and the revisit is the one where
+# a line has moved and there is still time. The flips used to vanish
+# the moment an entry existed, which made the second visit useless.
+_e = _sq.connect(os.path.join(WORK, "football_picks.db"))
+_e.execute("DELETE FROM entry WHERE season=2026 AND week=5")
+_e.executemany(
+    "INSERT INTO entry (season, week, away_code, home_code, team) "
+    "VALUES (2026, 5, ?, ?, ?)",
+    [("ARI", "NYG", "ARI"), ("PIT", "CLE", "PIT")])
+_e.commit()
+_e.close()
+
+at8 = run()
+boom(at8, "with an entry already in")
+page8 = " ".join(m.value for m in at8.markdown)
+assert "Flip" in page8, "the flips vanished once the picks were entered"
+assert "Still worth a look" in page8, page8[:400]
+# it names both sides of the disagreement, and only for games that can
+# still be changed
+assert "you have " in page8 and "the card says" in page8
+caps = " ".join(c.value for c in at8.caption)
+assert "not locked" in caps, caps
+print("suggestions survive the entry, and say where they differ OK")
 
 # ── ESPN being unreachable must not cost a single game ──────────────────
 def dead(url, params=None, **kw):
