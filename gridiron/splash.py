@@ -694,7 +694,12 @@ def sniff(text):
         return "picks_by_week"
     if ". view entry details" in t or ("all entries" in t and "tie diff" in t):
         return "standings"
-    if "autopicks" in t and "%)" in text:
+    # Structural, not a column heading. Keying on the word "AUTOPICKS"
+    # meant a distribution page missing that column — or copied without
+    # it — was not a distribution page at all. What actually identifies
+    # it is the repeated code / count / (percentage) triple, so ask the
+    # parser whether it can see several of those.
+    if "%)" in text and len(parse_distribution(text)) >= 3:
         return "distribution"
     if "view picks" in t or "rank:" in t:
         return "entry"

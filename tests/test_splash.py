@@ -104,6 +104,17 @@ assert rows[-1][0][0] == "SEA", rows[-1]           # a live game parses too
 assert not any(c in ("CFB", "NFL", "Sep") for (c, _n, _p), _b in rows)
 print("distribution page OK")
 
+# the page is recognised by its shape, not by a column heading. A copy
+# without the AUTOPICKS column used to sniff as nothing at all.
+no_header = "\n".join(l for l in DIST.splitlines()
+                       if l.strip().upper() not in
+                       ("AUTOPICKS", "PICKS", "PICK DISTRIBUTION"))
+assert splash.sniff(no_header) == "distribution", splash.sniff(no_header)
+assert len(splash.parse_distribution(no_header)) == len(rows)
+# and a page with a stray percentage is still not a distribution
+assert splash.sniff("Rank: #4\nsomething (12.5%)\n") != "distribution"
+print("a distribution is known by its shape, not its headings OK")
+
 # ── the finding that matters: the entry page HIDES games you didn't pick
 entry_codes = {g.away_code for g in e.games} | {g.home_code for g in e.games}
 dist_codes = {s[0] for pair in rows for s in pair}
