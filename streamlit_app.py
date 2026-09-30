@@ -421,6 +421,14 @@ except Exception as _exc:
     moves = []
     st.caption(f"Late-change watch is off this load "
                f"({type(_exc).__name__}: {_exc}).")
+if games and not entry:
+    # It only watches games you picked, and before the deadline Splash
+    # does not say which those are — the entry page shows the matchup
+    # and marks your side visually, so the text carries no pick. Saying
+    # so beats a feature that is quietly doing nothing.
+    st.caption("Late-change alerts are off until the app knows your picks. "
+               "Splash does not put them in the page text before kickoff; "
+               "paste **Picks by Week** once the deadline passes.")
 if moves:
     st.warning("**Since you picked:**\n\n"
                + "\n".join(f"- {c}" for c in moves))

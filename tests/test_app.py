@@ -280,6 +280,12 @@ assert view.lock_time(k5[-1]).isoformat().startswith("2026-10-03T16:00"), \
     view.lock_time(k5[-1])
 print(f"the real Week 5 board: {len(fresh)} cards, dated and in order OK")
 
+# a week with no entry says the late-change watch is off, rather than
+# leaving a feature quietly doing nothing
+assert any("Late-change alerts are off" in c.value for c in at2.caption), \
+    [c.value for c in at2.caption]
+print("a week with no entry says why the watch is silent OK")
+
 # ── the advice records itself ──────────────────────────────────────────
 # It used to need a button press. Miss it and the week's advice is gone
 # for good, and the one thing the user asked to be able to answer — is
