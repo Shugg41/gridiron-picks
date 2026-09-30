@@ -128,8 +128,11 @@ def power_index(team_id, league, season, ttl=86400):
     """FPI and EPA. Preseason-informed, which is what makes it worth
     anything in September when box scores are a two-game sample."""
     def build():
-        url = (f"{CORE}/{CORE_PATH[league]}/seasons/{season}/types/2/teams/"
-               f"{team_id}/powerindex")
+        # Not under types/2/teams, which 404s in both leagues. Written
+        # from memory when this was added and never called once, so
+        # nothing noticed for a fortnight — the path is now the one a
+        # probe confirmed answers.
+        url = f"{CORE}/{CORE_PATH[league]}/seasons/{season}/powerindex/{team_id}"
         return parse_power(_get(url))
     return cached(ttl, ("fpi", league, season, team_id), build)
 

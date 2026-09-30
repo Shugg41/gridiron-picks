@@ -227,6 +227,44 @@ assert espn.movement({"items": [{"homeTeamOdds": {
     "current": {"pointSpread": {"american": "+3.2"}}}}]}, "H", "A") == (None, None)
 print("no move, no opener, and noise all report nothing OK")
 
+# ── the URLs, which were wrong and untested for a fortnight ───────
+# power_index() and team_stats() were written from memory and called by
+# nothing, so every FPI lookup 404'd and no test noticed: they only ever
+# fed fake payloads to the parsers. These pin the paths a probe actually
+# confirmed against ESPN.
+urls = []
+
+
+class _Blank:
+    status_code = 200
+
+    @staticmethod
+    def json():
+        return {}
+
+    @staticmethod
+    def raise_for_status():
+        pass
+
+
+def _spy(url, params=None, **kw):
+    urls.append(url)
+    return _Blank()
+
+
+_real, requests.get = requests.get, _spy
+espn.clear_cache()
+try:
+    espn.power_index("5", "NFL", 2026)
+    espn.team_stats("5", "NFL", 2026)
+finally:
+    requests.get = _real
+espn.clear_cache()
+assert urls[0].endswith("/nfl/seasons/2026/powerindex/5"), urls[0]
+assert "types/2/teams" not in urls[0], "the 404 path is back"
+assert urls[1].endswith("/nfl/seasons/2026/types/2/teams/5/statistics"), urls[1]
+print("FPI and stats ask for paths ESPN actually serves OK")
+
 # ── the date range, built in Eastern ────────────────────────────
 # The real week 5 board: Thursday 8:15pm ET is stored as Friday 00:15Z,
 # so a range taken off the raw timestamps starts on the 2nd and drops
