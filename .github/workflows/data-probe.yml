@@ -23,3 +23,6 @@ jobs:
       # Is the movement the app reports as advice actually real?
       - run: python scripts/probe_movement.py
         if: always()
+      # Is FPI worth wiring in, or does it just agree with the line?
+      - run: python scripts/probe_fpi.py
+        if: always()
