@@ -107,7 +107,17 @@ class Fake:
         pass
 
 
+# FPI per team, so the second opinion is exercised rather than
+# silently absent. NYG is rated far above ARI, where the market has
+# ARI favored — so FPI likes the underdog and the card should say so.
+FPI = {"NYG": 8.0, "ARI": 0.0}
+
+
 def fake_get(url, params=None, **kw):
+    if "/powerindex/" in url:
+        code = url.rstrip("/").split("/")[-1]
+        return Fake({"predictives": [{"name": "fpi",
+                                      "value": FPI.get(code, 0.0)}]})
     if "scoreboard" in url and "/nfl/" in url:
         return Fake({"events": _events()})
     return Fake({"events": []})
@@ -299,6 +309,17 @@ def proposals(week):
 
 
 assert proposals(5) > 0, "the week's advice was never recorded"
+
+# ── the second opinion reaches the card ───────────────────────────────
+# power_index spent a fortnight 404ing behind tests that only ever fed
+# fake payloads to the parser, so the wiring gets checked end to end:
+# team id out of the event, FPI fetched, compared with the market, and
+# said out loud on the flip it chose.
+page = " ".join(m.value for m in at2.markdown)
+assert "Flip" in page, "no flips were offered at all"
+assert "FPI rates" in page, f"the second opinion never reached the card"
+assert "NYG" in page, "FPI should have moved the flip onto the Giants"
+print("FPI is fetched, compared and explained on the card OK")
 # and it keeps up as lines arrive: a record frozen at the first look
 # would cover the handful of games that had odds on a Tuesday
 _before = proposals(5)
