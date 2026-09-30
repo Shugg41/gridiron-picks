@@ -56,11 +56,17 @@ def abbr_of(ref):
 
 
 def events_for(league, week):
-    """Parsed-enough events for one ESPN week: codes, id, and the line."""
+    """Every event in an ESPN week, as codes and an id. No odds yet.
+
+    limit=200 because college football runs to about 130 games a
+    week and the first attempt asked for 60 — which is why most of
+    the college slate came back unpriced and looked like a matching
+    failure rather than a truncated list.
+    """
     out = []
     try:
         listing = get(f"{CORE}/{league}/seasons/{SEASON}/types/2/weeks/{week}/"
-                      f"events?limit=60")
+                      f"events?limit=200")
     except urllib.error.HTTPError as exc:
         print(f"# {league} week {week}: HTTP {exc.code}", file=sys.stderr)
         return out
@@ -77,24 +83,34 @@ def events_for(league, week):
                 sides[c.get("homeAway")] = abbr_of(ref)
         if not sides.get("home") or not sides.get("away"):
             continue
-        tag = "NFL" if league == "nfl" else "CFB"
-        details = None
-        try:
-            odds = espn.odds_history(str(event.get("id")), tag)
-            details = ((odds.get("items") or [{}])[0]).get("details")
-        except Exception:
-            pass
-        named, value = espn._spread(details)
-        if not named or value is None:
-            continue
-        # "ARI -1.5" names the team laying the points, "GB +3.5" the
-        # one getting them.
-        fav = named if value < 0 else (sides["away"] if named == sides["home"]
-                                       else sides["home"])
-        out.append({"away": {"abbr": sides["away"]}, "home": {"abbr": sides["home"]},
-                    "event_id": str(event.get("id")), "fav": fav,
-                    "line": abs(value)})
+        out.append({"away": {"abbr": sides["away"]},
+                    "home": {"abbr": sides["home"]},
+                    "event_id": str(event.get("id")),
+                    "league": "NFL" if league == "nfl" else "CFB"})
     return out
+
+
+def price_of(event):
+    """The closing line for one event, asked for only once it matters.
+
+    Odds were previously fetched for every event in the league — a
+    hundred-odd wasted requests a week for the games this pool does
+    not even carry. Now only linked games are priced.
+    """
+    try:
+        odds = espn.odds_history(event["event_id"], event["league"])
+        details = ((odds.get("items") or [{}])[0]).get("details")
+    except Exception:
+        return None, None
+    named, value = espn._spread(details)
+    if not named or value is None:
+        return None, None
+    # "ARI -1.5" names the team laying the points, "GB +3.5" the one
+    # getting them.
+    fav = named if value < 0 else (
+        event["away"]["abbr"] if named == event["home"]["abbr"]
+        else event["home"]["abbr"])
+    return abs(value), fav
 
 
 def main():
@@ -123,17 +139,17 @@ def main():
         for g, ev in espn.link(games, pool):
             if not ev:
                 continue
-            pct = share.get((g.away_code, g.home_code, ev["fav"]))
-            if pct is None:
-                # ESPN's favourite spelled its way; try the board's
-                pct = share.get((g.away_code, g.home_code,
-                                 g.home_code if ev["fav"] == ev["home"]["abbr"]
-                                 else g.away_code))
+            line, fav = price_of(ev)
+            if line is None:
+                continue
+            # Say the favourite in Splash's spelling, never ESPN's —
+            # the shares are keyed that way.
+            fav_code = (g.home_code if fav == ev["home"]["abbr"]
+                        else g.away_code)
+            pct = share.get((g.away_code, g.home_code, fav_code))
             if pct is None:
                 continue
-            fav_code = (g.home_code if ev["fav"] == ev["home"]["abbr"]
-                        else g.away_code)
-            print(f"{week}\t{g.away_code}\t{g.home_code}\t{ev['line']:g}\t"
+            print(f"{week}\t{g.away_code}\t{g.home_code}\t{line:g}\t"
                   f"{fav_code}\t{pct:.3f}")
             hit += 1
         print(f"# week {week}: {hit} of {len(games)} games priced",
