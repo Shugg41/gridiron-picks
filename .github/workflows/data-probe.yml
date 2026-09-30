@@ -29,3 +29,7 @@ jobs:
       # Every FPI call 404s or similar; find the path that answers.
       - run: python scripts/probe_paths.py
         if: always()
+      # Pair each past game's crowd share with the price the pool was
+      # offered. TSV to stdout, read back out of the log.
+      - run: python scripts/backfill_lines.py
+        if: always()
