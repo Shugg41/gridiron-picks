@@ -489,7 +489,12 @@ if not entry:
     # "is the advice working" has nothing to answer with. The button is
     # for pinning a later, better version once the lines have moved.
     _proposed = [(p.away, p.home, p.team, p.basis) for p in picks if p.team]
-    if _proposed and not store.has_proposals(conn, SEASON, week):
+    # Re-record while it is still growing. The first look at a week
+    # happens before the lines are out — week 5's first pass covered
+    # seven games of thirty-six — and a record frozen at that point
+    # would have the tracker scoring an opinion the app never held by
+    # the time it mattered.
+    if _proposed and len(_proposed) > store.proposal_count(conn, SEASON, week):
         store.save_proposals(conn, SEASON, week, _proposed)
         save()
     if st.button("Update the recorded proposal", width="stretch"):

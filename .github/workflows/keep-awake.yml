@@ -47,7 +47,7 @@ jobs:
                   print("frame:", f.url[:120])
                   try:
                       body = re.sub(r"\s+", " ",
-                                    f.locator("body").inner_text())[:600]
+                                    f.locator("body").inner_text())[:4000]
                       if body.strip():
                           print("  body:", body)
                   except Exception as e:

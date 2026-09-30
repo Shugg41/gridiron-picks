@@ -293,6 +293,18 @@ def proposals(week):
 
 
 assert proposals(5) > 0, "the week's advice was never recorded"
+# and it keeps up as lines arrive: a record frozen at the first look
+# would cover the handful of games that had odds on a Tuesday
+_before = proposals(5)
+_p = _sq.connect(os.path.join(WORK, "football_picks.db"))
+_p.execute("DELETE FROM proposal WHERE season=2026 AND week=5 "
+           "AND rowid IN (SELECT rowid FROM proposal LIMIT 2)")
+_p.commit()
+_p.close()
+assert proposals(5) == _before - 2
+run()
+assert proposals(5) == _before, \
+    "the recorded advice did not grow when more games had lines"
 # and week 4 is over and already entered, so no advice is invented for
 # it after the fact — that would read as though the app had called it
 assert proposals(4) == 0, "advice was recorded for a week already played"

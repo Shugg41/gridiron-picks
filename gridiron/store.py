@@ -218,10 +218,17 @@ def save_entry(conn, season, week, games):
                keep=("result",))
 
 
-def has_proposals(conn, season, week):
-    return bool(conn.execute(
-        "SELECT 1 FROM proposal WHERE season=? AND week=? LIMIT 1",
-        (season, week)).fetchone())
+def proposal_count(conn, season, week):
+    """How many games the recorded advice covers.
+
+    A count rather than a yes/no, because the first look at a week
+    happens before most lines exist: week 5 recorded seven of
+    thirty-six and, being recorded, never updated. Lines arriving is
+    the normal case, so the record should follow them up.
+    """
+    return conn.execute(
+        "SELECT COUNT(*) FROM proposal WHERE season=? AND week=?",
+        (season, week)).fetchone()[0]
 
 
 def save_proposals(conn, season, week, picks):
