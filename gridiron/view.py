@@ -153,7 +153,33 @@ def standout(n, pick):
     chance = f" — {pick.prob:.0%} to win" if pick.prob is not None else ""
     return (f"<div class='standout'><span class='num'>{n}.</span> "
             f"<span class='team'>{pick.team}</span>"
-            f"<span class='opp'> over {pick.other}{chance}{share}</span></div>")
+            f"<span class='opp'> over {pick.other}{chance}{share}</span></div>"
+            + fpi_note(pick))
+
+
+def fpi_note(pick):
+    """Why this coin flip and not another one.
+
+    Said in points of win probability and attributed to FPI, because
+    the honest claim is narrow: an independent model prices this game
+    differently from the book. It is not a claim that FPI is right —
+    the market forecasts better than it does — only that among games
+    already close enough to flip, this is the one where something
+    other than the line has an opinion.
+    """
+    lean = getattr(pick, "fpi_lean", None)
+    if lean is None or abs(lean) < 0.02:
+        return ""
+    pts = abs(lean)
+    if lean > 0:
+        body = (f"FPI rates {pick.team} {pts:.0%} more likely than the "
+                f"line does — that disagreement is why this flip and "
+                f"not another.")
+    else:
+        body = (f"FPI rates {pick.team} {pts:.0%} <em>less</em> likely "
+                f"than the line does, so the second opinion is against "
+                f"this one too.")
+    return f"<div class='sub'>&#8990; {body}</div>"
 
 
 def copy_list(numbered, tiebreak=None):

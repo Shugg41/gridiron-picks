@@ -136,6 +136,7 @@ class Pick:
     prob: Optional[float] = None     # the pick's own win probability
     other_prob: Optional[float] = None
     field_on_team: Optional[float] = None    # league's share, once known
+    fpi_lean: Optional[float] = None         # FPI minus market, on this pick
 
     @property
     def flipped(self):
@@ -164,7 +165,13 @@ def _board_codes(game, event, fav, dog):
     return game.away_code, game.home_code
 
 
-def propose(linked, field=None, strat=None):
+# How far FPI has to differ from the market before it is worth letting
+# it break a tie. Two points of win probability: below that the two
+# agree, and the median disagreement across a real slate is under three.
+FPI_AGREES = 0.02
+
+
+def propose(linked, field=None, strat=None, edge=None):
     """Pick every game, then flip the best few underdogs.
 
     The favorite everywhere is the right baseline and nearly the whole
@@ -172,11 +179,27 @@ def propose(linked, field=None, strat=None):
     closest games — and where the league's behaviour is known, to the
     closest games the crowd is most piled against, since a coin flip
     nobody else is fading buys no separation.
+
+    `edge` is an optional callable (game, event) -> FPI's disagreement
+    with the market in win probability, positive meaning FPI likes the
+    home side more. It is asked only about games already in flip
+    range, because it costs a request per team and is used nowhere
+    else.
+
+    What it is allowed to do is deliberately narrow. FPI disagreeing
+    with the line does not make FPI right — the market is the better
+    forecaster and overriding it would cost points. But among games
+    that are already coin flips, which one to take was previously
+    arbitrary, and "the one an independent model thinks is
+    mispriced" beats picking by list order. So it reorders
+    candidates; it never changes which games are candidates, and
+    never touches the other thirty.
     """
     strat = strat or Strategy()
     field = field or {}
+    pairs = list(linked)
     picks = []
-    for game, event in linked:
+    for game, event in pairs:
         fav, dog, p = favorite(event)
         fav, dog = _board_codes(game, event, fav, dog)
         shares = field.get((game.away_code, game.home_code)) or {}
@@ -188,9 +211,25 @@ def propose(linked, field=None, strat=None):
 
     # Candidates are judged before anything is flipped, on the underdog's
     # chance and on how exposed the crowd is to losing that game.
-    live = [pk for pk in picks
+    live = [(i, pk) for i, pk in enumerate(picks)
             if pk.other_prob is not None and pk.other_prob >= LIVE_DOG]
-    live.sort(key=lambda pk: -(pk.other_prob * (pk.field_on_team or 0.5)))
+    if edge is not None:
+        for i, pk in live:
+            game, event = pairs[i]
+            e = edge(game, event)
+            if e is None:
+                continue
+            # `e` is home-relative; the flip would take pk.other, so
+            # turn it into "how much more FPI likes the side we would
+            # be taking than the market does".
+            pk.fpi_lean = e if pk.other == game.home_code else -e
+    # Lexicographic, not weighted: candidates FPI also likes come
+    # first, and within each group the old leverage order stands.
+    # Blending them would need a weight, and there is no evidence for
+    # one — a made-up number would only hide the guess.
+    live.sort(key=lambda t: (0 if (t[1].fpi_lean or 0) >= FPI_AGREES else 1,
+                             -(t[1].other_prob * (t[1].field_on_team or 0.5))))
+    live = [pk for _i, pk in live]
     # However many the strategy asks for, capped by how many games are
     # actually close. A chalky week should produce no flips rather than
     # reach down into spots where the points stop being cheap.

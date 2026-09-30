@@ -240,7 +240,31 @@ events = enrich(games, _window)
 linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
                        away=g["away"] or "", home=g["home"] or ""),
            events.get((g["away_code"], g["home_code"]))) for g in games]
-picks = model.propose(linked, field=field, strat=strat)
+@st.cache_data(ttl=86400, show_spinner=False)
+def team_fpi(team_id, league):
+    """FPI for one team, cached for a day — it moves weekly, not hourly."""
+    if not team_id:
+        return None
+    try:
+        return espn.power_index(team_id, league, SEASON).get("fpi")
+    except Exception:
+        return None
+
+
+def fpi_disagreement(_game, event):
+    """FPI's view of a game minus the market's, positive for the home
+    side. Asked only about games already in flip range, so this costs
+    two requests for a handful of games rather than seventy-two."""
+    if not event:
+        return None
+    return model.fpi_edge(
+        event,
+        team_fpi((event.get("home") or {}).get("id"), event.get("league")),
+        team_fpi((event.get("away") or {}).get("id"), event.get("league")))
+
+
+picks = model.propose(linked, field=field, strat=strat,
+                      edge=fpi_disagreement)
 numbered = list(enumerate(picks, 1))
 by_key = {(p.away, p.home): p for p in picks}
 

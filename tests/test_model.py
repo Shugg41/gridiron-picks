@@ -131,6 +131,62 @@ xf = model.propose(crossed, field=xfield, strat=model.Strategy())[0]
 assert xf.field_on_team == 0.8, xf.field_on_team
 print("picks are named the way Splash names them OK")
 
+# ── FPI breaks the tie between coin flips ─────────────────────────────
+# Two near-identical coin flips. Without a second opinion the choice
+# between them is list order; with one, the game FPI thinks is
+# mispriced goes first. FPI never changes WHICH games are candidates
+# and never touches a game outside flip range.
+flips = [(game("AA", "BB"), ev("AA", "BB", details="BB -1")),
+         (game("CC", "DD"), ev("CC", "DD", details="DD -1")),
+         (game("EE", "FF"), ev("EE", "FF", details="FF -20"))]
+
+plain = model.propose(flips, strat=model.Strategy("chalk", 1))
+assert [p.basis for p in plain] == ["flip", "line", "line"], \
+    [p.basis for p in plain]
+
+# FPI likes CC (the away underdog in game two) far more than the
+# market: a negative, home-relative edge of 8 points.
+def edge(g, _e):
+    return {("CC", "DD"): -0.08}.get((g.away_code, g.home_code))
+
+
+led = model.propose(flips, strat=model.Strategy("chalk", 1), edge=edge)
+assert [p.basis for p in led] == ["line", "flip", "line"], \
+    "FPI did not move the flip to the game it disagrees on"
+assert led[1].team == "CC" and abs(led[1].fpi_lean - 0.08) < 1e-9
+
+# a blowout is never dragged into flip range by FPI, however much it
+# disagrees
+def loud(g, _e):
+    return -0.9 if (g.away_code, g.home_code) == ("EE", "FF") else None
+
+
+shout = model.propose(flips, strat=model.Strategy("chalk", 1), edge=loud)
+assert shout[2].basis == "line", "FPI made a 20-point game a coin flip"
+
+# a disagreement under the threshold is left alone, and an edge
+# function that fails on every game changes nothing
+tiny = model.propose(flips, strat=model.Strategy("chalk", 1),
+                     edge=lambda g, e: -0.001)
+assert [p.basis for p in tiny] == [p.basis for p in plain], "noise reordered it"
+none = model.propose(flips, strat=model.Strategy("chalk", 1),
+                     edge=lambda g, e: None)
+assert [p.basis for p in none] == [p.basis for p in plain]
+print("FPI reorders the coin flips and nothing else OK")
+
+# and the card says why, in the honest direction both ways
+from gridiron import view                                      # noqa: E402
+
+agree = view.standout(3, led[1])
+assert "FPI rates CC 8% more likely" in agree, agree
+against = model.Pick(away="AA", home="BB", team="AA", other="BB",
+                     prob=0.45, fpi_lean=-0.07)
+assert "less</em> likely" in view.standout(1, against)
+# silence when the two agree, rather than a line of filler
+assert view.fpi_note(model.Pick(fpi_lean=0.001)) == ""
+assert view.fpi_note(model.Pick()) == ""
+print("the card says why that flip and not another OK")
+
 # a game with no odds gets no pick, and is not quietly dropped
 assert by[("ZZZ", "QQQ")].team is None and by[("ZZZ", "QQQ")].basis == "none"
 

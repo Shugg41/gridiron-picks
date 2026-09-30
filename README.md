@@ -105,6 +105,25 @@ nighter lock at kickoff instead of at Saturday noon — none of it waits on
 an ESPN match, because the game that fails to match is exactly the one
 that would otherwise sort by the text "Mon 8:15pm" and never warn.
 
+**A second opinion.** Every pick used to come from one number: the
+betting line. ESPN's FPI is now fetched for the teams in any game
+already close enough to flip, and its view of the game is compared
+with the market's.
+
+It is allowed to do one narrow thing: decide which coin flip to take.
+FPI disagreeing with the line does not make FPI right — the market
+forecasts better, and overriding it would cost points — but choosing
+between two near-even games was previously arbitrary, and "the one an
+independent model prices differently" beats list order. It never
+changes which games are candidates and never touches the other
+thirty. The ordering is lexicographic rather than weighted: blending
+leverage and disagreement would need a number nobody has evidence
+for.
+
+Measured on a real slate: 28 games priced, median disagreement 2.7
+points of win probability, 7 games at 5 or more. Mostly the two
+agree, which is the expected and reassuring result.
+
 **Line movement.** ESPN's core API carries the opening line as well as
 the current one. The crowd piles onto favorites, so a favorite getting
 cheaper since it opened is usually sharper money on the other side — a
