@@ -137,21 +137,32 @@ def save():
 
 
 @st.cache_data(ttl=900, show_spinner=False)
-def scoreboard():
+def scoreboard(dates=None):
     """Both leagues, and whatever went wrong, as a value.
 
     The failure is returned rather than stashed in session_state: a
     cached function only runs on a miss, so anything it writes to state
     is silently absent on every subsequent run — the error would show
     once and then vanish while still being true.
+
+    Both the default payload and the dated one are taken, and the
+    union used. ESPN refuses this endpoint to anything but the app
+    itself, so the dates parameter could not be tested anywhere before
+    shipping it; a union cannot do worse than the default alone, which
+    makes that untestability survivable rather than a gamble.
     """
-    out, failed = [], []
+    windows = [None] if dates is None else [None, dates]
+    out, seen, failed = [], set(), []
     for league in ("CFB", "NFL"):
-        try:
-            out += espn.scoreboard(league)
-        except Exception as exc:
-            failed.append(f"{league}: {type(exc).__name__}")
-    return out, ", ".join(failed)
+        for window in windows:
+            try:
+                for event in espn.scoreboard(league, window):
+                    if event["event_id"] not in seen:
+                        seen.add(event["event_id"])
+                        out.append(event)
+            except Exception as exc:
+                failed.append(f"{league}: {type(exc).__name__}")
+    return out, ", ".join(sorted(set(failed)))
 
 
 # ── loading a week ──────────────────────────────────────────────────────
@@ -174,7 +185,7 @@ standings = [splash.Standing(rank=r[2], name=r[0], entry=r[1], points=r[3],
 strat = model.strategy(standings, max(0, WEEKS_IN_SEASON - (week or 0)))
 
 
-def enrich(games):
+def enrich(games, dates=None):
     """Attach an ESPN event to each game, remembering the link.
 
     A game that will not match keeps its place with no odds — the board
@@ -183,7 +194,7 @@ def enrich(games):
     """
     if not games:
         return {}
-    events = {e["event_id"]: e for e in scoreboard()[0]}
+    events = {e["event_id"]: e for e in scoreboard(dates)[0]}
     found, unlinked = {}, []
     for g in games:
         key = (g["away_code"], g["home_code"])
@@ -209,7 +220,8 @@ def enrich(games):
     return found
 
 
-events = enrich(games)
+_window = espn.window([g["kickoff"] for g in games])
+events = enrich(games, _window)
 linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
                        away=g["away"] or "", home=g["home"] or ""),
            events.get((g["away_code"], g["home_code"]))) for g in games]
@@ -254,7 +266,7 @@ if _note:
 
 if st.session_state.get("sync_error"):
     st.warning(f"Not saved to GitHub: {st.session_state['sync_error']}")
-_espn_error = scoreboard()[1]
+_espn_error = scoreboard(_window)[1]
 if _espn_error:
     st.caption(f"No lines right now — ESPN unreachable ({_espn_error}). "
                f"The card is intact; the odds are not.")

@@ -18,6 +18,8 @@ than st.cache_data for the same reason.
 import math
 import re
 import time
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -57,12 +59,55 @@ def _get(url, params=None, timeout=15):
     return r.json()
 
 
-def scoreboard(league, ttl=900):
-    """Every game ESPN knows about this week, already parsed."""
+ET = ZoneInfo("America/New_York")
+
+
+def window(kickoffs, pad=1):
+    """ESPN's YYYYMMDD-YYYYMMDD range for a set of kickoff timestamps.
+
+    Built in Eastern rather than UTC, which is the whole point: a
+    Thursday 8:15pm kickoff is stored as Friday 00:15Z, so a range
+    taken straight off the timestamps starts a day late and excludes
+    the game that locks first.
+
+    Padded by a day at each end. Extra events cost nothing — link()
+    needs both codes to match and claims each event at most once, so a
+    wider net cannot invent a game — while a range one day short
+    silently drops one.
+    """
+    days = []
+    for k in kickoffs:
+        try:
+            days.append(datetime.fromisoformat(
+                str(k).replace("Z", "+00:00")).astimezone(ET))
+        except (ValueError, TypeError):
+            continue
+    if not days:
+        return None
+    return (f"{(min(days) - timedelta(days=pad)):%Y%m%d}-"
+            f"{(max(days) + timedelta(days=pad)):%Y%m%d}")
+
+
+def scoreboard(league, dates=None, ttl=900):
+    """Every game ESPN knows about, already parsed.
+
+    With no `dates` this is whatever ESPN calls the current week, which
+    is not the week being picked: on a Tuesday the NFL scoreboard still
+    holds the games that just finished, so a board full of next
+    weekend's games matches nothing and every card reads "no line".
+
+    `dates` is ESPN's own YYYYMMDD-YYYYMMDD range, and it is in their
+    local reckoning rather than UTC — a Thursday night game is Friday
+    in UTC, so a range built from stored timestamps misses the game
+    that locks first. The caller pads it.
+    """
     def build():
-        data = _get(f"{SITE}/{PATH[league]}/scoreboard", {"limit": 400})
+        params = {"limit": 400}
+        if dates:
+            params["dates"] = dates
+        data = _get(f"{SITE}/{PATH[league]}/scoreboard", params)
         return [parse_event(ev, league) for ev in data.get("events", [])]
-    return cached(ttl, ("scoreboard", league), build)
+    return cached(ttl, ("scoreboard", league, dates), build)
 
 
 def summary(event_id, league, ttl=1800):

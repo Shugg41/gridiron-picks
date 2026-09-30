@@ -12,6 +12,8 @@ by hand in the shape the real API returns.
 import os
 import sys
 
+import requests
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from gridiron import espn, splash                              # noqa: E402
 
@@ -224,6 +226,62 @@ assert espn.movement({"items": [{"homeTeamOdds": {
     "open": {"pointSpread": {"american": "+3"}},
     "current": {"pointSpread": {"american": "+3.2"}}}}]}, "H", "A") == (None, None)
 print("no move, no opener, and noise all report nothing OK")
+
+# ── the date range, built in Eastern ────────────────────────────
+# The real week 5 board: Thursday 8:15pm ET is stored as Friday 00:15Z,
+# so a range taken off the raw timestamps starts on the 2nd and drops
+# the game that locks first.
+BOARD = open(os.path.join(HERE, "fixtures", "board_week5.txt")).read()
+_kicks = [g.kickoff_iso for g in splash.parse_board(BOARD).games]
+assert min(_kicks).startswith("2026-10-02"), "the fixture changed"
+assert espn.window(_kicks) == "20260930-20261006", espn.window(_kicks)
+assert espn.window(_kicks, pad=0) == "20261001-20261005", \
+    espn.window(_kicks, pad=0)
+# junk in, nothing out — never a range that quietly means "all of time"
+assert espn.window([]) is None
+assert espn.window([None, "", "not a date"]) is None
+assert espn.window(["2026-10-03T16:00Z", "bad"]) == "20261002-20261004"
+print("the ESPN window is built in Eastern and padded OK")
+
+# ── asking for a date range ────────────────────────────────────────────
+# Without one the scoreboard is whatever ESPN calls this week, which on
+# a Tuesday is the week that just finished — so the board matches
+# nothing and every card reads "no line". ESPN refuses this endpoint to
+# anything but the app, so the shape of the call is what can be tested.
+seen_params = []
+
+
+class _Empty:
+    status_code = 200
+
+    @staticmethod
+    def json():
+        return {"events": []}
+
+    @staticmethod
+    def raise_for_status():
+        pass
+
+
+def spy(url, params=None, **kw):
+    seen_params.append((url, dict(params or {})))
+    return _Empty()
+
+
+_real_get, requests.get = requests.get, spy
+espn.clear_cache()
+try:
+    espn.scoreboard("NFL")
+    espn.scoreboard("NFL", "20261001-20261006")
+    espn.scoreboard("NFL", "20261001-20261006")     # cached, not refetched
+finally:
+    requests.get = _real_get
+assert len(seen_params) == 2, f"the dated call was not cached: {seen_params}"
+assert "dates" not in seen_params[0][1], seen_params[0]
+assert seen_params[1][1]["dates"] == "20261001-20261006", seen_params[1]
+assert seen_params[0][1]["limit"] == seen_params[1][1]["limit"] == 400
+espn.clear_cache()
+print("the scoreboard can be asked for a date range, and caches per range OK")
 
 # ── the cache is a cache, and can be emptied ────────────────────────────
 calls = []
