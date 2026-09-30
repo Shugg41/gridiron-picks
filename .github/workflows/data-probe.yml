@@ -20,3 +20,6 @@ jobs:
       # runner at all once it stops announcing itself as a script.
       - run: python scripts/probe_dates.py
         if: always()
+      # Is the movement the app reports as advice actually real?
+      - run: python scripts/probe_movement.py
+        if: always()
