@@ -181,6 +181,12 @@ is the polling loop.
 - **pick-reminder** — Saturday morning, if no entry has been pasted or a
   game has no pick.
 - **results-recap** — the week's record, from Splash's grading.
+- **running score** — sent by the app itself as games finish, not by an
+  Action: it needs ESPN's finals, which GitHub's runners are refused.
+  Keep-awake runs hourly Thursday to Monday, and each load grades
+  whatever has finished and pushes the new record, with the card's
+  record on the same games beside it when the two differ. Keyed on the
+  record, so a reload between games sends nothing.
 - **keep-awake** — every 2h so Streamlit Cloud never sleeps.
 
 Needs an `NTFY_TOPIC` repo Actions secret matching the topic subscribed

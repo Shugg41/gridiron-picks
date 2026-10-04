@@ -128,6 +128,33 @@ def _conn(identity):
 sync, conn = _sync(), _conn(_db_identity())
 
 
+def push(title, body, tags, key):
+    """Send one ntfy notification, at most once per distinct `key`.
+
+    The marker lives in the database rather than in session_state.
+    Keep-awake opens a brand new browser session every two hours, so
+    session_state is always empty there and anything deduped against
+    it would have been re-sent round the clock.
+    """
+    topic = secret("NTFY_TOPIC")
+    if not topic or store.meta_get(conn, "last_push") == key:
+        return
+    try:
+        import urllib.request
+        # Headers are latin-1 only; an emoji in a title raises before
+        # anything is sent, which is how the Saturday reminder spent a
+        # month never going out.
+        req = urllib.request.Request(
+            f"https://ntfy.sh/{topic}", data=body.encode(),
+            headers={"Title": title.encode("ascii", "ignore").decode(),
+                     "Tags": tags})
+        urllib.request.urlopen(req, timeout=10)
+        store.meta_set(conn, "last_push", key)
+        conn.commit()
+    except Exception:
+        pass                          # a failed push must never break the page
+
+
 def save():
     conn.commit()
     if sync.enabled and not sync.push(conn):
@@ -257,6 +284,19 @@ events = enrich(games, _window)
 if week and store.grade_from_scores(conn, SEASON, week):
     entry = store.week_entry(conn, SEASON, week)
     save()
+
+# A running score through the day, pushed only when it has actually
+# moved. Keyed on the record itself, so a reload between games sends
+# nothing and every finished game sends once.
+if week:
+    _w, _l, _left = store.week_record(conn, SEASON, week)
+    if _w + _l:
+        _line = f"{_w}-{_l}" + (f", {_left} to play" if _left else " — final")
+        _cw, _cl = store.card_record(conn, SEASON, week)
+        if (_cw, _cl) != (_w, _l) and _cw + _cl:
+            _line += f". The card is {_cw}-{_cl} on the same games."
+        push(f"Week {week}: {_w}-{_l}", _line, "football",
+             key=f"score:{week}:{_w}-{_l}-{_left}")
 linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
                        away=g["away"] or "", home=g["home"] or ""),
            events.get((g["away_code"], g["home_code"]))) for g in games]
@@ -516,20 +556,9 @@ if games and not entry:
 if moves:
     st.warning("**Since you picked:**\n\n"
                + "\n".join(f"- {c}" for c in moves))
-    topic = secret("NTFY_TOPIC")
-    pushed_key = f"pushed:{week}:" + "|".join(str(c) for c in moves)
-    if topic and st.session_state.get("last_push") != pushed_key:
-        try:
-            import urllib.request
-            req = urllib.request.Request(
-                f"https://ntfy.sh/{topic}",
-                data=("\n".join(str(c) for c in moves)).encode(),
-                headers={"Title": "Something moved on a game you picked",
-                         "Tags": "warning,football"})
-            urllib.request.urlopen(req, timeout=10)
-            st.session_state["last_push"] = pushed_key
-        except Exception:
-            pass                      # a failed push must never break the page
+    push("Something moved on a game you picked",
+         "\n".join(str(c) for c in moves), "warning,football",
+         key=f"moved:{week}:" + "|".join(str(c) for c in moves))
 
 # ── how the week is likely to go ────────────────────────────────────────
 with st.expander("Odds this week"):

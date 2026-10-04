@@ -207,6 +207,42 @@ def season_record(conn, season):
     return tuple(int(x or 0) for x in row)
 
 
+def week_record(conn, season, week):
+    """(won, lost, still to play) for the entry this week."""
+    row = conn.execute(
+        "SELECT SUM(result='W'), SUM(result='L'), "
+        "       SUM(result IS NULL AND team IS NOT NULL) "
+        "FROM entry WHERE season=? AND week=?", (season, week)).fetchone()
+    return tuple(int(x or 0) for x in row)
+
+
+def card_record(conn, season, week):
+    """(won, lost) for what the app proposed, over the same graded games.
+
+    Only games where both the entry and the proposal exist and the
+    result is in, so the two records are always measured on identical
+    games and the comparison means something.
+    """
+    won = lost = 0
+    for team, result, g_away, g_home, a_sc, h_sc in conn.execute(
+            "SELECT p.team, e.result, g.away_code, g.home_code, "
+            "       g.away_score, g.home_score "
+            "FROM proposal p "
+            "JOIN entry e ON e.season=p.season AND e.week=p.week "
+            " AND e.away_code=p.away_code AND e.home_code=p.home_code "
+            "JOIN game g ON g.season=p.season AND g.week=p.week "
+            " AND g.away_code=p.away_code AND g.home_code=p.home_code "
+            "WHERE p.season=? AND p.week=? AND e.result IS NOT NULL "
+            "  AND g.away_score IS NOT NULL AND g.home_score IS NOT NULL",
+            (season, week)):
+        if a_sc == h_sc:
+            continue
+        winner = g_away if a_sc > h_sc else g_home
+        won += team == winner
+        lost += team != winner
+    return won, lost
+
+
 def grade_from_scores(conn, season, week):
     """Fill in results from final scores the app has already fetched.
 

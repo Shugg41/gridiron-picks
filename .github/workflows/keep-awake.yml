@@ -14,7 +14,10 @@ name: Keep app awake
 
 on:
   schedule:
-    - cron: "23 */2 * * *"   # every 2 hours (offset from :00 to dodge cron rush)
+    - cron: "23 */2 * * 2,3"   # every 2h Tue/Wed: just keep it awake
+    - cron: "23 * * * 4,5,6,0,1"  # hourly Thu-Mon: games are being played,
+                                  # and this load is what grades them and
+                                  # pushes the running score
   workflow_dispatch: {}
 
 jobs:

@@ -138,6 +138,17 @@ assert store.grade_from_scores(gr, 2026, 7) == 0
 assert store.week_entry(gr, 2026, 7)[("AA", "BB")] == ("AA", "L")
 print("results can be graded from the finals, without overwriting Splash OK")
 
+# ── the running score, and the card beside it ─────────────────────────
+assert store.week_record(gr, 2026, 7) == (0, 2, 2), store.week_record(gr, 2026, 7)
+store.save_proposals(gr, 2026, 7, [("AA", "BB", "AA", "line"),
+                                   ("CC", "DD", "DD", "line"),
+                                   ("GG", "HH", "GG", "line")])
+# measured only on games both have and that are graded: AA (both
+# right by the scoreline) and CC (the card took DD and won it)
+assert store.card_record(gr, 2026, 7) == (2, 0), store.card_record(gr, 2026, 7)
+assert store.week_record(gr, 2026, 9) == (0, 0, 0), "a week with nothing in it"
+print("week record and the card's record on the same games OK")
+
 # the pool and the picker want different numbers out of the same rows
 store.save_entry(conn, 2026, 4, [{"away_code": "AA", "home_code": "BB",
                                   "team": "AA", "result": "W"}])
