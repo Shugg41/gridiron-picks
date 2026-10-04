@@ -80,6 +80,54 @@ jobs:
               return False
 
 
+          # What the database says MUST therefore be on the page.
+          # "It did not crash" is too weak a test: FPI spent a
+          # fortnight returning 404, the late-change watch sat idle,
+          # and the recap could not fire — all behind a green ping.
+          # Each of those was a feature quietly producing nothing, and
+          # nothing is exactly what this used to accept.
+          def expectations():
+              import sqlite3
+              want = []
+              try:
+                  db = sqlite3.connect("football_picks.db")
+                  season, week = 2026, db.execute(
+                      "SELECT MAX(week) FROM game WHERE season=2026"
+                  ).fetchone()[0]
+                  games = db.execute(
+                      "SELECT COUNT(*) FROM game WHERE season=? AND week=?",
+                      (season, week)).fetchone()[0]
+                  if games:
+                      want.append((f"{games} games", "the week's game count"))
+                  if db.execute("SELECT COUNT(*) FROM standing").fetchone()[0]:
+                      want.append(("points a week", "the strategy line"))
+                  graded = db.execute(
+                      "SELECT COUNT(*) FROM entry WHERE result IS NOT NULL"
+                  ).fetchone()[0]
+                  if graded:
+                      want.append(("Season ", "the season record"))
+                  db.close()
+              except Exception as e:
+                  print("could not read expectations:", type(e).__name__)
+              return want
+
+
+          def missing(page, want):
+              out = []
+              for needle, what in want:
+                  seen = False
+                  for f in page.frames:
+                      try:
+                          if needle in f.locator("body").inner_text():
+                              seen = True
+                              break
+                      except Exception:
+                          pass
+                  if not seen:
+                      out.append(f"{what} (looked for {needle!r})")
+              return out
+
+
           with sync_playwright() as p:
               browser = p.chromium.launch()
               page = browser.new_page()
@@ -114,6 +162,13 @@ jobs:
                               print("App is up and rendering.")
                               page.wait_for_timeout(15_000)  # hold the session open
                               if broken(page):
+                                  browser.close()
+                                  sys.exit(1)
+                              gone = missing(page, expectations())
+                              if gone:
+                                  dump(page, "page is missing what it should show")
+                                  for g in gone:
+                                      print("MISSING:", g)
                                   browser.close()
                                   sys.exit(1)
                               browser.close()
