@@ -573,16 +573,12 @@ with st.expander("Odds this week"):
         # which is exactly too late to act on them. Stand the field up
         # from what this pool has done at similar prices in weeks 1-4
         # so the question can be asked while the answer still matters.
-        shares = {}
-        for g, ev in linked:
-            key = (g.away_code, g.home_code)
-            share = model.expected_share((ev or {}).get("line"))
-            fav, dog, _p = model.favorite(ev)
-            if share is None or not fav:
-                continue
-            fav, dog = model._board_codes(g, ev, fav, dog)
-            shares[key] = {fav: share, dog: 1 - share}
-        if shares and standings:
+        # Every game in probs, or none of them. An estimated field
+        # covering fewer games than the entry is scored on wins
+        # nothing and makes the entry look unbeatable.
+        shares = {k: model.crowd_split(v) for k, v in probs.items()}
+        shares = {k: v for k, v in shares.items() if v}
+        if standings and len(shares) == len(probs) and shares:
             rivals = simulate.estimated_rivals(
                 shares, max(1, len(standings) - 1))
             estimated = bool(rivals)
@@ -615,9 +611,11 @@ with st.expander("Odds this week"):
         flipped, chalk = simulate.what_flips_are_worth(picks, probs, rivals,
                                                        trials=4000)
         if flipped.mean != chalk.mean or flipped.any_win != chalk.any_win:
+            _gap = chalk.mean - flipped.mean
+            _verb = "cost" if _gap >= 0 else "gain"
             st.caption(
-                f"The flips cost {chalk.mean - flipped.mean:+.2f} in expected "
-                f"score and move your chance of finishing first from "
+                f"The flips {_verb} {abs(_gap):.2f} in expected score and "
+                f"move your chance of finishing first from "
                 f"{chalk.any_win:.0%} to {flipped.any_win:.0%}. That trade is "
                 f"the whole argument for making them — if it ever reads the "
                 f"wrong way round, stop flipping.")

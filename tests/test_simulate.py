@@ -181,4 +181,35 @@ assert model.expected_share(-7) == model.expected_share(7)
 assert model.FIELD_RMS > 0.1, "the fit is worse than it looks; say so"
 print("the crowd curve is monotone, sign-blind and honest about error OK")
 
+# ── the field must cover every game the entry is scored on ────────────
+# It did not. The estimate was built only from games that still had a
+# line, and ESPN drops the odds once a game kicks off — so late in a
+# week the imaginary rivals were playing a three-game week against the
+# entry's thirty-six and lost every trial. The page said 100% to win.
+# twelve games, as a real week is, with only the first still quoted
+all_probs = {(f"A{i}", f"B{i}"): {f"A{i}": 0.8 if i == 0 else 0.5,
+                                  f"B{i}": 0.2 if i == 0 else 0.5}
+             for i in range(12)}
+split = {k: model.crowd_split(v) for k, v in all_probs.items()}
+assert all(split.values()), "a game was left without a crowd split"
+assert set(split) == set(all_probs), "the field would miss games"
+
+mine = {k: list(v)[0] for k, v in all_probs.items()}
+quoted = {("A0", "B0"): split[("A0", "B0")]}
+bad = simulate.simulate(mine, all_probs, simulate.estimated_rivals(quoted, 37),
+                        trials=800)
+good = simulate.simulate(mine, all_probs, simulate.estimated_rivals(split, 37),
+                         trials=800)
+assert bad.win > 0.95, f"the bug no longer reproduces: {bad.win}"
+assert good.win < 0.5, f"still beating a full field almost always: {good.win}"
+print(f"a field short of games wins {bad.win:.0%}; a full one {good.win:.0%} OK")
+
+# a coin flip splits the pool evenly rather than inventing a favourite
+assert model.crowd_split({"A": 0.5, "B": 0.5}) == {"A": 0.5, "B": 0.5}
+assert model.crowd_split({"A": 1.0}) is None
+assert model.crowd_split(None) is None
+heavy = model.crowd_split({"A": 0.85, "B": 0.15})
+assert heavy["A"] > 0.95 and abs(sum(heavy.values()) - 1) < 1e-9
+print("a crowd split exists for every game, from probability alone OK")
+
 print("\nALL SIMULATE TESTS PASS")

@@ -9,6 +9,7 @@ and it depends on the standings rather than on any single game.
 Nothing here touches the network or the database.
 """
 import math
+from statistics import NormalDist
 from dataclasses import dataclass
 from typing import Optional
 
@@ -200,6 +201,39 @@ def expected_share(line):
     if line is None:
         return None
     return 1 / (1 + math.exp(-(FIELD_A + FIELD_B * abs(line))))
+
+
+def crowd_split(sides):
+    """{team: expected crowd share} from {team: win probability}.
+
+    Works off the probability rather than the line so that every game
+    gets a split, including the ones ESPN has stopped quoting odds on
+    — which is all of them once a game kicks off.
+
+    That mattered more than it sounds. The estimated field was built
+    only from games that still had a line, while the entry was scored
+    on all thirty-six, so the imaginary rivals were playing a
+    three-game week against a thirty-six-game one and lost every
+    trial. The page said 100% to win outright.
+
+    The probability is turned back into a notional margin and run
+    through the same fitted curve. A true coin flip splits the pool
+    evenly, which is the honest answer when nothing is known.
+    """
+    if not sides or len(sides) != 2:
+        return None
+    (a, pa), (b, pb) = list(sides.items())
+    fav, other, p = (a, b, pa) if pa >= pb else (b, a, pb)
+    if p is None:
+        return None
+    if abs(p - 0.5) < 1e-6:
+        return {fav: 0.5, other: 0.5}
+    # One spread, not per-league: `sides` does not say which league it
+    # came from, and the curve is shallow enough that the difference
+    # between 13.2 and 16.5 moves the share by a point or two.
+    line = 14.5 * NormalDist().inv_cdf(min(max(p, 0.001), 0.999))
+    share = expected_share(line)
+    return {fav: share, other: 1 - share}
 
 
 def propose(linked, field=None, strat=None, edge=None):
