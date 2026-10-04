@@ -375,6 +375,30 @@ caps = " ".join(c.value for c in at8.caption)
 assert "not locked" in caps, caps
 print("suggestions survive the entry, and say where they differ OK")
 
+# ── a notifier with nowhere to send says so ───────────────────────────
+# NTFY_TOPIC is a GitHub Actions secret and the app reads Streamlit's,
+# which are a different store. Two of the four alerts are sent by the
+# app, so both sent nothing for a week and nothing said a word.
+assert "NTFY_TOPIC" not in os.environ, "this test needs the topic unset"
+# nothing graded yet, so there is nothing to send and nothing to say
+assert not any("Phone alerts" in c.value for c in at8.caption), \
+    "it should not nag when it has nothing to send"
+
+_g = _sq.connect(os.path.join(WORK, "football_picks.db"))
+_g.execute("UPDATE entry SET result='W' WHERE season=2026 AND week=5 "
+           "AND away_code='ARI'")
+_g.execute("UPDATE entry SET result='L' WHERE season=2026 AND week=5 "
+           "AND away_code='PIT'")
+_g.commit()
+_g.close()
+
+at9 = run()
+boom(at9, "with a record to announce and nowhere to send it")
+caps = " ".join(c.value for c in at9.caption)
+assert "Phone alerts are not going out" in caps, caps
+assert "NTFY_TOPIC" in caps
+print("an unconfigured notifier is visible, not silent OK")
+
 # ── ESPN being unreachable must not cost a single game ──────────────────
 def dead(url, params=None, **kw):
     raise requests.ConnectionError("no route to host")

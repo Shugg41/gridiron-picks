@@ -244,7 +244,15 @@ app's Secrets:
 ```toml
 GITHUB_TOKEN = "github_pat_…"   # fine-grained PAT, Contents read/write
 GITHUB_REPO  = "Shugg41/gridiron-picks"
+NTFY_TOPIC   = "…"              # same topic as the Actions secret
 ```
+
+`NTFY_TOPIC` has to be here as well as in the repo's Actions secrets.
+They are different stores, and two of the four alerts are sent by the
+app rather than by a workflow — the late-change watch and the running
+score both need ESPN, which refuses GitHub's runners. Without it in
+the app's Secrets those two send nothing, which is exactly what
+happened for a week. The page now says so instead of staying quiet.
 
 Without them the app still runs, local only.
 

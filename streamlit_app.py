@@ -128,6 +128,13 @@ def _conn(identity):
 sync, conn = _sync(), _conn(_db_identity())
 
 
+# Why the last push did not go out, if it did not. Shown on the page:
+# a notifier that silently does nothing is the fourth feature this
+# week to fail that way, and the only reason the others were found is
+# that somebody happened to look.
+_push_problem = None
+
+
 def push(title, body, tags, key):
     """Send one ntfy notification, at most once per distinct `key`.
 
@@ -136,8 +143,15 @@ def push(title, body, tags, key):
     session_state is always empty there and anything deduped against
     it would have been re-sent round the clock.
     """
+    global _push_problem
     topic = secret("NTFY_TOPIC")
-    if not topic or store.meta_get(conn, "last_push") == key:
+    if not topic:
+        _push_problem = (
+            "no **NTFY_TOPIC** in this app's Secrets. The GitHub Actions "
+            "secret of that name does not reach the app — it needs adding "
+            "under Manage app → Settings → Secrets.")
+        return
+    if store.meta_get(conn, "last_push") == key:
         return
     try:
         import urllib.request
@@ -151,8 +165,11 @@ def push(title, body, tags, key):
         urllib.request.urlopen(req, timeout=10)
         store.meta_set(conn, "last_push", key)
         conn.commit()
-    except Exception:
-        pass                          # a failed push must never break the page
+    except Exception as exc:
+        # Never break the page over it, but never swallow it either —
+        # a push that fails silently is indistinguishable from one
+        # that was never configured.
+        _push_problem = f"ntfy refused it: {type(exc).__name__}: {exc}"
 
 
 def save():
@@ -559,6 +576,9 @@ if moves:
     push("Something moved on a game you picked",
          "\n".join(str(c) for c in moves), "warning,football",
          key=f"moved:{week}:" + "|".join(str(c) for c in moves))
+
+if _push_problem:
+    st.caption(f"Phone alerts are not going out — {_push_problem}")
 
 # ── how the week is likely to go ────────────────────────────────────────
 with st.expander("Odds this week"):
