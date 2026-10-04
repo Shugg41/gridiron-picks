@@ -108,6 +108,36 @@ assert store.missing_picks(conn, 2026, 4) == {("ATL", "GB")}, \
 assert store.missing_picks(conn, 2026, 9) == set()
 print("a missing pick can be told apart from a wrong one OK")
 
+# ── grading from the finals the app already has ───────────────────────
+# The recap reads results out of here and only Splash ever wrote them,
+# so a week recorded any other way — from screenshots, say — never got
+# graded and the recap stayed silent for good. It did exactly that.
+gr = store.connect(":memory:")
+store.save_games(gr, 2026, 7, [
+    splash.Game(away_code="AA", home_code="BB", away_score=21, home_score=17),
+    splash.Game(away_code="CC", home_code="DD", away_score=10, home_score=24),
+    splash.Game(away_code="EE", home_code="FF", away_score=13, home_score=13),
+    splash.Game(away_code="GG", home_code="HH")])          # not played yet
+store.save_entry(gr, 2026, 7, [
+    {"away_code": "AA", "home_code": "BB", "team": "AA", "result": None},
+    {"away_code": "CC", "home_code": "DD", "team": "CC", "result": None},
+    {"away_code": "EE", "home_code": "FF", "team": "EE", "result": None},
+    {"away_code": "GG", "home_code": "HH", "team": "GG", "result": None}])
+assert store.grade_from_scores(gr, 2026, 7) == 2
+got = store.week_entry(gr, 2026, 7)
+assert got[("AA", "BB")] == ("AA", "W"), got[("AA", "BB")]
+assert got[("CC", "DD")] == ("CC", "L"), got[("CC", "DD")]
+assert got[("EE", "FF")] == ("EE", None), "a tie decides nothing"
+assert got[("GG", "HH")] == ("GG", None), "an unplayed game is not a loss"
+
+# Splash's own grading is never overwritten — it knows about forfeits
+# and its own scoring rules, and a scoreline does not
+store.save_entry(gr, 2026, 7, [{"away_code": "AA", "home_code": "BB",
+                                "team": "AA", "result": "L"}])
+assert store.grade_from_scores(gr, 2026, 7) == 0
+assert store.week_entry(gr, 2026, 7)[("AA", "BB")] == ("AA", "L")
+print("results can be graded from the finals, without overwriting Splash OK")
+
 # the pool and the picker want different numbers out of the same rows
 store.save_entry(conn, 2026, 4, [{"away_code": "AA", "home_code": "BB",
                                   "team": "AA", "result": "W"}])

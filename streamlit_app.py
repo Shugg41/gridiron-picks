@@ -232,11 +232,31 @@ def enrich(games, dates=()):
                 (evt["event_id"], evt.get("date"), SEASON, week,
                  sg.away_code, sg.home_code))
         conn.commit()
+
+    # Keep the finals. They are already in the payload, and without
+    # them the recap alert has nothing to report on a week whose picks
+    # were recorded from anything other than a pasted Splash page.
+    for key, evt in found.items():
+        if not evt.get("completed"):
+            continue
+        a, h = (evt.get("away") or {}).get("score"), (evt.get("home") or {}).get("score")
+        if a is None or h is None:
+            continue
+        conn.execute(
+            "UPDATE game SET away_score=?, home_score=?, status='FINAL' "
+            "WHERE season=? AND week=? AND away_code=? AND home_code=?",
+            (a, h, SEASON, week, key[0], key[1]))
+    conn.commit()
     return found
 
 
 _window = tuple(espn.window([g["kickoff"] for g in games]))
 events = enrich(games, _window)
+# Grade whatever the finals now settle. Splash's own results win where
+# it has given them; this only fills blanks.
+if week and store.grade_from_scores(conn, SEASON, week):
+    entry = store.week_entry(conn, SEASON, week)
+    save()
 linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
                        away=g["away"] or "", home=g["home"] or ""),
            events.get((g["away_code"], g["home_code"]))) for g in games]

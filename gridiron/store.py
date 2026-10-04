@@ -207,6 +207,45 @@ def season_record(conn, season):
     return tuple(int(x or 0) for x in row)
 
 
+def grade_from_scores(conn, season, week):
+    """Fill in results from final scores the app has already fetched.
+
+    The recap alert reads results out of this database and Splash is
+    the only thing that ever wrote them, which means a week whose
+    picks were recorded any other way — from a screenshot, say — never
+    gets graded and the recap stays silent for good. It did.
+
+    ESPN's finals are sitting in the game table. A pick with a winner
+    beside it is a result, and working that out needs nobody to paste
+    anything.
+
+    Only empty results are filled. Splash's own grading is
+    authoritative where it exists: it knows about forfeits, voided
+    games and its own scoring rules, and a scoreline does not.
+    Returns how many were graded.
+    """
+    done = 0
+    rows = conn.execute(
+        "SELECT g.away_code, g.home_code, g.away_score, g.home_score, e.team "
+        "FROM game g JOIN entry e "
+        "  ON e.season=g.season AND e.week=g.week "
+        " AND e.away_code=g.away_code AND e.home_code=g.home_code "
+        "WHERE g.season=? AND g.week=? AND e.result IS NULL "
+        "  AND e.team IS NOT NULL "
+        "  AND g.away_score IS NOT NULL AND g.home_score IS NOT NULL",
+        (season, week)).fetchall()
+    for away, home, a_sc, h_sc, team in rows:
+        if a_sc == h_sc:
+            continue                      # a tie decides nothing
+        winner = away if a_sc > h_sc else home
+        conn.execute(
+            "UPDATE entry SET result=? WHERE season=? AND week=? "
+            "AND away_code=? AND home_code=?",
+            ("W" if team == winner else "L", season, week, away, home))
+        done += 1
+    return done
+
+
 def missing_picks(conn, season, week):
     """Games Splash has stated outright were never picked.
 

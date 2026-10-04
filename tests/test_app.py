@@ -342,12 +342,24 @@ print(f"{proposals(5)} proposals recorded, none back-dated OK")
 # Picks go in fast and get revisited, and the revisit is the one where
 # a line has moved and there is still time. The flips used to vanish
 # the moment an entry existed, which made the second visit useless.
+from datetime import datetime, timedelta, timezone                # noqa: E402
+
+# Dated forward from now, not pinned to a date in the fixture. The
+# first version of this used the board's real kickoffs, which were in
+# the future the day it was written and in the past four days later —
+# so the whole section quietly stopped testing anything.
+_soon = (datetime.now(timezone.utc) + timedelta(days=3)).strftime(
+    "%Y-%m-%dT%H:%MZ")
 _e = _sq.connect(os.path.join(WORK, "football_picks.db"))
 _e.execute("DELETE FROM entry WHERE season=2026 AND week=5")
 _e.executemany(
     "INSERT INTO entry (season, week, away_code, home_code, team) "
     "VALUES (2026, 5, ?, ?, ?)",
     [("ARI", "NYG", "ARI"), ("PIT", "CLE", "PIT")])
+_e.executemany(
+    "UPDATE game SET kickoff=? WHERE season=2026 AND week=5 "
+    "AND away_code=? AND home_code=?",
+    [(_soon, "ARI", "NYG"), (_soon, "PIT", "CLE")])
 _e.commit()
 _e.close()
 
