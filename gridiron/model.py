@@ -173,22 +173,32 @@ def _board_codes(game, event, fav, dog):
 FPI_AGREES = 0.02
 
 
-# How hard this pool backs a favorite, fitted to 43 of its own games
-# across weeks 1-4: share = logistic(A + B x line).
+# How hard this pool backs a favorite, fitted to 75 of its own games
+# across weeks 1-5: share = logistic(A + B x line).
 #
-# The intercept is the story. A one-point favorite already draws 79% of
-# these thirty-eight entries, and seven points of spread buys only
-# eleven points more. This is a chalky pool and the price barely moves
-# it.
+# The first version of this was fitted to 43 games and was wrong in a
+# way that mattered. It had an intercept of 1.138 and a slope of
+# 0.157, which says a one-point favorite already draws 78% and the
+# price barely moves the crowd after that. With the whole season's
+# field in hand, neither half holds: a one-point favorite draws 61%,
+# and the line moves this pool a great deal more than it appeared to
+# — the slope more than doubles. The old curve was flattered by a
+# sample that happened to be short of close games.
 #
-# FIELD_RMS is the residual spread, and it is large — twelve points
-# against a range of eighteen. The line explains some of what this
-# crowd does and nowhere near all of it: the worst miss was Texas
-# favored by two and a half with the pool 40% on them, forty-three
-# points adrift. Those games are where a week is won, and by
-# definition this cannot see them coming. Any number derived from
-# here should be shown with that admission attached.
-FIELD_A, FIELD_B, FIELD_RMS = 1.138, 0.157, 0.125
+# The direction of the error is the point. On a near-pick'em the old
+# curve claimed 78-80% of the pool would be on the favorite when the
+# truth is nearer two thirds, so every contrarian play looked more
+# contrarian than it was, and the estimated field was too concentrated
+# exactly where a week is actually won or lost.
+#
+# FIELD_RMS is the residual spread. It improves, 0.125 to 0.103, but
+# it is still large and the misses are all one shape: five of them,
+# every one a short favorite the pool refused to back. Ohio State laid
+# two and a half at Texas and took 40% of the room against a predicted
+# 73%. Those games are where a week is won, and by definition a curve
+# drawn through the line alone cannot see them coming. Any number
+# derived from here should be shown with that admission attached.
+FIELD_A, FIELD_B, FIELD_RMS = 0.087, 0.369, 0.103
 
 
 def expected_share(line):

@@ -172,9 +172,17 @@ assert simulate.estimated_rivals({}, 5) == {}
 assert simulate.estimated_rivals(None, 5) == {}
 print("a field can be estimated before the deadline OK")
 
-# the curve it rests on, and its stated error
-assert 0.75 < model.expected_share(1) < 0.82, model.expected_share(1)
-assert 0.95 < model.expected_share(14) < 0.99
+# the curve it rests on, and its stated error.
+# These bounds are the measured field, not the fit: across 75 priced
+# games the pool put 68% on favorites of under two points and 98% on
+# favorites of ten or more. The first fit, drawn from 43 games, said
+# 78% at a point — which is why these are pinned to what the crowd
+# did rather than to whatever the constants currently are.
+assert 0.58 < model.expected_share(1) < 0.68, model.expected_share(1)
+assert 0.95 < model.expected_share(14) < 1.0
+# the near-pick'em end is where the estimate earns or loses its keep,
+# so the curve has to stay well clear of chalk there
+assert model.expected_share(1) < model.expected_share(3) < 0.85
 assert model.expected_share(None) is None
 # the sign of the line must not matter — a favorite is a favorite
 assert model.expected_share(-7) == model.expected_share(7)
