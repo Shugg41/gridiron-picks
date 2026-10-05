@@ -48,11 +48,25 @@ def get(url):
         return json.load(r)
 
 
+_ABBR = {}
+
+
 def abbr_of(ref):
+    """A team's code, asked for once per team rather than once per game.
+
+    Every event names its two teams by URL, and resolving each one is
+    its own request. Over five weeks that is about nine hundred calls
+    for roughly a hundred and fifty distinct teams, and the job ran
+    out of its six minutes long before it ran out of games — which is
+    why the first fit saw 43 of the season instead of all of it.
+    """
+    if ref in _ABBR:
+        return _ABBR[ref]
     try:
-        return get(ref).get("abbreviation")
+        _ABBR[ref] = get(ref).get("abbreviation")
     except Exception:
-        return None
+        _ABBR[ref] = None
+    return _ABBR[ref]
 
 
 def events_for(league, week):

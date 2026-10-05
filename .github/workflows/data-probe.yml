@@ -5,30 +5,37 @@
 name: ESPN data probe
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "all probes, or just the line backfill"
+        type: choice
+        options: [all, lines]
+        default: all
 
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       # stdlib only: the point is to learn what a plain client is served
       - run: python scripts/probe_espn.py
+        if: inputs.scope == 'all'
       # Separate question, same "probe before you build" rule: can the
       # scoreboard be asked for a date range, and does site.api answer a
       # runner at all once it stops announcing itself as a script.
       - run: python scripts/probe_dates.py
-        if: always()
+        if: always() && inputs.scope == 'all'
       # Is the movement the app reports as advice actually real?
       - run: python scripts/probe_movement.py
-        if: always()
+        if: always() && inputs.scope == 'all'
       # Is FPI worth wiring in, or does it just agree with the line?
       - run: python scripts/probe_fpi.py
-        if: always()
+        if: always() && inputs.scope == 'all'
       # Every FPI call 404s or similar; find the path that answers.
       - run: python scripts/probe_paths.py
-        if: always()
+        if: always() && inputs.scope == 'all'
       # Pair each past game's crowd share with the price the pool was
       # offered. TSV to stdout, read back out of the log.
       - run: python scripts/backfill_lines.py
