@@ -10,7 +10,7 @@ on:
       scope:
         description: "all probes, or just the line backfill"
         type: choice
-        options: [all, lines]
+        options: [all, lines, deepdive]
         default: all
 
 jobs:
@@ -39,4 +39,9 @@ jobs:
       # Pair each past game's crowd share with the price the pool was
       # offered. TSV to stdout, read back out of the log.
       - run: python scripts/backfill_lines.py
-        if: always()
+        if: always() && inputs.scope != 'deepdive'
+      # A whole-week read: every game's price against what this pool
+      # will do with it, and the week simulated against 37 rivals whose
+      # chalkiness is measured from their own five weeks of cards.
+      - run: python scripts/deep_dive.py
+        if: always() && inputs.scope == 'deepdive'
