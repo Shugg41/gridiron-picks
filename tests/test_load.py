@@ -76,11 +76,20 @@ git(theirs, "config", "user.name", "App")
 
 # ── loading without --push touches nothing outside the file ────────────
 # Asked for week 6, handed week 5's board: the page wins, and says so.
+#
+# Week 6 is counted before and after rather than assumed empty. It was
+# assumed empty, and then week 6 was played and loaded into the real
+# database this test copies — so the assertion started failing on a
+# change that had nothing to do with it. What is actually being tested
+# is that the week the page names takes the games and the week the
+# caller named takes none of them.
+before6 = games(mine, 6)
 r = load(mine, "6", "-")
 assert r.returncode == 0, r.stderr
 assert "36 games loaded" in r.stdout, r.stdout
 assert "week 5, not 6" in r.stdout, r.stdout
-assert games(mine, 5) == 36 and games(mine, 6) == 0
+assert games(mine, 5) == 36, games(mine, 5)
+assert games(mine, 6) == before6, "the named week was written to anyway"
 assert not git(mine, "log", "origin/main..HEAD", "--oneline"), \
     "a plain load must not commit anything"
 git(mine, "checkout", "--", "football_picks.db")     # put it back
