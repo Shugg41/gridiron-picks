@@ -25,6 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # The assertions below read the committed database to work out what
+      # the page ought to be showing. Without the repo on disk, sqlite3
+      # silently creates an empty file, the first query raises "no such
+      # table: game", expectations() returns nothing, and the check passes
+      # by having nothing to check — which is what it had been doing since
+      # the day it was added.
+      - uses: actions/checkout@v4
+
       - name: Install Playwright
         run: |
           pip install --quiet playwright
@@ -108,7 +116,10 @@ jobs:
                       want.append(("Season ", "the season record"))
                   db.close()
               except Exception as e:
-                  print("could not read expectations:", type(e).__name__)
+                  # Returning [] here means "assert nothing", so this is
+                  # a failure of the check itself, not a clean skip.
+                  print("could not read expectations:", type(e).__name__, e)
+                  sys.exit(1)
               return want
 
 
