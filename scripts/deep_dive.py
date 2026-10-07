@@ -217,20 +217,25 @@ def main():
             "kick": g.kickoff,
         })
 
-    print(f"{'game':<13} {'fav':>5} {'line':>5} {'win%':>5} "
-          f"{'pool%':>6} {'edge':>6}  note")
-    for r in sorted(rows, key=lambda r: -(r["p_fav"] - r["share"])):
-        edge = r["p_fav"] - r["share"]
-        note = ""
-        if edge > 0.04:
-            note = "pool UNDER-backs a real favourite"
-        elif edge < -0.12:
-            note = "pool OVER-backs a shaky favourite"
-        if r["move"] and r["move"] >= 2:
-            note += f" | line moved {r['move']:g} to {r['toward']}"
+    # win% and pool% are different quantities and their difference is
+    # not an edge. A straight-up pool backs favourites about 87% of the
+    # time while favourites win about 70%, so win% minus pool% is
+    # negative on nearly every game by construction — an earlier
+    # version of this script printed exactly that and called the
+    # biggest gaps "the pool over-backs a shaky favourite", which only
+    # ever meant "this is a large favourite". The honest per-game
+    # reading is the two numbers side by side: how likely the favourite
+    # is, and how much of the field will be on it. Whether departing
+    # pays is a question about the whole card, and is answered by
+    # simulation below rather than by arithmetic here.
+    print(f"{'game':<13} {'fav':>5} {'line':>5} {'win%':>5} {'pool%':>6}"
+          f"  line move")
+    for r in sorted(rows, key=lambda r: r["line"]):
+        move = (f"moved {r['move']:g} to {r['toward']}"
+                if r["move"] and r["move"] >= 2 else "")
         print(f"{r['key'][0]+'@'+r['key'][1]:<13} {r['fav']:>5} "
-              f"{r['line']:>5g} {r['p_fav']:>5.0%} {r['share']:>6.0%} "
-              f"{edge:>+6.0%}  {note}")
+              f"{r['line']:>5g} {r['p_fav']:>5.0%} {r['share']:>6.0%}"
+              f"  {move}")
 
     # ── what the app proposed, versus chalk ───────────────────────────
     mine = {(r["away_code"], r["home_code"]): r["team"] for r in conn.execute(
@@ -252,6 +257,28 @@ def main():
 
     print(f"\nthe app departs from chalk on {len(diff)}: "
           + ", ".join(f"{a}@{h} -> {mine[(a,h)]}" for a, h in diff))
+
+    # And what each departure is worth on its own: the same card with
+    # that one game put back on the favourite.
+    if diff:
+        print("\nvalue of each flip, measured by taking it back out:")
+        full = simulate.simulate(mine, probs, field, trials=TRIALS)
+        for k in diff:
+            without = dict(mine)
+            without[k] = chalk[k]
+            o = simulate.simulate(without, probs, field, trials=TRIALS)
+            print(f"  {k[0]}@{k[1]:<6} keep {mine[k]:<5} "
+                  f"wins {full.win:.1%}/top3 {full.top3:.1%}   "
+                  f"revert to {chalk[k]:<5} "
+                  f"wins {o.win:.1%}/top3 {o.top3:.1%}   "
+                  f"delta {full.win - o.win:+.1%} / "
+                  f"{full.top3 - o.top3:+.1%}")
+
+    print(f"\nNOTE: {len(probs)} of {len(board)} games carry a price this "
+          f"far out, so every score above is out of {len(probs)}, not "
+          f"{len(board)}. The comparison between cards is sound; the "
+          f"absolute win and tie rates are not, because a short week "
+          f"produces far more ties than a full one.")
     conn.close()
 
 
