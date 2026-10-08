@@ -157,12 +157,28 @@ def locksoon(conn, now=None):
     A Thursday night game locks at kickoff, and the Saturday reminder is
     far too late for it. This cost a real game in week four, which is
     why it exists.
+
+    What it can honestly say depends on whether the entry has been
+    pasted. Before a deadline it never has been — Splash does not put
+    picks in the page text until a game starts — so the `entry` table
+    is empty for the current week every single time this runs, and the
+    old message read "no pick yet on USF @ UTSA" with no evidence
+    whatsoever. It said exactly that on a week where all 34 picks were
+    in, which is how an alert teaches you to ignore it.
+
+    So: if the week has no entry rows at all, nothing is known about
+    what is picked, and the alert is a reminder rather than an
+    accusation. Only a week that HAS been pasted, and shows a game with
+    no team against it, earns the stronger wording.
     """
     now = now or datetime.now(timezone.utc)
     season, week = latest_week(conn)
     if not season:
         print("No games recorded — nothing to watch.")
         return
+    known = conn.execute(
+        "SELECT COUNT(*) FROM entry WHERE season=? AND week=?",
+        (season, week)).fetchone()[0] > 0
     picked = {(a, h) for a, h in conn.execute(
         "SELECT away_code, home_code FROM entry WHERE season=? AND week=? "
         "AND team IS NOT NULL", (season, week))}
@@ -175,7 +191,7 @@ def locksoon(conn, now=None):
             continue                       # locks at the normal deadline
         if not EARLY_WARN_MIN <= lock - now <= EARLY_WARN_MAX:
             continue
-        if (away, home) in picked:
+        if known and (away, home) in picked:
             continue
         due.append(f"{away} @ {home}")
         soonest = lock if soonest is None else min(soonest, lock)
@@ -183,10 +199,16 @@ def locksoon(conn, now=None):
         print("No early game needs attention right now. Silent.")
         return
     hrs = max(1, round((soonest - now).total_seconds() / 3600))
-    send(f"Early game locks in ~{hrs}h",
-         f"Week {week}: no pick yet on " + "; ".join(due)
-         + ". An unpicked game is a straight loss now, not an autopick.",
-         tags="alarm_clock,football")
+    if known:
+        body = (f"Week {week}: no pick yet on " + "; ".join(due)
+                + ". An unpicked game is a straight loss now, not an "
+                  "autopick.")
+    else:
+        body = (f"Week {week}: " + "; ".join(due) + " locks at kickoff, "
+                "not at Saturday noon. Check it is in before then — an "
+                "unpicked game is a straight loss. (Your entry has not "
+                "been pasted, so this is a heads-up, not a missing pick.)")
+    send(f"Early game locks in ~{hrs}h", body, tags="alarm_clock,football")
 
 
 def recap(conn):

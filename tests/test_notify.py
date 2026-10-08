@@ -168,6 +168,35 @@ notify.locksoon(conn, now=notify.lock_time(THU)[0] - timedelta(hours=4))
 assert SENT
 print("locksoon fires exactly once per game OK")
 
+# ── the alert must not claim a missing pick it cannot have seen ───────
+# Splash does not put picks in the page text until a game starts, so
+# before a deadline the entry table is empty for the current week every
+# single time this runs. The alert read that absence as "no pick yet on
+# USF @ UTSA" and sent it on a week where all 34 picks were in. An
+# alert that cries wolf on a complete card is worse than no alert.
+conn = db()
+add(conn, "ATL", "GB", THU)                 # board loaded, nothing pasted
+SENT.clear()
+notify.locksoon(conn, now=now)
+assert SENT, "an early game still deserves a heads-up"
+body = SENT[-1][1]
+assert "ATL @ GB" in body
+assert "no pick yet" not in body, \
+    "claimed a missing pick with an empty entry table: " + body
+assert "not been pasted" in body, body
+
+# but once the entry IS pasted and a game really has no team against
+# it, the stronger wording is earned
+conn = db()
+add(conn, "ATL", "GB", THU, picked=None, entered=True)
+add(conn, "MISS", "FLA", SAT_LATE, picked="FLA")
+SENT.clear()
+notify.locksoon(conn, now=now)
+assert SENT, SENT
+assert "no pick yet" in SENT[-1][1], SENT[-1][1]
+print("locksoon only claims a missing pick when it has actually seen one OK")
+
+
 conn = db()
 conn.execute("INSERT INTO game (season, week, away_code, home_code) "
              "VALUES (2026,4,'A','B')")
