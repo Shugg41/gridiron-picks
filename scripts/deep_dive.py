@@ -192,9 +192,31 @@ def main():
     print()
 
     # ── per-game table ────────────────────────────────────────────────
+    # A game that has been played is not a 74% chance of anything. The
+    # first version of this re-randomised finished games, so on a
+    # Saturday morning it was still rolling dice for Thursday night —
+    # Dallas had already lost and the simulation kept giving them 74%.
+    # A decided game gets probability 1 on the team that actually won,
+    # which keeps it in every card's score where it belongs.
+    done = {}
+    for a, h, asc, hsc in conn.execute(
+            "SELECT away_code, home_code, away_score, home_score FROM game "
+            "WHERE season=? AND week=? AND away_score IS NOT NULL",
+            (SEASON, WEEK)):
+        done[(a, h)] = a if asc > hsc else h
+    if done:
+        print(f"{len(done)} game(s) already final: "
+              + ", ".join(f"{a}@{h} won by {t}"
+                          for (a, h), t in done.items()))
+
     probs, shares, rows = {}, {}, []
     for g, ev in linked:
         key = (g.away_code, g.home_code)
+        if key in done:
+            won = done[key]
+            other = g.away_code if won == g.home_code else g.home_code
+            probs[key] = {won: 1.0, other: 0.0}
+            continue
         hp, ap = espn.win_probability(ev)
         if hp is None:
             continue
@@ -238,10 +260,21 @@ def main():
               f"  {move}")
 
     # ── what the app proposed, versus chalk ───────────────────────────
+    # What was actually entered beats what the app suggested: the two
+    # differ every week, and simulating the suggestion answers a
+    # question nobody asked.
     mine = {(r["away_code"], r["home_code"]): r["team"] for r in conn.execute(
-        "SELECT away_code, home_code, team FROM proposal "
-        "WHERE season=? AND week=?", (SEASON, WEEK))}
+        "SELECT away_code, home_code, team FROM entry "
+        "WHERE season=? AND week=? AND team IS NOT NULL", (SEASON, WEEK))}
+    source = "entered"
+    if not mine:
+        mine = {(r["away_code"], r["home_code"]): r["team"]
+                for r in conn.execute(
+                    "SELECT away_code, home_code, team FROM proposal "
+                    "WHERE season=? AND week=?", (SEASON, WEEK))}
+        source = "proposed (no entry recorded)"
     mine = {k: v for k, v in mine.items() if k in probs}
+    print(f"\nmy card: {len(mine)} priced games, {source}")
     chalk = {k: max(v, key=v.get) for k, v in probs.items()}
     diff = [k for k in mine if chalk.get(k) and mine[k] != chalk[k]]
 
@@ -249,13 +282,13 @@ def main():
     print(f"\nfield: {len(field)} real rivals, cards drawn from their own "
           f"measured habits\n")
 
-    for label, card in (("the app's card", mine), ("pure chalk", chalk)):
+    for label, card in (("your card", mine), ("pure chalk", chalk)):
         o = simulate.simulate(card, probs, field, trials=TRIALS)
         print(f"  {label:<16} wins {o.win:>6.1%}  ties {o.tie:>5.1%}  "
               f"top3 {o.top3:>6.1%}  score {o.p10}/{o.p50}/{o.p90} "
               f"(mean {o.mean:.1f})")
 
-    print(f"\nthe app departs from chalk on {len(diff)}: "
+    print(f"\nyour card departs from chalk on {len(diff)}: "
           + ", ".join(f"{a}@{h} -> {mine[(a,h)]}" for a, h in diff))
 
     # And what each departure is worth on its own: the same card with
