@@ -209,15 +209,25 @@ def main():
               + ", ".join(f"{a}@{h} won by {t}"
                           for (a, h), t in done.items()))
 
-    probs, shares, rows = {}, {}, []
+    # chalk must stay the team the market favoured, never the team that
+    # turned out to win. Deriving it from the probabilities broke the
+    # moment decided games were given probability 1: "chalk" silently
+    # became perfect hindsight on every finished game, and the chalk
+    # card's chance of winning the week leapt from 0% to 49%. It also
+    # listed Dallas and Washington — two favourites the entry backed
+    # and lost with — as departures from chalk.
+    probs, shares, rows, chalk = {}, {}, [], {}
     for g, ev in linked:
         key = (g.away_code, g.home_code)
+        hp, ap = espn.win_probability(ev)
+        if hp is not None:
+            chalk[key] = g.home_code if hp >= ap else g.away_code
         if key in done:
             won = done[key]
             other = g.away_code if won == g.home_code else g.home_code
             probs[key] = {won: 1.0, other: 0.0}
+            chalk.setdefault(key, won)      # no line: nothing better to say
             continue
-        hp, ap = espn.win_probability(ev)
         if hp is None:
             continue
         sides = {}
@@ -275,8 +285,11 @@ def main():
         source = "proposed (no entry recorded)"
     mine = {k: v for k, v in mine.items() if k in probs}
     print(f"\nmy card: {len(mine)} priced games, {source}")
-    chalk = {k: max(v, key=v.get) for k, v in probs.items()}
-    diff = [k for k in mine if chalk.get(k) and mine[k] != chalk[k]]
+    chalk = {k: v for k, v in chalk.items() if k in probs}
+    # Only undecided games are a live choice; a flip on a game that has
+    # finished is a result, not a decision.
+    diff = [k for k in mine
+            if k not in done and chalk.get(k) and mine[k] != chalk[k]]
 
     field = habit_field(shares, offsets)
     print(f"\nfield: {len(field)} real rivals, cards drawn from their own "
