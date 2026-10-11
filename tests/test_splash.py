@@ -396,3 +396,19 @@ assert h.rank == 16 and h.tiebreaker is None
 print("a half-copied page keeps what it got OK")
 
 print("\nALL SPLASH TESTS PASS")
+
+# ── the live Picks by Week page states the split a second way ─────────
+# Counts, no percentages, one summary line a game. It turned up
+# mid-Sunday of week 6 and sniff() returned None, so a complete field
+# for thirty-four games could not be read at all.
+live = open(os.path.join(HERE, "fixtures", "dist_week6_live.txt")).read()
+assert splash.sniff(live) == "distribution", splash.sniff(live)
+d = splash.parse_distribution(live)
+assert len(d) == 4, d
+assert d[0] == (("USF", 4, 4 / 35), ("UTSA", 31, 31 / 35)), d[0]
+# the denominator is the two counts, not the 38 entries: this game had
+# one entry that never picked it, and dividing by 38 would understate
+# both sides.
+assert abs(sum(x[2] for x in d[1]) - 1.0) < 1e-9, d[1]
+assert d[2][0][0] == "CLE" and d[2][0][1] == 22
+print("the live Picks by Week split is read as a distribution OK")

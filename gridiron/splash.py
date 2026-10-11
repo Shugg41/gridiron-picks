@@ -423,6 +423,11 @@ def _board_size(text):
     return int(m.group(1)) if m else None
 
 
+_PICKED_BY = re.compile(
+    r"Picked by entries\s*[—-]\s*([A-Za-z&'.\-]+):\s*(\d+),\s*"
+    r"([A-Za-z&'.\-]+):\s*(\d+)")
+
+
 def parse_distribution(text):
     """Read the Pick Distribution page: how the whole league picked.
 
@@ -449,7 +454,28 @@ def parse_distribution(text):
         if not is_code(code) or _int(count) is None:
             continue
         sides.append((code, _int(count), float(m.group(1)) / 100))
-    return [(sides[i], sides[i + 1]) for i in range(0, len(sides) - 1, 2)]
+    if sides:
+        return [(sides[i], sides[i + 1]) for i in range(0, len(sides) - 1, 2)]
+
+    # The live Picks by Week page states the same split a second way, as
+    # one summary line per game with counts and no percentages:
+    #
+    #     Picked by entries — USF: 4, UTSA: 31
+    #
+    # It arrived mid-Sunday of week 6 and sniff() did not recognise the
+    # page at all, so a full field for thirty-four games sat unreadable.
+    # The denominator is the two counts, not the entry count: a game
+    # nobody skipped totals 38, one with a missing pick totals less, and
+    # dividing by 38 throughout would quietly understate every share on
+    # the games people forgot.
+    out = []
+    for m in _PICKED_BY.finditer(text):
+        a, na, b, nb = m.group(1), int(m.group(2)), m.group(3), int(m.group(4))
+        total = na + nb
+        if not total or not (is_code(a) and is_code(b)):
+            continue
+        out.append(((a, na, na / total), (b, nb, nb / total)))
+    return out
 
 
 @dataclass
@@ -699,7 +725,7 @@ def sniff(text):
     # it — was not a distribution page at all. What actually identifies
     # it is the repeated code / count / (percentage) triple, so ask the
     # parser whether it can see several of those.
-    if "%)" in text and len(parse_distribution(text)) >= 3:
+    if len(parse_distribution(text)) >= 3:
         return "distribution"
     if "view picks" in t or "rank:" in t:
         return "entry"
