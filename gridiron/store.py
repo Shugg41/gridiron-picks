@@ -272,7 +272,17 @@ def grade_from_scores(conn, season, week):
         (season, week)).fetchall()
     for away, home, a_sc, h_sc, team in rows:
         if a_sc == h_sc:
-            continue                      # a tie decides nothing
+            # A tie is a loss for everyone who picked it. Giants 27,
+            # Washington 27 in week 6 came back marked "incorrect" on
+            # both sides of the room — the 26 entries on Washington and
+            # the 11 on New York alike. This used to skip the game and
+            # leave the pick ungraded for good, so the app read the week
+            # as 17-16 while Splash had it 17-17.
+            conn.execute(
+                "UPDATE entry SET result='L' WHERE season=? AND week=? "
+                "AND away_code=? AND home_code=?", (season, week, away, home))
+            done += 1
+            continue
         winner = away if a_sc > h_sc else home
         conn.execute(
             "UPDATE entry SET result=? WHERE season=? AND week=? "

@@ -123,11 +123,17 @@ store.save_entry(gr, 2026, 7, [
     {"away_code": "CC", "home_code": "DD", "team": "CC", "result": None},
     {"away_code": "EE", "home_code": "FF", "team": "EE", "result": None},
     {"away_code": "GG", "home_code": "HH", "team": "GG", "result": None}])
-assert store.grade_from_scores(gr, 2026, 7) == 2
+assert store.grade_from_scores(gr, 2026, 7) == 3
 got = store.week_entry(gr, 2026, 7)
 assert got[("AA", "BB")] == ("AA", "W"), got[("AA", "BB")]
 assert got[("CC", "DD")] == ("CC", "L"), got[("CC", "DD")]
-assert got[("EE", "FF")] == ("EE", None), "a tie decides nothing"
+# This used to assert "a tie decides nothing" and leave the pick open.
+# Week 6 settled it with evidence: Giants 27, Washington 27 came back
+# from Splash marked "incorrect" for the 26 entries on Washington AND
+# the 11 on New York. A tie is a loss for everyone who picked it, and
+# leaving it ungraded had the app reading the week 17-16 against
+# Splash's 17-17.
+assert got[("EE", "FF")] == ("EE", "L"), "a tie is a loss on both sides"
 assert got[("GG", "HH")] == ("GG", None), "an unplayed game is not a loss"
 
 # Splash's own grading is never overwritten — it knows about forfeits
@@ -139,7 +145,8 @@ assert store.week_entry(gr, 2026, 7)[("AA", "BB")] == ("AA", "L")
 print("results can be graded from the finals, without overwriting Splash OK")
 
 # ── the running score, and the card beside it ─────────────────────────
-assert store.week_record(gr, 2026, 7) == (0, 2, 2), store.week_record(gr, 2026, 7)
+# 0 won, 3 lost (AA overridden by Splash, CC wrong, EE tied), 1 to play
+assert store.week_record(gr, 2026, 7) == (0, 3, 1), store.week_record(gr, 2026, 7)
 store.save_proposals(gr, 2026, 7, [("AA", "BB", "AA", "line"),
                                    ("CC", "DD", "DD", "line"),
                                    ("GG", "HH", "GG", "line")])
@@ -339,3 +346,16 @@ for p in (path, path2, old_path, other_path, path3):
     if os.path.exists(p):
         os.unlink(p)
 print("\nALL STORE TESTS PASS")
+
+# ── a tie is a loss, because Splash says so ───────────────────────────
+# Giants 27, Washington 27 in week 6 came back "incorrect" for both the
+# 26 entries on Washington and the 11 on New York. Skipping ties left
+# the pick ungraded for good and the week one short.
+conn = store.connect(":memory:")
+conn.execute("INSERT INTO game (season,week,away_code,home_code,away_score,"
+             "home_score) VALUES (2026,6,'NYG','WAS',27,27)")
+conn.execute("INSERT INTO entry (season,week,away_code,home_code,team) "
+             "VALUES (2026,6,'NYG','WAS','WAS')")
+assert store.grade_from_scores(conn, 2026, 6) == 1
+assert conn.execute("SELECT result FROM entry").fetchone()[0] == "L"
+print("a tied game is graded a loss, not left open OK")

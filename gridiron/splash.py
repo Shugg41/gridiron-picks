@@ -560,6 +560,9 @@ _PICK_STATE = {
 _MATCHUP = re.compile(r"^([A-Z][A-Z0-9&.'()-]{1,6})\s+@\s+([A-Z][A-Z0-9&.'()-]{1,6})$")
 
 
+_PTS = re.compile(r"^(\d+)\s*pts?$", re.I)
+
+
 def parse_picks_by_week(text):
     """Read the Picks by Week page: every entry's pick on every game.
 
@@ -597,12 +600,29 @@ def parse_picks_by_week(text):
         if j < len(lines) and lines[j] == "You":    # the user's own row
             e.me = True
             j += 1
+        # The live page separates the header fields with a middot and
+        # writes the score as "24 pts" rather than "Pts: 24":
+        #
+        #     Rank32 / MJSMITH1642 / · / Entry 1 / · / 17 pts
+        #     , you. View entry details
+        #
+        # Reading the next line blind made the entry label "·", the
+        # points stayed None, and — worst — the header-skip looked for
+        # a line STARTING with ". view entry", which ", you. View entry
+        # details" does not. So the user's own row ran off the end of
+        # the page and was dropped entirely: 37 rivals parsed and the
+        # one entry that matters missing.
+        while j < len(lines) and lines[j] in ("·", "•", "-", ""):
+            j += 1
         e.entry = lines[j] if j < len(lines) else ""
-        # skip forward to the link that ends every entry's header
-        while j < len(lines) and not lines[j].lower().startswith(". view entry"):
+        while j < len(lines) and "view entry" not in lines[j].lower():
             if lines[j].startswith("Pts:"):
                 e.points = _int(lines[j].split(":", 1)[1])
+            elif _PTS.match(lines[j]):
+                e.points = _int(_PTS.match(lines[j]).group(1))
             j += 1
+        if j < len(lines) and "you" in lines[j].lower().split("view")[0]:
+            e.me = True                             # ", you. View entry details"
         j += 1
 
         # then the picks, in the header's order, until the next entry
