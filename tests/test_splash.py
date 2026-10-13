@@ -413,11 +413,12 @@ assert abs(sum(x[2] for x in d[1]) - 1.0) < 1e-9, d[1]
 assert d[2][0][0] == "CLE" and d[2][0][1] == 22
 print("the live Picks by Week split is read as a distribution OK")
 
-# ── week 7's board put a win probability between code and record ──────
+# ── a board page that carries win probabilities ───────────────────────
 # "SEA / 55% Win Probwin probability / 3-2". Without allowing for it
-# the entire board read as zero games — the app would have had no week
-# at all. Splash prices every game, including the college ones where
-# ESPN's feed covers barely half, so the number is kept.
+# such a page reads as zero games — the app would have had no week at
+# all. Which Splash view this came from is not established, so the
+# probabilities are optional: week 5's board below has none and parses,
+# this one has them and parses.
 b7 = splash.parse_board(
     open(os.path.join(HERE, "fixtures", "board_week7.txt")).read())
 assert len(b7.games) == 3, len(b7.games)
@@ -431,3 +432,11 @@ assert g[("FLA", "TEX")].home == "Texas", g[("FLA", "TEX")].home
 # and a tied record parses like any other
 assert g[("NO", "NYG")].home_prob == 0.52
 print("the week 7 board, with win probabilities and a tied record OK")
+
+# the shape without probabilities must keep working, or "optional" is
+# a claim rather than a fact
+b5 = splash.parse_board(
+    open(os.path.join(HERE, "fixtures", "board_week5.txt")).read())
+assert len(b5.games) == 36, len(b5.games)
+assert all(x.away_prob is None for x in b5.games)
+print("a board with no probabilities still parses OK")

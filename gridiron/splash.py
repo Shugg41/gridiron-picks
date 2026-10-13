@@ -340,15 +340,25 @@ def _two_sides(lines, i, stop=None):
             return None
         codes.append(lines[j])
         j += 1
-        # Week 7's board added a win probability between the code and
+        # Some board pages put a win probability between the code and
         # the record:
         #
         #     SEA / 55% Win Probwin probability / 3-2
         #
-        # Without allowing for it the whole board read as zero games.
-        # It is worth having for its own sake as well: Splash prices
-        # every game including the college ones, where ESPN's feed
-        # carries odds for barely half.
+        # Without allowing for it such a page reads as zero games.
+        #
+        # Which Splash view this is has not been established. It
+        # arrived for week 7 and the first reading of it here was that
+        # Splash had changed the board; the user then said it may have
+        # come from a different page, and nothing available here can
+        # settle that. So it is treated as optional rather than new:
+        # week 5's board, kept as a fixture, carries no probabilities
+        # and still parses, and this one does too. Do not read the
+        # presence of these numbers as a property of "the board".
+        #
+        # They are worth keeping wherever they appear: they cover every
+        # game, including the college ones, where ESPN's feed carries
+        # odds for barely half.
         m = _WINPROB.match(lines[j]) if j < stop else None
         probs.append(float(m.group(1)) / 100 if m else None)
         if m:
