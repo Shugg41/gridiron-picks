@@ -314,9 +314,31 @@ if week:
             _line += f". The card is {_cw}-{_cl} on the same games."
         push(f"Week {week}: {_w}-{_l}", _line, "football",
              key=f"score:{week}:{_w}-{_l}-{_left}")
+def _priced(g):
+    """The ESPN event for this game, carrying Splash's probability too.
+
+    ESPN prices roughly two games in three and hardly any of the
+    college slate, which is why half this card has read "No line yet"
+    all season. Splash states a probability for every game on the
+    board. Attaching it to the event — inventing a bare one where ESPN
+    matched nothing at all — means every downstream reader gets a
+    number without any of them changing: win_probability prefers the
+    market and falls back to this.
+    """
+    ev = events.get((g["away_code"], g["home_code"]))
+    ap, hp = g["away_prob"], g["home_prob"]
+    if ap is None or hp is None:
+        return ev
+    ev = dict(ev) if ev else {"away": {"abbr": g["away_code"]},
+                              "home": {"abbr": g["home_code"]}}
+    ev.setdefault("away_prob", ap)
+    ev.setdefault("home_prob", hp)
+    return ev
+
+
 linked = [(splash.Game(away_code=g["away_code"], home_code=g["home_code"],
                        away=g["away"] or "", home=g["home"] or ""),
-           events.get((g["away_code"], g["home_code"]))) for g in games]
+           _priced(g)) for g in games]
 @st.cache_data(ttl=86400, show_spinner=False)
 def team_fpi(team_id, league):
     """FPI for one team, cached for a day — it moves weekly, not hourly."""

@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS game (
     away TEXT, home TEXT, seq INTEGER,
     day TEXT, kickoff TEXT, espn_id TEXT,
     status TEXT, away_score INTEGER, home_score INTEGER,
+    away_prob REAL, home_prob REAL,
     PRIMARY KEY (season, week, away_code, home_code)
 );
 CREATE TABLE IF NOT EXISTS proposal (
@@ -89,9 +90,21 @@ CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
 """
 
 
+# Columns added after the first databases were written. CREATE TABLE
+# IF NOT EXISTS does nothing to a table that already exists, so a new
+# column in SCHEMA never reaches a file created before it — and the
+# committed database is exactly such a file.
+ADDED_COLUMNS = {"game": {"away_prob": "REAL", "home_prob": "REAL"}}
+
+
 def connect(path):
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.executescript(SCHEMA)
+    for table, columns in ADDED_COLUMNS.items():
+        have = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
+        for name, kind in columns.items():
+            if name not in have:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {name} {kind}")
     conn.commit()
     return conn
 
@@ -184,8 +197,14 @@ def save_games(conn, season, week, games, links=None):
                             or getattr(g, "kickoff_iso", "") or None),
                 "espn_id": (ev or {}).get("event_id"),
                 "status": g.status or None,
-                "away_score": g.away_score, "home_score": g.home_score},
-               keep=("espn_id", "status", "away_score", "home_score"),
+                "away_score": g.away_score, "home_score": g.home_score,
+                # Splash's own win probability, where the page carried
+                # it. Kept rather than overwritten, because the pages
+                # that do not show it must not wipe the ones that did.
+                "away_prob": getattr(g, "away_prob", None),
+                "home_prob": getattr(g, "home_prob", None)},
+               keep=("espn_id", "status", "away_score", "home_score",
+                     "away_prob", "home_prob"),
                fallback={"kickoff": g.kickoff or None})
         n += 1
     return n
@@ -404,11 +423,13 @@ def week_games(conn, season, week):
     """The board in kickoff order, which is the order Splash lists it."""
     rows = conn.execute(
         "SELECT away_code, home_code, away, home, seq, day, kickoff, espn_id, "
-        "status, away_score, home_score FROM game WHERE season=? AND week=? "
+        "status, away_score, home_score, away_prob, home_prob "
+        "FROM game WHERE season=? AND week=? "
         "ORDER BY COALESCE(kickoff, '9999'), seq",
         (season, week)).fetchall()
     cols = ["away_code", "home_code", "away", "home", "seq", "day", "kickoff",
-            "espn_id", "status", "away_score", "home_score"]
+            "espn_id", "status", "away_score", "home_score",
+            "away_prob", "home_prob"]
     return [dict(zip(cols, r)) for r in rows]
 
 

@@ -394,6 +394,12 @@ def win_probability(event):
     """
     if not event:
         return None, None
+    # A probability stated outright wins, but only where the market has
+    # said nothing. Splash prices every game on the board, including the
+    # college ones ESPN's feed leaves alone — about eleven of
+    # twenty-nine in week 7 — so this is what closes the blind spot.
+    # It does not displace a moneyline or a spread: those are the
+    # market's own number and this one's method is not published.
     hp, ap = _implied(event.get("home_ml")), _implied(event.get("away_ml"))
     if hp and ap:
         return hp / (hp + ap), ap / (hp + ap)
@@ -403,6 +409,9 @@ def win_probability(event):
         p = 0.5 * (1 + math.erf((line / sd) / math.sqrt(2)))
         home_is_fav = fav == (event.get("home") or {}).get("abbr")
         return (p, 1 - p) if home_is_fav else (1 - p, p)
+    sh, sa = event.get("home_prob"), event.get("away_prob")
+    if sh is not None and sa is not None and (sh + sa):
+        return sh / (sh + sa), sa / (sh + sa)
     return None, None
 
 

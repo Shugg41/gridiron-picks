@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from gridiron import splash, store                             # noqa: E402
+from gridiron import espn, splash, store                       # noqa: E402
 
 HERE = os.path.dirname(__file__)
 MATRIX = open(os.path.join(HERE, "fixtures", "picks_by_week4.txt")).read()
@@ -359,3 +359,29 @@ conn.execute("INSERT INTO entry (season,week,away_code,home_code,team) "
 assert store.grade_from_scores(conn, 2026, 6) == 1
 assert conn.execute("SELECT result FROM entry").fetchone()[0] == "L"
 print("a tied game is graded a loss, not left open OK")
+
+# ── Splash's own win probability, where the page states one ──────────
+# ESPN prices about two games in three and hardly any college game, so
+# this is what stops half a card reading "No line yet". A board that
+# does not show probabilities must not wipe the ones that did.
+pr = store.connect(":memory:")
+store.save_games(pr, 2026, 7, [
+    splash.Game(away_code="SEA", home_code="DEN",
+                away_prob=0.55, home_prob=0.45),
+    splash.Game(away_code="AA", home_code="BB")])
+got = {(g["away_code"], g["home_code"]): g
+       for g in store.week_games(pr, 2026, 7)}
+assert got[("SEA", "DEN")]["away_prob"] == 0.55
+assert got[("AA", "BB")]["away_prob"] is None
+store.save_games(pr, 2026, 7, [splash.Game(away_code="SEA", home_code="DEN")])
+got = {(g["away_code"], g["home_code"]): g
+       for g in store.week_games(pr, 2026, 7)}
+assert got[("SEA", "DEN")]["away_prob"] == 0.55, "a plain board wiped it"
+print("a stated win probability is stored and never blanked OK")
+
+# and it reaches a win probability only where the market is silent
+assert espn.win_probability({"home_prob": 0.45, "away_prob": 0.55}) == (0.45, 0.55)
+mkt = {"home_prob": 0.45, "away_prob": 0.55, "line": 7, "fav_abbr": "H",
+       "home": {"abbr": "H"}, "away": {"abbr": "A"}, "league": "NFL"}
+assert espn.win_probability(mkt)[0] > 0.6, "the market must still win"
+print("Splash's number fills the gap without displacing the market OK")
