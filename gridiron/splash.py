@@ -76,6 +76,11 @@ class Game:
     home_code: str = ""
     day: str = ""                       # "Saturday, Sep 26" as printed
     kickoff: str = ""                   # "Sun 4:05pm" as printed
+    # Splash began printing its own win probability per side in week 7.
+    # It covers every game, where ESPN's feed prices barely half the
+    # college slate, so it is kept whenever the page offers it.
+    away_prob: Optional[float] = None
+    home_prob: Optional[float] = None
     kickoff_iso: str = ""               # the same instant, when datable
     status: str = ""                    # FINAL / LIVE Q2 6:38 / ""
     away_score: Optional[int] = None
@@ -181,7 +186,7 @@ def parse_entry(text):
         # of it is assumed.
         sides = _two_sides(lines, i, tb_at) if is_code(line) and i >= 3 else None
         if sides:
-            away_code, home_code, after = sides
+            away_code, home_code, after, _probs = sides
             g = _game_from(lines, i, day, away_code, home_code)
             if g:
                 g.points, after = _points_at(lines, after)
@@ -311,6 +316,9 @@ def parse_board(text):
     return entry
 
 
+_WINPROB = re.compile(r"^(\d+(?:\.\d+)?)\s*%\s*Win Prob", re.I)
+
+
 def _two_sides(lines, i, stop=None):
     """Read "[#7ranked #7] CODE [2-1]" twice, starting at `i`.
 
@@ -324,7 +332,7 @@ def _two_sides(lines, i, stop=None):
     Returns (away_code, home_code, index_after) or None.
     """
     stop = len(lines) if stop is None else stop
-    j, codes = i, []
+    j, codes, probs = i, [], []
     for _ in range(2):
         if j < stop and _RANKED.match(lines[j]):
             j += 1
@@ -332,9 +340,22 @@ def _two_sides(lines, i, stop=None):
             return None
         codes.append(lines[j])
         j += 1
+        # Week 7's board added a win probability between the code and
+        # the record:
+        #
+        #     SEA / 55% Win Probwin probability / 3-2
+        #
+        # Without allowing for it the whole board read as zero games.
+        # It is worth having for its own sake as well: Splash prices
+        # every game including the college ones, where ESPN's feed
+        # carries odds for barely half.
+        m = _WINPROB.match(lines[j]) if j < stop else None
+        probs.append(float(m.group(1)) / 100 if m else None)
+        if m:
+            j += 1
         if j < stop and _RECORD.match(lines[j]):
             j += 1
-    return codes[0], codes[1], j
+    return codes[0], codes[1], j, probs
 
 
 def _points_at(lines, i):
@@ -370,9 +391,10 @@ def _board_game(lines, kick_at, day, stop, year=None):
     sides = _two_sides(lines, kick_at + 1, stop)
     if not sides:
         return None, kick_at
-    away_code, home_code, j = sides
+    away_code, home_code, j, probs = sides
     return Game(away=away, home=home, away_code=away_code, home_code=home_code,
                 day=day, kickoff=lines[kick_at],
+                away_prob=probs[0], home_prob=probs[1],
                 kickoff_iso=_board_kickoff(day, lines[kick_at], year)), j
 
 

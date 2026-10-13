@@ -412,3 +412,22 @@ assert d[0] == (("USF", 4, 4 / 35), ("UTSA", 31, 31 / 35)), d[0]
 assert abs(sum(x[2] for x in d[1]) - 1.0) < 1e-9, d[1]
 assert d[2][0][0] == "CLE" and d[2][0][1] == 22
 print("the live Picks by Week split is read as a distribution OK")
+
+# ── week 7's board put a win probability between code and record ──────
+# "SEA / 55% Win Probwin probability / 3-2". Without allowing for it
+# the entire board read as zero games — the app would have had no week
+# at all. Splash prices every game, including the college ones where
+# ESPN's feed covers barely half, so the number is kept.
+b7 = splash.parse_board(
+    open(os.path.join(HERE, "fixtures", "board_week7.txt")).read())
+assert len(b7.games) == 3, len(b7.games)
+assert b7.expected == 3, b7.expected
+g = {(x.away_code, x.home_code): x for x in b7.games}
+assert g[("SEA", "DEN")].away_prob == 0.55
+assert g[("SEA", "DEN")].home_prob == 0.45
+assert g[("FLA", "TEX")].away_prob == 0.20, g[("FLA", "TEX")].away_prob
+# a rank line still sits above the code it belongs to
+assert g[("FLA", "TEX")].home == "Texas", g[("FLA", "TEX")].home
+# and a tied record parses like any other
+assert g[("NO", "NYG")].home_prob == 0.52
+print("the week 7 board, with win probabilities and a tied record OK")
