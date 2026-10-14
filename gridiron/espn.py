@@ -416,8 +416,16 @@ def win_probability(event):
 
 
 # How much margin sits in the probability Splash prints. Measured from
-# one game detail page, Washington at Purdue in week 7: +138 / -166.
-SPLASH_VIG = 0.0442
+# four week 7 game detail pages, which agree closely:
+#
+#     WASH @ PUR   +138 / -166   4.42%
+#     OSU  @ IND   -182 / +150   4.54%
+#     UVA  @ SMU   +255 / -319   4.30%
+#     FLA  @ TEX   +320 / -420   4.58%
+#
+# Correcting by the mean cuts the mean absolute error against the
+# properly devigged probability from 2.8 points to 1.1.
+SPLASH_VIG = 0.0446
 
 
 def _devig_stated(home, away):
@@ -435,11 +443,25 @@ def _devig_stated(home, away):
     direction for the one decision this app exists to make: whether a
     dog is worth taking.
 
-    Dividing the favourite's share by (1 + margin) undoes it. The
-    margin itself is a single measurement, so this is a central
-    estimate and not a law — it is named and kept in one place so a
-    better number can replace it. Where ESPN quotes both moneylines
-    none of this applies; that path devigs from the two real prices.
+    Dividing the favourite's share by (1 + margin) undoes it. Three of
+    the four pages measured fit that rule to within a thousandth.
+
+    The fourth does not, and is worth recording rather than smoothing
+    over. Ohio State at Indiana showed -182 / +150 and a probability
+    of 60/40 — but -182 implies 64.5%, while +150 implies exactly
+    40.0%. The printed probability matches a moneyline of -150, not
+    the -182 beside it, so the likeliest reading is that the number
+    is computed once and the price moves on without it. On that game
+    the correction makes things worse, 61.7% true against 57.4%
+    corrected. It still more than halves the average error across the
+    four, which is why it stays.
+
+    The practical consequence: where a game detail page is to hand,
+    its two moneylines beat the board's percentage, because they are
+    current and this is not.
+
+    Where ESPN quotes both moneylines none of this applies; that path
+    devigs from the two real prices.
     """
     fav, dog = (home, away) if home >= away else (away, home)
     true_fav = min(max(fav / (1 + SPLASH_VIG), 0.5), 0.99)

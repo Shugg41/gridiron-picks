@@ -385,10 +385,16 @@ print("a stated win probability is stored and never blanked OK")
 # the remainder. Washington at Purdue, +138 / -166, printed 37.6/62.4
 # where the fair split is 40.2/59.8. Taking it at face value would
 # understate every underdog — the one number this app turns on.
+# Measured against four week 7 game detail pages: (home ml, away ml,
+# what Splash printed for the home side, the properly devigged truth).
+for _mlh, _mla, _stated, _true in ((-166, +138, 0.624, 0.598),
+                                   (-319, +255, 0.761, 0.730),
+                                   (-420, +320, 0.808, 0.772)):
+    _hp, _ap = espn.win_probability({"home_prob": _stated,
+                                     "away_prob": 1 - _stated})
+    assert abs(_hp - _true) < 0.005, (_mlh, _hp, _true)
+    assert abs(_hp + _ap - 1) < 1e-9
 hp, ap = espn.win_probability({"home_prob": 0.624, "away_prob": 0.376})
-assert abs(hp - 0.598) < 0.004, hp
-assert abs(ap - 0.402) < 0.004, ap
-assert abs(hp + ap - 1) < 1e-9
 # and the correction never flips which side is favoured
 hp2, ap2 = espn.win_probability({"home_prob": 0.45, "away_prob": 0.55})
 assert ap2 > hp2 and abs(hp2 + ap2 - 1) < 1e-9, (hp2, ap2)
