@@ -411,8 +411,40 @@ def win_probability(event):
         return (p, 1 - p) if home_is_fav else (1 - p, p)
     sh, sa = event.get("home_prob"), event.get("away_prob")
     if sh is not None and sa is not None and (sh + sa):
-        return sh / (sh + sa), sa / (sh + sa)
+        return _devig_stated(sh, sa)
     return None, None
+
+
+# How much margin sits in the probability Splash prints. Measured from
+# one game detail page, Washington at Purdue in week 7: +138 / -166.
+SPLASH_VIG = 0.0442
+
+
+def _devig_stated(home, away):
+    """Take the bookmaker's margin back out of a stated probability.
+
+    Splash's "Win Prob" is not a fair probability. It converts the
+    FAVOURITE's moneyline to an implied chance with the margin still
+    in it, then hands the underdog whatever is left over — the dog's
+    own price never enters. Washington at Purdue: Purdue -166 implies
+    62.41% and Splash printed 62.4%; Washington +138 implies 42.02%
+    and Splash printed 37.6%, which is simply 100 minus Purdue's.
+
+    Every favourite is therefore overstated, here by 2.6 points, and
+    every underdog understated by the same. That is the wrong
+    direction for the one decision this app exists to make: whether a
+    dog is worth taking.
+
+    Dividing the favourite's share by (1 + margin) undoes it. The
+    margin itself is a single measurement, so this is a central
+    estimate and not a law — it is named and kept in one place so a
+    better number can replace it. Where ESPN quotes both moneylines
+    none of this applies; that path devigs from the two real prices.
+    """
+    fav, dog = (home, away) if home >= away else (away, home)
+    true_fav = min(max(fav / (1 + SPLASH_VIG), 0.5), 0.99)
+    return ((true_fav, 1 - true_fav) if home >= away
+            else (1 - true_fav, true_fav))
 
 
 def _implied(moneyline):

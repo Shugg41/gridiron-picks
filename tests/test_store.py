@@ -380,7 +380,18 @@ assert got[("SEA", "DEN")]["away_prob"] == 0.55, "a plain board wiped it"
 print("a stated win probability is stored and never blanked OK")
 
 # and it reaches a win probability only where the market is silent
-assert espn.win_probability({"home_prob": 0.45, "away_prob": 0.55}) == (0.45, 0.55)
+# Splash's stated number carries the bookmaker's margin: it converts
+# only the FAVOURITE's moneyline, margin included, and gives the dog
+# the remainder. Washington at Purdue, +138 / -166, printed 37.6/62.4
+# where the fair split is 40.2/59.8. Taking it at face value would
+# understate every underdog — the one number this app turns on.
+hp, ap = espn.win_probability({"home_prob": 0.624, "away_prob": 0.376})
+assert abs(hp - 0.598) < 0.004, hp
+assert abs(ap - 0.402) < 0.004, ap
+assert abs(hp + ap - 1) < 1e-9
+# and the correction never flips which side is favoured
+hp2, ap2 = espn.win_probability({"home_prob": 0.45, "away_prob": 0.55})
+assert ap2 > hp2 and abs(hp2 + ap2 - 1) < 1e-9, (hp2, ap2)
 mkt = {"home_prob": 0.45, "away_prob": 0.55, "line": 7, "fav_abbr": "H",
        "home": {"abbr": "H"}, "away": {"abbr": "A"}, "league": "NFL"}
 assert espn.win_probability(mkt)[0] > 0.6, "the market must still win"
