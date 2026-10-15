@@ -440,3 +440,21 @@ b5 = splash.parse_board(
 assert len(b5.games) == 36, len(b5.games)
 assert all(x.away_prob is None for x in b5.games)
 print("a board with no probabilities still parses OK")
+
+# ── the matrix before the deadline states YOUR picks and no one else's ─
+# Every rival reads "Pick hidden until this game starts"; the user's own
+# row reads "CODE / — not yet graded". With neither "correct" nor
+# "incorrect" anywhere, sniff() fell through to standings — which the
+# page also resembles — and the one page that states the user's picks
+# in plain text before kickoff would have been filed as a standings
+# table. The entry page cannot do this: there the pick is a highlight.
+pre = open(os.path.join(HERE, "fixtures",
+                        "pbw_week7_predeadline.txt")).read()
+assert splash.sniff(pre) == "picks_by_week", splash.sniff(pre)
+pg, pe = splash.parse_picks_by_week(pre)
+assert len(pg) == 29, len(pg)
+assert len(pe) == 1 and pe[0].me, pe
+assert len(pe[0].picks) == 29
+assert all(p[0] in g for g, p in zip(pg, pe[0].picks)), "a pick left its game"
+assert pe[0].picks[0][0] == "SEA" and pe[0].picks[-1][0] == "SF"
+print("the pre-deadline matrix yields the user's own 29 picks OK")

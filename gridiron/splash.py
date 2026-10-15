@@ -768,7 +768,15 @@ def sniff(text):
     # Check this before standings: the picks matrix carries the standings
     # nav, the "All entries" count and "View entry details" links too, and
     # only the per-pick annotations tell the two apart.
-    if "— correct" in text or "— incorrect" in text or "missing pick" in t:
+    # Before the deadline the matrix has no graded picks to key on:
+    # every rival's row reads "Pick hidden until this game starts" and
+    # the user's own reads "— not yet graded". Without those two the
+    # test fell through to standings, which the page also looks like,
+    # and a card stating all 29 of the user's picks in plain text —
+    # the one page that does state them before kickoff — would have
+    # been filed as a standings table.
+    if ("— correct" in text or "— incorrect" in text or "missing pick" in t
+            or "not yet graded" in t or "pick hidden until" in t):
         return "picks_by_week"
     if ". view entry details" in t or ("all entries" in t and "tie diff" in t):
         return "standings"
