@@ -181,7 +181,13 @@ store.save_field(conn, 2026, 4, [
     (games[i][0], games[i][1], side[0], side[1], side[2], None)
     for i in range(len(games)) for side in dist[i]])
 fld = store.week_field(conn, 2026, 4)
-assert fld[("ATL", "GB")]["GB"] == 0.5, fld[("ATL", "GB")]   # 2 of 4 entries
+# 2 of the 3 entries that picked this game took Green Bay. The fourth
+# entry skipped it and is not in the denominator — which is how Splash
+# counts: week 5's own distribution page divided by 37 on games one
+# entry missed, not by the 38 in the pool. This asserted 0.5 by
+# dividing by all four, and that silently understated both sides of
+# every game anyone skipped.
+assert abs(fld[("ATL", "GB")]["GB"] - 2 / 3) < 1e-9, fld[("ATL", "GB")]
 srows, size = splash.parse_standings(STAND)
 store.save_standings(conn, 2026, None, srows)
 me_row = conn.execute("SELECT rank, points, tie_diff FROM standing "

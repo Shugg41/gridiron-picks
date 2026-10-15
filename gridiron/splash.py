@@ -696,7 +696,15 @@ def distribution_from_matrix(games, entries):
             team = e.picks[idx][0]
             if team in tally:
                 tally[team] += 1
-        total = len(entries) or 1
+        # Divide by the entries that actually stated a pick on THIS
+        # game, not by every entry on the page. Dividing by the total
+        # understates both sides wherever somebody skipped a game, and
+        # the denominator is not constant down a week: week 6 had
+        # games with 38 picks and games with 35.
+        total = tally[away] + tally[home]
+        if not total:
+            out.append(((away, 0, 0.0), (home, 0, 0.0)))
+            continue
         out.append(((away, tally[away], tally[away] / total),
                     (home, tally[home], tally[home] / total)))
     return out

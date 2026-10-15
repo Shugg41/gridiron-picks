@@ -21,6 +21,9 @@ ROOT = os.path.dirname(HERE)
 BOARD = os.path.join(HERE, "fixtures", "board_week5.txt")
 WORK = tempfile.mkdtemp(prefix="gp_load_")
 
+sys.path.insert(0, ROOT)
+from gridiron import ingest, store                 # noqa: E402
+
 
 def git(cwd, *args, check=True):
     r = subprocess.run(("git",) + args, cwd=cwd, check=check,
@@ -146,3 +149,21 @@ print("re-loading the same page is a no-op OK")
 
 shutil.rmtree(WORK, ignore_errors=True)
 print("\nALL LOAD TESTS PASS")
+
+# ── a page with every rival hidden must not become a field ────────────
+# Before the deadline Picks by Week states only the user's own row and
+# hides the rest. Recording that gave a league of exactly one entry —
+# the user — so the app told them 100% of the league agreed with them
+# on all 29 games.
+pre = os.path.join(HERE, "fixtures", "pbw_week7_predeadline.txt")
+hid = store.connect(":memory:")
+level, note = ingest.load(hid, 2026, 7, open(pre).read())
+assert level == "ok", (level, note)
+assert "not recorded" in note, note
+assert hid.execute("SELECT COUNT(*) FROM field").fetchone()[0] == 0, \
+    "a field of one was written"
+assert hid.execute("SELECT COUNT(*) FROM field_card").fetchone()[0] == 0
+# the picks themselves are the point of the page and must survive
+assert hid.execute("SELECT COUNT(*) FROM entry WHERE team IS NOT NULL"
+                   ).fetchone()[0] == 29
+print("a matrix with every rival hidden yields picks but no field OK")

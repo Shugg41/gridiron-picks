@@ -12,6 +12,15 @@ be told what happened.
 """
 from . import simulate, splash, store
 
+# The failure this guards against is zero: before the deadline Picks
+# by Week hides every rival and states only the user's own row. Two
+# is the threshold rather than one because a single rival is not a
+# league either, and deliberately no higher — mid-week the page
+# reveals rivals a game at a time, and a partial field still beats
+# none now that each game's share is divided by the entries that
+# actually picked it.
+MIN_FIELD = 2
+
 
 def _match_pair(games, a, b):
     """Find the stored game these two codes belong to, either way round."""
@@ -106,19 +115,32 @@ def _load(conn, season, week, text):
                  "result": {"W": "W", "L": "L"}.get(
                      mine.picks[i][1] if i < len(mine.picks) else "")}
                 for i, (a, h) in enumerate(board_games)])
-        store.save_field_cards(conn, season, week,
-                               simulate.rivals_from_matrix(board_games, entries))
-        dist = splash.distribution_from_matrix(board_games, entries)
-        store.save_field(conn, season, week, [
-            (board_games[i][0], board_games[i][1], side[0], side[1], side[2],
-             None)
-            for i in range(len(board_games)) for side in dist[i]])
+        # Before the deadline this page hides every rival — their rows
+        # read "Pick hidden until this game starts" and only the user's
+        # own picks are stated. Deriving a field from that gave a
+        # league of one, and since that one is the user, the app
+        # reported 100% of the league agreeing with them on all 29
+        # games. A field of one is not a field, so it is not written.
+        rivals = [e for e in entries if not e.me and any(p[0] for p in e.picks)]
+        if len(rivals) >= MIN_FIELD:
+            store.save_field_cards(
+                conn, season, week,
+                simulate.rivals_from_matrix(board_games, entries))
+            dist = splash.distribution_from_matrix(board_games, entries)
+            store.save_field(conn, season, week, [
+                (board_games[i][0], board_games[i][1], side[0], side[1],
+                 side[2], None)
+                for i in range(len(board_games)) for side in dist[i]])
         if not board_games:
             return "warn", ("That looks like a Picks by Week page but no "
                             "games came out of it — the shape has probably "
                             "changed.")
         missed = sum(1 for p in (mine.picks if mine else []) if p[0] is None)
         note = f"Week {week}: {len(board_games)} games, {len(entries)} entries."
+        if len(rivals) < MIN_FIELD:
+            note += (f" Only {len(rivals)} rival card(s) visible, so the "
+                     f"league's picks were not recorded — paste again once "
+                     f"the deadline has passed.")
         if missed:
             note += f"  {missed} game(s) you never picked."
         return "ok", note
