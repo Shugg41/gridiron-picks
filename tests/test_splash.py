@@ -8,6 +8,7 @@ tests only trust the saved pages.
     python tests/test_splash.py
 """
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -458,3 +459,40 @@ assert len(pe[0].picks) == 29
 assert all(p[0] in g for g, p in zip(pg, pe[0].picks)), "a pick left its game"
 assert pe[0].picks[0][0] == "SEA" and pe[0].picks[-1][0] == "SF"
 print("the pre-deadline matrix yields the user's own 29 picks OK")
+
+# ── the same week after the deadline: 38 rows, and the counts have to
+# agree with the page's own "Picked by entries" line on all 29 games.
+# One entry had no Thursday pick, written as a bare "Missing pick" with
+# no leading dash. That line was skipped rather than recorded, so every
+# later pick in that row slid up a slot and the entry turned up holding
+# Tennessee in the Air Force game. Four tallies came out one off. The
+# shift is the dangerous part: it is small enough to look like rounding.
+fin = open(os.path.join(HERE, "fixtures", "pbw_week7_final.txt")).read()
+assert splash.sniff(fin) == "picks_by_week", splash.sniff(fin)
+fg, fe = splash.parse_picks_by_week(fin)
+assert len(fg) == 29, len(fg)
+assert len(fe) == 38, len(fe)
+assert sum(x.me for x in fe) == 1
+assert all(len(x.picks) == 29 for x in fe), [len(x.picks) for x in fe]
+assert all(p[0] in g or p[0] is None
+           for x in fe for g, p in zip(fg, x.picks)), "a pick left its game"
+
+stated = []
+for line in fin.splitlines():
+    m = re.search(r"Picked by entries — (\w+): (\d+), (\w+): (\d+)",
+                  line.strip())
+    if m and (row := (m[1], int(m[2]), m[3], int(m[4]))) not in stated:
+        stated.append(row)
+assert len(stated) == 29, len(stated)
+for (away, n_away, home, n_home), sides in zip(
+        stated, splash.distribution_from_matrix(fg, fe)):
+    got = {team: n for team, n, _ in sides}
+    assert got[away] == n_away and got[home] == n_home, (away, home, got)
+print("week 7 final: 38 rows and all 29 counts match the page OK")
+
+# The entry with no pick has a hole, not a shifted row.
+gap = [x for x in fe if any(p[0] is None for p in x.picks)]
+assert gap, "nobody is missing a pick"
+assert gap[0].picks[0] == (None, "missing"), gap[0].picks[0]
+assert gap[0].picks[1][0] == "PUR", gap[0].picks[1]
+print("a missing pick leaves a hole rather than shifting the row OK")

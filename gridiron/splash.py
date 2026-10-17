@@ -667,6 +667,21 @@ def parse_picks_by_week(text):
                 e.picks.append((None, "missing"))
                 j += 2
                 continue
+            # A missing pick is sometimes its own line with no dash, and
+            # before kickoff an entry that has not been exposed yet reads
+            # "Pick hidden until this game starts". Both occupy a slot in
+            # the header's order. Skipping them instead of recording them
+            # shifted every later pick in that row by one, which is how a
+            # single entry with no Thursday pick turned up holding TENN in
+            # the Air Force game and put the tallies one off the page's own.
+            if line == "Missing pick":
+                e.picks.append((None, "missing"))
+                j += 1
+                continue
+            if line.startswith("Pick hidden"):
+                e.picks.append((None, "hidden"))
+                j += 1
+                continue
             nxt = lines[j + 1] if j + 1 < len(lines) else ""
             if is_code(line) and nxt.startswith("—"):
                 state = _PICK_STATE.get(nxt.lstrip("—").strip(), "open")
