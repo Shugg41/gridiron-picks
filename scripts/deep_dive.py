@@ -151,14 +151,60 @@ def habit_field(shares, offsets, seed=11):
         for key, sides in shares.items():
             if len(sides) != 2:
                 continue
-            (a, pa), (b, _) = list(sides.items())
-            # sides is {favourite: share, dog: share} from the curve;
-            # shift that share by this rival's own offset
-            p = 1 / (1 + math.exp(-(math.log(max(pa, .01) / max(1 - pa, .01))
-                                    + delta)))
+            (a, pa), (b, pb) = list(sides.items())
+            # Chalkiness is a pull toward the favourite, so it needs a
+            # favourite to pull toward. On a dead heat there is none,
+            # and the offset must not be applied to whichever side the
+            # dictionary happens to list first.
+            #
+            # It was. crowd_split returns {first_key: 0.5, other: 0.5}
+            # at an exact tie, and this read that ordering as "the
+            # favourite" and pushed every chalky rival onto it. Dallas
+            # at Green Bay is 50.000/50.000 after the margin comes out,
+            # and the simulated field piled onto Dallas purely because
+            # Dallas was listed first — which made Green Bay look worth
+            # 1.3 points of win probability, reproducibly across eight
+            # seeds. It was worth nothing; the two sides are
+            # indistinguishable.
+            if abs(pa - pb) < 1e-9:
+                p = 0.5
+            else:
+                fav_first = pa > pb
+                q = pa if fav_first else pb
+                shifted = 1 / (1 + math.exp(
+                    -(math.log(max(q, .01) / max(1 - q, .01)) + delta)))
+                p = shifted if fav_first else 1 - shifted
             card[key] = a if rng.random() < p else b
         field[name] = card
     return field
+
+
+def outlook(card, probs, shares, offsets, draws=12, trials=2500):
+    """Average over many drawn fields, not one.
+
+    The rivals' cards are invented: each pick is drawn from that
+    rival's own chalkiness. Draw the field once and every comparison
+    that follows is conditional on that single sample — and with 37
+    independent draws a genuine 50/50 game comes out 24-13 often
+    enough to matter. It did. The one field this script had been
+    using put 24 of 37 rivals on Dallas in a game that is 50.000 /
+    50.000, which made Green Bay look worth 1.3 points of win
+    probability across eight simulation seeds. Redrawing the field
+    each time, the difference is 0.3 against a spread of 0.7: nothing.
+
+    So the field is redrawn `draws` times and the results averaged.
+    The spread across draws is returned too, because a difference
+    smaller than it is not a difference.
+    """
+    import statistics
+    wins, tops = [], []
+    for d in range(1, draws + 1):
+        field = habit_field(shares, offsets, seed=d)
+        o = simulate.simulate(card, probs, field, trials=trials, seed=d)
+        wins.append(o.win + o.tie / 2)
+        tops.append(o.top3)
+    return (statistics.mean(wins), statistics.stdev(wins),
+            statistics.mean(tops), statistics.stdev(tops))
 
 
 def main():
@@ -296,10 +342,9 @@ def main():
           f"measured habits\n")
 
     for label, card in (("your card", mine), ("pure chalk", chalk)):
-        o = simulate.simulate(card, probs, field, trials=TRIALS)
-        print(f"  {label:<16} wins {o.win:>6.1%}  ties {o.tie:>5.1%}  "
-              f"top3 {o.top3:>6.1%}  score {o.p10}/{o.p50}/{o.p90} "
-              f"(mean {o.mean:.1f})")
+        w, wsd, t, tsd = outlook(card, probs, shares, offsets)
+        print(f"  {label:<16} win-or-share {w:>6.1%} +/- {wsd:.1%}   "
+              f"top3 {t:>6.1%} +/- {tsd:.1%}")
 
     print(f"\nyour card departs from chalk on {len(diff)}: "
           + ", ".join(f"{a}@{h} -> {mine[(a,h)]}" for a, h in diff))
@@ -308,17 +353,16 @@ def main():
     # that one game put back on the favourite.
     if diff:
         print("\nvalue of each flip, measured by taking it back out:")
-        full = simulate.simulate(mine, probs, field, trials=TRIALS)
+        fw, fwsd, _ft, _ftsd = outlook(mine, probs, shares, offsets)
         for k in diff:
             without = dict(mine)
             without[k] = chalk[k]
-            o = simulate.simulate(without, probs, field, trials=TRIALS)
-            print(f"  {k[0]}@{k[1]:<6} keep {mine[k]:<5} "
-                  f"wins {full.win:.1%}/top3 {full.top3:.1%}   "
-                  f"revert to {chalk[k]:<5} "
-                  f"wins {o.win:.1%}/top3 {o.top3:.1%}   "
-                  f"delta {full.win - o.win:+.1%} / "
-                  f"{full.top3 - o.top3:+.1%}")
+            w, wsd, t, tsd = outlook(without, probs, shares, offsets)
+            d = fw - w
+            verdict = "worth it" if d > 2 * max(fwsd, wsd) else "inside the noise"
+            print(f"  {k[0]}@{k[1]:<6} keep {mine[k]:<5} {fw:.1%}   "
+                  f"revert to {chalk[k]:<5} {w:.1%}   "
+                  f"delta {d:+.1%} (spread {max(fwsd, wsd):.1%}) — {verdict}")
 
     print(f"\nNOTE: {len(probs)} of {len(board)} games carry a price this "
           f"far out, so every score above is out of {len(probs)}, not "
