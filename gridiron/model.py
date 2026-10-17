@@ -200,6 +200,15 @@ FPI_AGREES = 0.02
 # derived from here should be shown with that admission attached.
 FIELD_A, FIELD_B, FIELD_RMS = 0.087, 0.369, 0.103
 
+# The range the fit actually saw. Seventy-five priced games from weeks
+# one to five, shortest line 1.5 points, longest 24.5. Below 1.5 the
+# curve is extrapolating: it reports 52% on a pick'em and 61% at a
+# point, because that is where a logistic drawn through longer games
+# happens to land, not because anyone measured a pick'em. Those are
+# exactly the games a week turns on, so a split quoted at or under
+# FIELD_MIN_LINE is a guess and should be said to be one.
+FIELD_MIN_LINE, FIELD_MAX_LINE = 1.5, 24.5
+
 
 def expected_share(line):
     """What fraction of the pool will take the favorite, given a line.
@@ -211,6 +220,18 @@ def expected_share(line):
     if line is None:
         return None
     return 1 / (1 + math.exp(-(FIELD_A + FIELD_B * abs(line))))
+
+
+def share_is_measured(line):
+    """Whether expected_share(line) sits inside the fitted range.
+
+    False means the number came out of an extrapolation. It is still
+    the best guess available, but it is a guess, and the caller should
+    not present it as a reading of the room.
+    """
+    if line is None:
+        return False
+    return FIELD_MIN_LINE <= abs(line) <= FIELD_MAX_LINE
 
 
 def crowd_split(sides):
