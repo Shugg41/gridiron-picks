@@ -442,6 +442,24 @@ assert len(b5.games) == 36, len(b5.games)
 assert all(x.away_prob is None for x in b5.games)
 print("a board with no probabilities still parses OK")
 
+# ── the board grew a "Preview" link under each matchup ────────────────
+# Names are read backwards from the kickoff line, so the extra line
+# pushed them up one: every home team came out called "Preview". The
+# codes and the probabilities were unaffected, which is the trap — the
+# picks would have been correct and the card would have read as gibberish.
+b8 = open(os.path.join(HERE, "fixtures", "board_week8.txt")).read()
+assert splash.sniff(b8) == "board", splash.sniff(b8)
+e8 = splash.parse_board(b8)
+assert len(e8.games) == 30 == e8.expected, (len(e8.games), e8.expected)
+assert not any(g.away == "Preview" or g.home == "Preview" for g in e8.games)
+first, last = e8.games[0], e8.games[-1]
+assert (first.away, first.home) == ("Patriots", "Bears"), first
+assert (first.away_code, first.home_code) == ("NE", "CHI"), first
+assert (first.away_prob, first.home_prob) == (0.39, 0.61), first
+assert (last.away_code, last.home_code) == ("DAL", "PHI"), last
+assert last.kickoff_iso == "2026-10-27T00:15Z", last.kickoff_iso
+print("the week 8 board: 30 games, real team names, probabilities kept OK")
+
 # ── the matrix before the deadline states YOUR picks and no one else's ─
 # Every rival reads "Pick hidden until this game starts"; the user's own
 # row reads "CODE / — not yet graded". With neither "correct" nor

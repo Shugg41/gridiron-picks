@@ -386,7 +386,19 @@ def _board_game(lines, kick_at, day, stop, year=None):
     — a game that does not parse cleanly is left out rather than guessed
     at, and `expected` will show that it went missing.
     """
-    away, home = lines[kick_at - 2], lines[kick_at - 1]
+    # The board grew a "Preview" link between the team names and the
+    # kickoff. Reading back a fixed two lines then landed on "Preview"
+    # and the name above it, so every home team on the board was called
+    # Preview and every away team carried the home team's name. The
+    # codes were untouched, which is exactly why it was worth catching:
+    # the picks would have been right and the page would have read as
+    # nonsense.
+    k = kick_at
+    while k - 1 >= 0 and lines[k - 1].lower() in ("preview", "gamecast"):
+        k -= 1
+    if k < 2:
+        return None, kick_at
+    away, home = lines[k - 2], lines[k - 1]
     for name in (away, home):
         # "@" is the separator on the pre-deadline entry page, where the
         # shape is name / @ / name / kickoff. Reading back two lines
