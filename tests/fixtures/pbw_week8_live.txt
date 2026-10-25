@@ -1,0 +1,3124 @@
+FINAL
+NE @ CHI
+NE
+24
+CHI
+30
+Picked:
+8-29
+Picked by entries — NE: 8, CHI: 29
+FINAL
+ARMY @ TLSA
+ARMY
+38
+TLSA
+35
+Picked:
+16-21
+Picked by entries — ARMY: 16, TLSA: 21
+FINAL
+AFA @ WYO
+AFA
+14
+WYO
+28
+Picked:
+34-3
+Picked by entries — AFA: 34, WYO: 3
+FINAL
+IND @ MICH
+IND
+13
+MICH
+6
+Picked:
+35-2
+Picked by entries — IND: 35, MICH: 2
+FINAL
+LSU @ AUB
+LSU
+38
+AUB
+17
+Picked:
+36-1
+Picked by entries — LSU: 36, AUB: 1
+FINAL
+WMU @ TOL
+WMU
+38
+TOL
+45
+Picked:
+4-33
+Picked by entries — WMU: 4, TOL: 33
+FINAL
+TXAM @ ALA
+TXAM
+20
+ALA
+31
+Picked:
+0-37
+Picked by entries — TXAM: 0, ALA: 37
+FINAL
+TENN @ SCAR
+TENN
+24
+SCAR
+27
+Picked:
+22-15
+Picked by entries — TENN: 22, SCAR: 15
+FINAL
+BC @ GT
+BC
+49
+GT
+27
+Picked:
+3-34
+Picked by entries — BC: 3, GT: 34
+FINAL
+UNT @ NAVY
+UNT
+49
+NAVY
+39
+Picked:
+23-14
+Picked by entries — UNT: 23, NAVY: 14
+FINAL
+OKLA @ MSST
+OKLA
+23
+MSST
+15
+Picked:
+27-10
+Picked by entries — OKLA: 27, MSST: 10
+FINAL
+IOWA @ MINN
+IOWA
+10
+MINN
+13
+Picked:
+35-2
+Picked by entries — IOWA: 35, MINN: 2
+FINAL
+KSU @ ASU
+KSU
+17
+ASU
+28
+Picked:
+24-13
+Picked by entries — KSU: 24, ASU: 13
+FINAL
+VT @ CLEM
+VT
+20
+CLEM
+16
+Picked:
+7-30
+Picked by entries — VT: 7, CLEM: 30
+FINAL
+USC @ WIS
+USC
+7
+WIS
+24
+Picked:
+32-5
+Picked by entries — USC: 32, WIS: 5
+FINAL
+MISS @ TEX
+MISS
+27
+TEX
+34
+Picked:
+10-27
+Picked by entries — MISS: 10, TEX: 27
+FINAL
+HOU @ UTAH
+HOU
+13
+UTAH
+21
+Picked:
+1-36
+Picked by entries — HOU: 1, UTAH: 36
+Q2 10:57
+PIT @ NO
+PIT
+3
+NO
+0
+Picked:
+31-6
+Picked by entries — PIT: 31, NO: 6
+Sun 1:00pm
+CIN @ BAL
+CIN
+BAL
+Picked:
+23-14
+Picked by entries — CIN: 23, BAL: 14
+Sun 1:00pm
+MIA @ NYJ
+MIA
+NYJ
+Picked:
+3-34
+Picked by entries — MIA: 3, NYJ: 34
+Sun 1:00pm
+CLE @ TEN
+CLE
+TEN
+Picked:
+32-5
+Picked by entries — CLE: 32, TEN: 5
+Sun 1:00pm
+TB @ CAR
+TB
+CAR
+Picked:
+4-33
+Picked by entries — TB: 4, CAR: 33
+Sun 1:00pm
+NYG @ HOU
+NYG
+HOU
+Picked:
+1-36
+Picked by entries — NYG: 1, HOU: 36
+Sun 1:00pm
+SF @ ATL
+SF
+ATL
+Picked:
+28-9
+Picked by entries — SF: 28, ATL: 9
+Sun 1:00pm
+IND @ MIN
+IND
+MIN
+Picked:
+0-37
+Picked by entries — IND: 0, MIN: 37
+Sun 4:05pm
+DEN @ ARI
+DEN
+ARI
+Picked:
+36-1
+Picked by entries — DEN: 36, ARI: 1
+Sun 4:25pm
+GB @ DET
+GB
+DET
+Picked:
+5-32
+Picked by entries — GB: 5, DET: 32
+Sun 4:25pm
+LA @ LV
+LA
+LV
+Picked:
+29-8
+Picked by entries — LA: 29, LV: 8
+Sun 8:20pm
+KC @ SEA
+KC
+SEA
+Picked:
+18-19
+Picked by entries — KC: 18, SEA: 19
+Mon 8:15pm
+DAL @ PHI
+DAL
+PHI
+Picked:
+36-1
+Picked by entries — DAL: 36, PHI: 1
+TIE DIFF (GUESS)
+FINAL
+NE @ CHI
+NE
+24
+CHI
+30
+Picked:
+8-29
+Picked by entries — NE: 8, CHI: 29
+FINAL
+ARMY @ TLSA
+ARMY
+38
+TLSA
+35
+Picked:
+16-21
+Picked by entries — ARMY: 16, TLSA: 21
+FINAL
+AFA @ WYO
+AFA
+14
+WYO
+28
+Picked:
+34-3
+Picked by entries — AFA: 34, WYO: 3
+FINAL
+IND @ MICH
+IND
+13
+MICH
+6
+Picked:
+35-2
+Picked by entries — IND: 35, MICH: 2
+FINAL
+LSU @ AUB
+LSU
+38
+AUB
+17
+Picked:
+36-1
+Picked by entries — LSU: 36, AUB: 1
+FINAL
+WMU @ TOL
+WMU
+38
+TOL
+45
+Picked:
+4-33
+Picked by entries — WMU: 4, TOL: 33
+FINAL
+TXAM @ ALA
+TXAM
+20
+ALA
+31
+Picked:
+0-37
+Picked by entries — TXAM: 0, ALA: 37
+FINAL
+TENN @ SCAR
+TENN
+24
+SCAR
+27
+Picked:
+22-15
+Picked by entries — TENN: 22, SCAR: 15
+FINAL
+BC @ GT
+BC
+49
+GT
+27
+Picked:
+3-34
+Picked by entries — BC: 3, GT: 34
+FINAL
+UNT @ NAVY
+UNT
+49
+NAVY
+39
+Picked:
+23-14
+Picked by entries — UNT: 23, NAVY: 14
+FINAL
+OKLA @ MSST
+OKLA
+23
+MSST
+15
+Picked:
+27-10
+Picked by entries — OKLA: 27, MSST: 10
+FINAL
+IOWA @ MINN
+IOWA
+10
+MINN
+13
+Picked:
+35-2
+Picked by entries — IOWA: 35, MINN: 2
+FINAL
+KSU @ ASU
+KSU
+17
+ASU
+28
+Picked:
+24-13
+Picked by entries — KSU: 24, ASU: 13
+FINAL
+VT @ CLEM
+VT
+20
+CLEM
+16
+Picked:
+7-30
+Picked by entries — VT: 7, CLEM: 30
+FINAL
+USC @ WIS
+USC
+7
+WIS
+24
+Picked:
+32-5
+Picked by entries — USC: 32, WIS: 5
+FINAL
+MISS @ TEX
+MISS
+27
+TEX
+34
+Picked:
+10-27
+Picked by entries — MISS: 10, TEX: 27
+FINAL
+HOU @ UTAH
+HOU
+13
+UTAH
+21
+Picked:
+1-36
+Picked by entries — HOU: 1, UTAH: 36
+Q2 10:57
+PIT @ NO
+PIT
+3
+NO
+0
+Picked:
+31-6
+Picked by entries — PIT: 31, NO: 6
+Sun 1:00pm
+CIN @ BAL
+CIN
+BAL
+Picked:
+23-14
+Picked by entries — CIN: 23, BAL: 14
+Sun 1:00pm
+MIA @ NYJ
+MIA
+NYJ
+Picked:
+3-34
+Picked by entries — MIA: 3, NYJ: 34
+Sun 1:00pm
+CLE @ TEN
+CLE
+TEN
+Picked:
+32-5
+Picked by entries — CLE: 32, TEN: 5
+Sun 1:00pm
+TB @ CAR
+TB
+CAR
+Picked:
+4-33
+Picked by entries — TB: 4, CAR: 33
+Sun 1:00pm
+NYG @ HOU
+NYG
+HOU
+Picked:
+1-36
+Picked by entries — NYG: 1, HOU: 36
+Sun 1:00pm
+SF @ ATL
+SF
+ATL
+Picked:
+28-9
+Picked by entries — SF: 28, ATL: 9
+Sun 1:00pm
+IND @ MIN
+IND
+MIN
+Picked:
+0-37
+Picked by entries — IND: 0, MIN: 37
+Sun 4:05pm
+DEN @ ARI
+DEN
+ARI
+Picked:
+36-1
+Picked by entries — DEN: 36, ARI: 1
+Sun 4:25pm
+GB @ DET
+GB
+DET
+Picked:
+5-32
+Picked by entries — GB: 5, DET: 32
+Sun 4:25pm
+LA @ LV
+LA
+LV
+Picked:
+29-8
+Picked by entries — LA: 29, LV: 8
+Sun 8:20pm
+KC @ SEA
+KC
+SEA
+Picked:
+18-19
+Picked by entries — KC: 18, SEA: 19
+Mon 8:15pm
+DAL @ PHI
+DAL
+PHI
+Picked:
+36-1
+Picked by entries — DAL: 36, PHI: 1
+TIE DIFF (GUESS)
+Rank1
+Ttowndoc
+·
+Entry 2
+·
+9 pts
+Season: 146 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (46)
+
+Rank2
+SCOTTYSTIGS
+·
+Entry 1
+·
+10 pts
+Season: 146 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+NO
+— currently losing
+BAL
+— not yet graded
+MIA
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+NYG
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (49)
+
+Rank3
+Ttowndoc
+·
+Entry 1
+·
+10 pts
+Season: 143 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (44)
+
+Rank4
+SMOKINJOE13
+·
+Entry 1
+·
+12 pts
+Season: 141 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+VT
+— correct
+WIS
+— correct
+TEX
+— correct
+UTAH
+— correct
+NO
+— currently losing
+BAL
+— not yet graded
+NYJ
+— not yet graded
+TEN
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (45)
+
+Rank5
+BUCKEYE-36
+·
+Entry 1
+·
+11 pts
+Season: 140 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+VT
+— correct
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (42)
+
+Rank6
+FFEJ0422
+·
+Entry 1
+·
+9 pts
+Season: 140 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (45)
+
+Rank7
+Jimbo03JDC
+·
+Entry 1
+·
+11 pts
+Season: 140 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+WYO
+— correct
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+BC
+— correct
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+VT
+— correct
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+GB
+— not yet graded
+LV
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (44)
+
+Rank8
+DINOTHEMAN
+·
+Entry 1
+·
+9 pts
+Season: 140 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (57)
+
+Rank9
+AJCBRAB
+·
+Entry 1
+·
+10 pts
+Season: 139 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (43)
+
+Rank10
+COMBSOHIO
+·
+Entry 1
+·
+12 pts
+Season: 139 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+VT
+— correct
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (37)
+
+Rank11
+VEINGRAFT
+·
+Entry 1
+·
+9 pts
+Season: 139 pts
+. View entry details	
+NE
+— incorrect
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+BC
+— correct
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+NO
+— currently losing
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (32)
+
+Rank12
+Thragus
+·
+Entry 1
+·
+9 pts
+Season: 139 pts
+. View entry details	
+NE
+— incorrect
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (44)
+
+Rank13
+mrainer
+·
+Entry 1
+·
+12 pts
+Season: 138 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+WYO
+— correct
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+VT
+— correct
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+GB
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (44)
+
+Rank14
+largemouth92
+·
+Entry 1
+·
+9 pts
+Season: 138 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+NO
+— currently losing
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+GB
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (38)
+
+Rank15
+JOGGER1
+·
+Entry 1
+·
+8 pts
+Season: 136 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+WMU
+— incorrect
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (42)
+
+Rank16
+Godfather-CFP
+·
+Entry 1
+·
+9 pts
+Season: 136 pts
+. View entry details	
+NE
+— incorrect
+TLSA
+— incorrect
+AFA
+— incorrect
+MICH
+— incorrect
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+WIS
+— correct
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+TEN
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (45)
+
+Rank17
+SamSaint
+·
+Entry 1
+·
+9 pts
+Season: 136 pts
+. View entry details	
+NE
+— incorrect
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+WMU
+— incorrect
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+MINN
+— correct
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (47)
+
+Rank18
+toddbuckeye
+·
+Kylefootball
+·
+7 pts
+Season: 136 pts
+. View entry details	
+NE
+— incorrect
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+ARI
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (42)
+
+Rank19
+COMBSCP22
+·
+Entry 1
+·
+9 pts
+Season: 135 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (47)
+
+Rank20
+JJPLUMBING
+·
+Entry 1
+·
+11 pts
+Season: 135 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (45)
+
+Rank21
+CHADWEI
+·
+Entry 1
+·
+9 pts
+Season: 135 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (44)
+
+Rank22
+UMHATER
+·
+Entry 1
+·
+11 pts
+Season: 134 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+WIS
+— correct
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (52)
+
+Rank23
+MaximillionShoe
+·
+Entry 1
+·
+11 pts
+Season: 133 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+WIS
+— correct
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+TEN
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (45)
+
+Rank24
+KB-778
+·
+Entry 1
+·
+0 pts
+Season: 133 pts
+. View entry details	
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Missing pick
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+Pick hidden until this game starts
+-
+
+Rank25
+sweetwied44
+·
+Entry 1
+·
+10 pts
+Season: 133 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (41)
+
+Rank26
+toddbuckeye
+·
+Toddfootballc
+·
+8 pts
+Season: 133 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (55)
+
+Rank27
+MJSMITH1642
+·
+Entry 1
+·
+8 pts
+Season: 131 pts
+, you. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+VT
+— correct
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (44)
+
+Rank28
+OBannion
+·
+Entry 1
+·
+9 pts
+Season: 130 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+MSST
+— incorrect
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+TB
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+SEA
+— not yet graded
+PHI
+— not yet graded
+— (38)
+
+Rank29
+GREGG1586
+·
+Entry 1
+·
+9 pts
+Season: 129 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+TB
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+GB
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (48)
+
+Rank30
+MATTADOR209
+·
+Entry 1
+·
+8 pts
+Season: 129 pts
+. View entry details	
+NE
+— incorrect
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+VT
+— correct
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (50)
+
+Rank31
+RCAL1709
+·
+Entry 1
+·
+11 pts
+Season: 127 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+MSST
+— incorrect
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+WIS
+— correct
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (55)
+
+Rank32
+Cherry-Bomb
+·
+Entry 1
+·
+9 pts
+Season: 127 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+NO
+— currently losing
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (42)
+
+Rank33
+TWELVIS
+·
+Entry 1
+·
+8 pts
+Season: 126 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+HOU
+— incorrect
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LV
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (42)
+
+Rank34
+Evil-Homer
+·
+Entry 1
+·
+5 pts
+Season: 122 pts
+. View entry details	
+NE
+— incorrect
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+WMU
+— incorrect
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+MSST
+— incorrect
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+TB
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+GB
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (40)
+
+Rank35
+NU-HUSKERS
+·
+Entry 1
+·
+10 pts
+Season: 121 pts
+. View entry details	
+CHI
+— correct
+ARMY
+— correct
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+ASU
+— correct
+CLEM
+— incorrect
+USC
+— incorrect
+MISS
+— incorrect
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+TEN
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (45)
+
+Rank36
+Riffner
+·
+Entry 1
+·
+8 pts
+Season: 114 pts
+. View entry details	
+NE
+— incorrect
+ARMY
+— correct
+WYO
+— correct
+MICH
+— incorrect
+AUB
+— incorrect
+WMU
+— incorrect
+ALA
+— correct
+TENN
+— incorrect
+BC
+— correct
+NAVY
+— incorrect
+OKLA
+— correct
+MINN
+— correct
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+CIN
+— not yet graded
+MIA
+— not yet graded
+CLE
+— not yet graded
+TB
+— not yet graded
+HOU
+— not yet graded
+ATL
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+KC
+— not yet graded
+DAL
+— not yet graded
+— (57)
+
+Rank37
+Jacobconway21
+·
+Entry 1
+·
+8 pts
+Season: 102 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+TENN
+— incorrect
+GT
+— incorrect
+NAVY
+— incorrect
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+NO
+— currently losing
+BAL
+— not yet graded
+MIA
+— not yet graded
+TEN
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (27)
+
+Rank38
+PARROTHEAD-734
+·
+Entry 1
+·
+10 pts
+Season: 43 pts
+. View entry details	
+CHI
+— correct
+TLSA
+— incorrect
+AFA
+— incorrect
+IND
+— correct
+LSU
+— correct
+TOL
+— correct
+ALA
+— correct
+SCAR
+— correct
+GT
+— incorrect
+UNT
+— correct
+OKLA
+— correct
+IOWA
+— incorrect
+KSU
+— incorrect
+CLEM
+— incorrect
+USC
+— incorrect
+TEX
+— correct
+UTAH
+— correct
+PIT
+— currently winning
+BAL
+— not yet graded
+NYJ
+— not yet graded
+CLE
+— not yet graded
+CAR
+— not yet graded
+HOU
+— not yet graded
+SF
+— not yet graded
+MIN
+— not yet graded
+DEN
+— not yet graded
+DET
+— not yet graded
+LA
+— not yet graded
+SEA
+— not yet graded
+DAL
+— not yet graded
+— (41)
+
