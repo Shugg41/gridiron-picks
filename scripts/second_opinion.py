@@ -29,7 +29,6 @@ Run via .github/workflows/data-probe.yml.
 """
 import datetime
 import json
-import math
 import os
 import sqlite3
 import sys
@@ -37,15 +36,11 @@ import urllib.error
 import urllib.request
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from gridiron import espn, splash                              # noqa: E402
+from gridiron import espn, lookahead, splash                              # noqa: E402
 
 CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues"
 DB = os.path.join(os.path.dirname(__file__), "..", "football_picks.db")
 SEASON = 2026
-# Home advantage in points. The same values fpi_edge() uses, kept here
-# rather than imported so a change there cannot silently rewrite history
-# already recorded under the old number.
-HFA = {"NFL": 2.0, "CFB": 2.6}
 
 
 def get(url):
@@ -141,41 +136,13 @@ def events_for(league, day):
     return out
 
 
-def normal(margin, sd):
-    return 0.5 * (1 + math.erf((margin / sd) / math.sqrt(2)))
+# The spread and FPI both come from gridiron.lookahead so the CI record
+# and the app screen cannot disagree about a number. The local copy of
+# market_home had the sign bug that put UConn over Air Force.
+market_home = lookahead.market_home
 
 
-def market_home(event):
-    """P(home wins) from the sportsbook spread, or None.
-
-    The spread rather than the moneyline because it is the field ESPN
-    fills in most reliably across both leagues, and because converting
-    it needs no devigging.
-    """
-    try:
-        odds = espn.odds_history(event["event_id"], event["league"])
-        details = ((odds.get("items") or [{}])[0]).get("details")
-    except Exception:
-        return None
-    named, value = espn._spread(details)
-    if not named or value is None:
-        return None
-    # "BUF -3.5" names the favourite; the sign is relative to that team.
-    home_margin = -value if named == event["home"]["abbr"] else value
-    return normal(home_margin, espn.MARGIN_SD.get(event["league"], 14.5))
-
-
-def fpi_home(event):
-    """P(home wins) from FPI alone — no price anywhere in it."""
-    try:
-        h = espn.power_index(event["home"]["id"], event["league"], SEASON)
-        a = espn.power_index(event["away"]["id"], event["league"], SEASON)
-    except Exception:
-        return None
-    if not h or not a or h.get("fpi") is None or a.get("fpi") is None:
-        return None
-    margin = (h["fpi"] + HFA[event["league"]]) - a["fpi"]
-    return normal(margin, espn.MARGIN_SD.get(event["league"], 14.5))
+fpi_home = lookahead.fpi_home
 
 
 def main():

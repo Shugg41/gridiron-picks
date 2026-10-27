@@ -40,12 +40,58 @@ assert lookahead.worth_rating(
     game(("UGA", "5"), ("MISS", "6"), "CFB", rank={"away": 3}))
 print("every NFL game, and college only when someone is ranked OK")
 
+# ── the home handicap, read without matching a team name ──────────────
+# The bug this replaces: "AFA -2.5" was matched against ESPN's spelling
+# of the home team, and when the spelling did not match, the line was
+# taken to be the away team's and the sign flipped. UConn came out
+# favoured over an Air Force side the whole market had by three, and it
+# was reported to the user as the app's mistake rather than this one's.
+def odds(**kw):
+    return {"items": [kw]}
+
+
+# Laying 2.5 at home: the home team is favoured.
+assert lookahead.home_handicap(
+    odds(homeTeamOdds={"current": {"pointSpread": {"american": "-2.5"}}})) == -2.5
+# Getting 3 at home: the home team is the underdog.
+assert lookahead.home_handicap(
+    odds(homeTeamOdds={"current": {"pointSpread": {"american": "+3"}}})) == 3.0
+# No "current" block yet — the opening price still answers.
+assert lookahead.home_handicap(
+    odds(homeTeamOdds={"pointSpread": {"american": "-7"}})) == -7.0
+# Neither, but ESPN's signed spread field is there.
+assert lookahead.home_handicap(odds(spread=-4.5)) == -4.5
+# Only the printed string, and it names the home team.
+assert lookahead.home_handicap(
+    odds(details="AFA -2.5",
+         homeTeamOdds={"team": {"abbreviation": "AFA"}})) == -2.5
+# Only the printed string, naming somebody this code cannot identify.
+# None, never a guess: a flipped sign is worse than a missing number.
+assert lookahead.home_handicap(
+    odds(details="CONN -2.5",
+         homeTeamOdds={"team": {"abbreviation": "AFA"}})) is None
+assert lookahead.home_handicap(odds(details="AFA -2.5")) is None
+assert lookahead.home_handicap({}) is None
+print("the home handicap is read, not inferred from a name OK")
+
+# A home favourite must come out above even money, which is the whole
+# point of the bug above.
+espn.clear_cache()
+espn.odds_history = lambda eid, lg: odds(
+    homeTeamOdds={"current": {"pointSpread": {"american": "-2.5"}}})
+p_home = lookahead.market_home(game(("CONN", "9"), ("AFA", "8"), "CFB"))
+assert p_home > 0.5, p_home
+print(f"a home team laying 2.5 reads as {p_home:.0%} to win OK")
+
 # ── rating with both signals, one signal, and neither ──────────────────
 espn.clear_cache()
-MARKET = {"both": "DEN -3.5", "mkt": "KC -7"}
+# Signed from the HOME team: Denver lays 3.5, Denver gets 7.
+MARKET = {"both": "-3.5", "mkt": "+7"}
 FPI = {"1": {"fpi": 10.0}, "2": {"fpi": 4.0}, "3": None}
 espn.odds_history = lambda eid, lg: (
-    {"items": [{"details": MARKET[eid]}]} if eid in MARKET else {"items": []})
+    {"items": [{"homeTeamOdds": {"current": {"pointSpread":
+                                             {"american": MARKET[eid]}}}}]}
+    if eid in MARKET else {"items": []})
 espn.power_index = lambda tid, lg, season: FPI.get(tid)
 
 both = game(("KC", "1"), ("DEN", "2"), "NFL", eid="both")

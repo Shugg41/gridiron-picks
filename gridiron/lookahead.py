@@ -45,19 +45,52 @@ def _normal(margin, sd):
     return 0.5 * (1 + math.erf((margin / sd) / math.sqrt(2)))
 
 
+def home_handicap(odds):
+    """The home team's own handicap: negative means laying the points.
+
+    Read from the structured field rather than the printed string.
+    "AFA -2.5" has to be matched against ESPN's spelling of the home
+    team to know whose line it is, and when the spelling does not match
+    — ESPN is not consistent about it — the obvious code assumes the
+    line belongs to the away team and silently flips the sign. That put
+    UConn ahead of a Air Force side the whole market had favoured by
+    three, and it was reported as the app's error rather than this
+    one's. A wrong sign is worse than a missing number, so this returns
+    None rather than guessing.
+    """
+    item = ((odds or {}).get("items") or [{}])[0]
+    home = item.get("homeTeamOdds") or {}
+    for block in (home.get("current"), home):
+        value = espn._point_spread(block)
+        if value is not None:
+            return value
+    # ESPN's own "spread" is already signed from the home side.
+    raw = item.get("spread")
+    if raw is not None:
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            pass
+    # Last resort: the printed string, used ONLY when the team it names
+    # is unambiguously one of these two.
+    named, value = espn._spread(item.get("details"))
+    if named and value is not None:
+        if named == (home.get("team") or {}).get("abbreviation"):
+            return value
+    return None
+
+
 def market_home(event):
     """P(home wins) from the sportsbook spread, or None before it is up."""
     try:
         odds = espn.odds_history(event["event_id"], event["league"])
-        details = ((odds.get("items") or [{}])[0]).get("details")
     except Exception:
         return None
-    named, value = espn._spread(details)
-    if not named or value is None:
+    handicap = home_handicap(odds)
+    if handicap is None:
         return None
-    # "BUF -3.5" names the side laying the points; the sign is theirs.
-    home_margin = -value if named == event["home"]["abbr"] else value
-    return _normal(home_margin, espn.MARGIN_SD.get(event["league"], 14.5))
+    # Laying 2.5 means an expected margin of +2.5.
+    return _normal(-handicap, espn.MARGIN_SD.get(event["league"], 14.5))
 
 
 def fpi_home(event):
