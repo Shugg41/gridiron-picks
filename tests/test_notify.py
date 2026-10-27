@@ -272,4 +272,53 @@ for title in ALL_TITLES:
     title.encode("latin-1")
 print(f"all {len(ALL_TITLES)} titles raised in this run are latin-1 clean OK")
 
+# ── an early-lock alert has to say what to pick ───────────────────────
+# Naming the game and not the pick means opening the app to find out,
+# which at 7pm on a Thursday is the difference between a pick made and
+# a game lost. And three hours' notice is only any use if the phone is
+# in your hand, so there is a second alert a day ahead.
+_n = notify
+from gridiron import splash
+_conn = store.connect(":memory:")
+_kick = datetime.now(timezone.utc) + timedelta(hours=3)   # a Thursday night game
+store.save_games(_conn, 2026, 9, [
+    splash.Game(away="Panthers", home="Packers", away_code="CAR",
+                home_code="GB", day="Thursday, Oct 29", kickoff="Thu 8:15pm",
+                kickoff_iso=_kick.strftime("%Y-%m-%dT%H:%MZ"))])
+store.save_proposals(_conn, 2026, 9, [("CAR", "GB", "GB", "researched")])
+_sent = []
+_n.send = lambda title, message, tags="football": _sent.append((title, message))
+_n.locksoon(_conn)
+assert _sent, "a game locking in three hours must raise something"
+_title, _body = _sent[0]
+assert "CAR @ GB" in _body, _body
+assert "take GB" in _body, "the alert must name the pick, not just the game"
+print("an early-lock alert names the pick, not only the game OK")
+
+# A day out, the same game raises the gentler, earlier alert instead.
+_sent.clear()
+_conn2 = store.connect(":memory:")
+_far = datetime.now(timezone.utc) + timedelta(hours=22)
+store.save_games(_conn2, 2026, 9, [
+    splash.Game(away="Panthers", home="Packers", away_code="CAR",
+                home_code="GB", day="Thursday, Oct 29", kickoff="Thu 8:15pm",
+                kickoff_iso=_far.strftime("%Y-%m-%dT%H:%MZ"))])
+_n.locksoon(_conn2)
+assert _sent, "a game locking tomorrow must still warn"
+assert "tomorrow" in _sent[0][0].lower(), _sent[0]
+print("a game that locks tomorrow warns a day ahead OK")
+
+# Nothing in either window stays quiet.
+_sent.clear()
+_conn3 = store.connect(":memory:")
+_mid = datetime.now(timezone.utc) + timedelta(hours=12)
+store.save_games(_conn3, 2026, 9, [
+    splash.Game(away="Panthers", home="Packers", away_code="CAR",
+                home_code="GB", day="Thursday, Oct 29", kickoff="Thu 8:15pm",
+                kickoff_iso=_mid.strftime("%Y-%m-%dT%H:%MZ"))])
+_n.locksoon(_conn3)
+assert not _sent, "twelve hours out is neither window — stay quiet"
+print("between the two windows it stays silent OK")
+
+
 print("\nALL NOTIFY TESTS PASS")

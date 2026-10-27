@@ -166,6 +166,12 @@ def lock_time(kickoff_iso):
 # three hours, so a three-hour-wide window catches each game exactly once.
 EARLY_WARN_MIN = timedelta(hours=2)
 EARLY_WARN_MAX = timedelta(hours=5)
+# And once the day before. Three hours' notice on a Thursday night game
+# is only any use if the phone is in your hand when it arrives; a day
+# ahead survives an afternoon in a meeting. Same three-hour width, so
+# each game still fires exactly once in this window too.
+DAY_WARN_MIN = timedelta(hours=21)
+DAY_WARN_MAX = timedelta(hours=24)
 
 
 def locksoon(conn, now=None):
@@ -199,23 +205,42 @@ def locksoon(conn, now=None):
     picked = {(a, h) for a, h in conn.execute(
         "SELECT away_code, home_code FROM entry WHERE season=? AND week=? "
         "AND team IS NOT NULL", (season, week))}
-    due, soonest = [], None
+    # What the card says, so the alert can be acted on from the lock
+    # screen. Naming the game and not the pick means opening the app to
+    # find out, which at 7pm on a Thursday is the difference between a
+    # pick made and a game lost.
+    advice = {(a, h): t for a, h, t in conn.execute(
+        "SELECT away_code, home_code, team FROM proposal "
+        "WHERE season=? AND week=?", (season, week))}
+    due, soonest, ahead = [], None, False
     for away, home, kickoff in conn.execute(
             "SELECT away_code, home_code, kickoff FROM game "
             "WHERE season=? AND week=?", (season, week)):
         lock, noon = lock_time(kickoff)
         if not lock or lock >= noon:
             continue                       # locks at the normal deadline
-        if not EARLY_WARN_MIN <= lock - now <= EARLY_WARN_MAX:
+        left = lock - now
+        if EARLY_WARN_MIN <= left <= EARLY_WARN_MAX:
+            pass
+        elif DAY_WARN_MIN <= left <= DAY_WARN_MAX:
+            ahead = True
+        else:
             continue
         if known and (away, home) in picked:
             continue
-        due.append(f"{away} @ {home}")
+        pick = advice.get((away, home))
+        due.append(f"{away} @ {home}" + (f" — take {pick}" if pick else ""))
         soonest = lock if soonest is None else min(soonest, lock)
     if not due:
         print("No early game needs attention right now. Silent.")
         return
     hrs = max(1, round((soonest - now).total_seconds() / 3600))
+    if ahead and hrs >= 20:
+        send(f"Locks tomorrow: {hrs}h",
+             f"Week {week}: " + "; ".join(due) + ". Locks at kickoff, not "
+             "at Saturday noon, so it needs doing before then.",
+             tags="calendar,football")
+        return
     if known:
         body = (f"Week {week}: no pick yet on " + "; ".join(due)
                 + ". An unpicked game is a straight loss now, not an "
