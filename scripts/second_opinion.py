@@ -27,6 +27,7 @@ write access, so the rows are read out of the log and committed.
 
 Run via .github/workflows/data-probe.yml.
 """
+import datetime
 import json
 import math
 import os
@@ -71,28 +72,42 @@ def team_of(ref):
     return _TEAM[ref]
 
 
-def events_for(league, week):
-    """Every event in an ESPN week, following the pagination.
+def dates_for(rows):
+    """The calendar days the board's kickoffs fall on, in ESPN's terms.
 
-    `limit=200` is ignored by this endpoint: it answers with a page of
-    25 and states pageCount. Asking once and trusting the limit got
-    five of college football's sixteen board games and looked exactly
-    like a matching failure, which is the wrong bug to go hunting.
+    Both the UTC day and the one before it, because ESPN keys an event
+    to its own local date and the board stores kickoffs in UTC: a
+    Saturday 11pm Eastern game is Sunday in UTC and Saturday to ESPN.
+    Asking for both and letting the matcher discard the surplus is
+    cheaper than being clever about time zones twice a year.
     """
-    out, items, page, pages = [], [], 1, 1
-    while page <= pages:
-        try:
-            listing = get(f"{CORE}/{league}/seasons/{SEASON}/types/2/weeks/"
-                          f"{week}/events?limit=100&page={page}")
-        except urllib.error.HTTPError as exc:
-            print(f"# {league} week {week} page {page}: HTTP {exc.code}",
-                  file=sys.stderr)
-            break
-        pages = int(listing.get("pageCount") or 1)
-        items += listing.get("items", [])
-        page += 1
-    print(f"# {league} week {week}: {len(items)} events over {pages} page(s)",
-          file=sys.stderr)
+    days = set()
+    for r in rows:
+        iso = r["kickoff"]
+        if not iso:
+            continue
+        d = datetime.datetime.strptime(iso[:10], "%Y-%m-%d")
+        days.add(d.strftime("%Y%m%d"))
+        days.add((d - datetime.timedelta(days=1)).strftime("%Y%m%d"))
+    return sorted(days)
+
+
+def events_for(league, day):
+    """Every event ESPN has on a calendar day.
+
+    NOT the week listing. types/2/weeks/N/events is a curated slate —
+    eighteen events for a college Saturday that actually holds
+    forty-seven — so five of the board's sixteen college games had no
+    price and it looked like the matcher failing. Keyed by date it is
+    the whole card.
+    """
+    out = []
+    try:
+        listing = get(f"{CORE}/{league}/events?dates={day}&limit=300")
+    except urllib.error.HTTPError as exc:
+        print(f"# {league} {day}: HTTP {exc.code}", file=sys.stderr)
+        return out
+    items = listing.get("items", [])
     for item in items:
         try:
             event = get(item["$ref"])
@@ -112,6 +127,8 @@ def events_for(league, week):
                     "home": {"abbr": sides["home"][1], "id": sides["home"][0]},
                     "event_id": str(event.get("id")),
                     "league": "NFL" if league == "nfl" else "CFB"})
+    print(f"# {league} {day}: {len(items)} events, {len(out)} usable",
+          file=sys.stderr)
     return out
 
 
@@ -160,8 +177,8 @@ def main():
         week = conn.execute("SELECT MAX(week) FROM game WHERE season=?",
                             (SEASON,)).fetchone()[0]
     rows = conn.execute(
-        "SELECT away_code, home_code, away, home, away_prob, home_prob "
-        "FROM game WHERE season=? AND week=? ORDER BY seq",
+        "SELECT away_code, home_code, away, home, away_prob, home_prob, "
+        "kickoff FROM game WHERE season=? AND week=? ORDER BY seq",
         (SEASON, week)).fetchall()
     games = [splash.Game(away_code=r["away_code"], home_code=r["home_code"],
                          away=r["away"] or "", home=r["home"] or "")
@@ -169,7 +186,16 @@ def main():
     stated = {(r["away_code"], r["home_code"]): r["home_prob"] for r in rows}
     print(f"# week {week}: {len(games)} board games", file=sys.stderr)
 
-    pool = events_for("nfl", week - 1) + events_for("college-football", week)
+    pool = []
+    for day in dates_for(rows):
+        pool += events_for("nfl", day)
+        pool += events_for("college-football", day)
+    seen, uniq = set(), []
+    for ev in pool:
+        if ev["event_id"] not in seen:
+            seen.add(ev["event_id"])
+            uniq.append(ev)
+    pool = uniq
     print(f"# espn events usable: {len(pool)}", file=sys.stderr)
 
     print("week\taway\thome\tsplash_home\tmarket_home\tfpi_home")
