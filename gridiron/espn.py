@@ -117,6 +117,71 @@ def scoreboard(league, dates=None, ttl=900):
     return cached(ttl, ("scoreboard", league, dates), build)
 
 
+def team_ref(ref, ttl=604800):
+    """A team, resolved from the $ref the core API hands back.
+
+    Memoised for a week because the answer does not change inside a
+    season and the same hundred-odd teams are asked for over and over:
+    resolving per game instead of per team is what made the first line
+    backfill time out at 43 of 75.
+    """
+    def build():
+        d = _get(ref)
+        return {"id": str(d.get("id")), "abbr": d.get("abbreviation"),
+                "full_name": d.get("displayName"),
+                "location": d.get("location"), "name": d.get("name")}
+    return cached(ttl, ("team", ref), build)
+
+
+def events_on(league, day, ttl=3600):
+    """Every game ESPN has on a calendar day, as linkable sides.
+
+    Keyed by date, NOT by week. types/2/weeks/N/events is a curated
+    slate — eighteen events for a college Saturday that holds
+    forty-seven — and asking it for a full card quietly returns a
+    third of one.
+
+    `league` is a CORE_PATH value: "nfl" or "college-football".
+    """
+    def build():
+        try:
+            listing = _get(f"{CORE}/{league}/events",
+                           {"dates": day, "limit": 300})
+        except Exception:
+            return []
+        out = []
+        for item in listing.get("items", []):
+            try:
+                ev = _get(item["$ref"])
+                comp = (ev.get("competitions") or [])[0]
+            except Exception:
+                continue
+            sides, rank = {}, {}
+            for c in comp.get("competitors") or []:
+                ref = (c.get("team") or {}).get("$ref")
+                if not ref:
+                    continue
+                try:
+                    side = team_ref(ref)
+                except Exception:
+                    continue
+                if not side.get("abbr"):
+                    continue
+                sides[c.get("homeAway")] = side
+                # 99 is ESPN's "unranked", not a 99th-placed team.
+                cr = (c.get("curatedRank") or {}).get("current")
+                if cr and cr < 99:
+                    rank[c.get("homeAway")] = cr
+            if len(sides) != 2:
+                continue
+            out.append({"away": sides["away"], "home": sides["home"],
+                        "rank": rank, "event_id": str(ev.get("id")),
+                        "kickoff": (ev.get("date") or "")[:16],
+                        "league": "NFL" if league == "nfl" else "CFB"})
+        return out
+    return cached(ttl, ("events_on", league, day), build)
+
+
 def summary(event_id, league, ttl=1800):
     """Predictor, injuries and recent form for one game."""
     def build():

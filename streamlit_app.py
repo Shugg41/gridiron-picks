@@ -63,7 +63,8 @@ for _name in _MODULES:
         # for; the next rerun tries again.
         pass
 
-from gridiron import espn, ingest, model, simulate, splash, store, view, watch
+from gridiron import (espn, ingest, lookahead, model, simulate, splash, store,
+                      view, watch)
 
 DB = os.path.join(os.path.dirname(__file__), "football_picks.db")
 SEASON = 2026
@@ -413,6 +414,47 @@ def load_paste(text, wk):
     """The paste bar's one job, done in gridiron.ingest so that a session
     here and the app cannot drift apart."""
     return ingest.load(conn, SEASON, int(wk), text)
+
+
+# ── the weekend ahead, board or no board ───────────────────────────────
+# This used to wait on a paste. Splash chooses which thirty games are on
+# the card, not which are played, so the weekend can be rated days
+# before the board exists and the paste becomes confirmation rather than
+# the thing everything is blocked on. Rated from the sportsbook line and
+# FPI — neither of them Splash's number, which is derived from Splash's
+# own line and so is not a second opinion at all.
+with st.expander("The weekend ahead", expanded=not games):
+    try:
+        with st.spinner("Pricing the weekend…"):
+            ahead = lookahead.preview()
+    except Exception as exc:
+        ahead = []
+        st.caption(f"Could not reach ESPN ({type(exc).__name__}).")
+    if ahead:
+        priced = sum("market" in r["sources"] for r in ahead)
+        st.caption(
+            f"{len(ahead)} games — every NFL game and every ranked college "
+            f"one. {priced} have a sportsbook line; the rest are FPI alone, "
+            f"which is one opinion rather than two. Lines appear a few days "
+            f"out, so this sharpens as the week goes on."
+        )
+        for r in ahead:
+            rank = "".join(
+                f"<span class='opp'>#{v}</span> " for _, v in
+                sorted(r["rank"].items()))
+            both = "market" in r["sources"] and "fpi" in r["sources"]
+            flag = (" <span class='opp'>— the line and FPI disagree</span>"
+                    if r["split"] else
+                    ("" if both else " <span class='opp'>— no line yet</span>"))
+            st.markdown(
+                f"<div class='standout'>{rank}"
+                f"<span class='team'>{r['pick']}</span>"
+                f"<span class='opp'> over "
+                f"{r['away'] if r['pick'] == r['home'] else r['home']} — "
+                f"{r['confidence']:.0%}</span>{flag}</div>",
+                unsafe_allow_html=True)
+    elif not ahead:
+        st.caption("Nothing to rate yet.")
 
 
 # ── the paste bar ───────────────────────────────────────────────────────
