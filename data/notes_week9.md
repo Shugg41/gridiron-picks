@@ -68,10 +68,19 @@ still likes Tech; the recent form does not.
 Utah is 7-0 and up to #5. Cincinnati is unranked but receiving votes and
 just beat Texas Tech. Road favourite against a team with a scalp.
 
-**6. WIS @ IOWA — Iowa, in a rock fight.** Total 36.5, which tells you
-the game. Wisconsin's Colton Joseph went 6 of 16 for 66 yards in the
-loss to UCLA. Iowa will not commit between Brown and Hecklinski, but
-Hecklinski won on the road in his first career start. Iowa -3.5 at home.
+**6. WIS @ IOWA — WISCONSIN. My first note on this game was wrong.**
+I wrote that Colton Joseph went 6 of 16 for 66 yards in the loss to
+UCLA. That was two weeks ago. LAST Saturday Wisconsin beat #16 USC
+24-7 at Camp Randall — Lincoln Riley's worst loss at USC — with Joseph
+12 of 14 and a touchdown. In the same week Iowa lost 13-10 at
+Minnesota. Both results were already in our own database and I quoted
+a stale line out of a search summary instead of looking.
+
+So: a #25 Wisconsin side coming off beating a top-16 team by
+seventeen, against an unranked Iowa coming off a loss, and Iowa lays
+3.5 — which is home field doing the entire job. Kinnick in a game with
+a 36.5 total is a real argument for Iowa and the market is not mad.
+But the form runs the other way and the price does not reflect it.
 
 **14. CLEM @ FSU — CLEMSON. Deviating from the price, on purpose.**
 Florida State lays 5.5 to 6.5 at home at 3-4, against a 4-3 Clemson.
@@ -172,11 +181,21 @@ the price — Sayin, Hurts, Houser, Jackson, Baylor's coach, all of it was
 priced before I looked. Research made the card correct; it did not make
 it different.
 
-Game 14 is the exception, taken deliberately. Four other defensible
-deviations were offered and declined: Cleveland at Pittsburgh (CBS picks
+Games 14 and 6 are the exceptions. Clemson was taken from a list of
+five defensible deviations; Wisconsin was his own, and it was right —
+my note on that game had understated it by quoting a two-week-old stat
+and omitting both teams' most recent results.
+
+Still on the table and declined: Cleveland at Pittsburgh (CBS picks
 Cleveland outright), Arizona at Texas Tech (Tech lost to unranked
 Cincinnati, Arizona won 39-3), Chicago at Seattle (the 5-2 side is the
 underdog) and Atlanta at Tampa Bay (Tampa is 2-5).
+
+**A process note, from getting Wisconsin wrong.** Both relevant results
+were sitting in the game table and I trusted a search summary's stat
+instead. Last week's scores are the cheapest form check available and
+they are already local. Read them first, every week, before quoting
+anyone's recent form.
 
 ## Tiebreaker
 
