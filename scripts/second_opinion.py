@@ -58,17 +58,27 @@ _TEAM = {}
 
 
 def team_of(ref):
-    """(id, abbreviation), asked once per team rather than once per game.
+    """A side the matcher can actually work with, memoised per team.
+
+    Not just the abbreviation. espn.link derives the codes other
+    scoreboards use — Splash's JAC, WAS and LA for ESPN's JAX, WSH and
+    LAR — from a team's location and name, so handing it an
+    abbreviation alone leaves it nothing to derive from. That cost
+    five games on a board where the data was sitting right there:
+    Jacksonville, the Rams and Washington in the NFL, Northwestern and
+    South Carolina in college.
 
     The same memo that took the line backfill from timing out at 43
     games to finishing all 75.
     """
     if ref not in _TEAM:
         try:
-            data = get(ref)
-            _TEAM[ref] = (str(data.get("id")), data.get("abbreviation"))
+            d = get(ref)
+            _TEAM[ref] = {"id": str(d.get("id")), "abbr": d.get("abbreviation"),
+                          "full_name": d.get("displayName"),
+                          "location": d.get("location"), "name": d.get("name")}
         except Exception:
-            _TEAM[ref] = (None, None)
+            _TEAM[ref] = None
     return _TEAM[ref]
 
 
@@ -121,10 +131,9 @@ def events_for(league, day):
                 sides[c.get("homeAway")] = team_of(ref)
         if not sides.get("home") or not sides.get("away"):
             continue
-        if not sides["home"][1] or not sides["away"][1]:
+        if not sides["home"].get("abbr") or not sides["away"].get("abbr"):
             continue
-        out.append({"away": {"abbr": sides["away"][1], "id": sides["away"][0]},
-                    "home": {"abbr": sides["home"][1], "id": sides["home"][0]},
+        out.append({"away": sides["away"], "home": sides["home"],
                     "event_id": str(event.get("id")),
                     "league": "NFL" if league == "nfl" else "CFB"})
     print(f"# {league} {day}: {len(items)} events, {len(out)} usable",
