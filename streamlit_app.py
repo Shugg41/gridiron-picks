@@ -152,7 +152,12 @@ def push(title, body, tags, key):
             "secret of that name does not reach the app — it needs adding "
             "under Manage app → Settings → Secrets.")
         return
-    if store.meta_get(conn, "last_push") == key:
+    # One marker PER key, not one marker in total. A single
+    # "last_push" row meant any two alerts overwrote each other's
+    # record: the score push and the line-movement push took turns
+    # clearing the other, so both could re-fire indefinitely, and
+    # anything per-game was impossible to dedupe at all.
+    if store.meta_get(conn, f"push:{key}"):
         return
     try:
         import urllib.request
@@ -164,7 +169,7 @@ def push(title, body, tags, key):
             headers={"Title": title.encode("ascii", "ignore").decode(),
                      "Tags": tags})
         urllib.request.urlopen(req, timeout=10)
-        store.meta_set(conn, "last_push", key)
+        store.meta_set(conn, f"push:{key}", "sent")
         conn.commit()
     except Exception as exc:
         # Never break the page over it, but never swallow it either —
@@ -299,9 +304,30 @@ _window = tuple(espn.window([g["kickoff"] for g in games]))
 events = enrich(games, _window)
 # Grade whatever the finals now settle. Splash's own results win where
 # it has given them; this only fills blanks.
-if week and store.grade_from_scores(conn, SEASON, week):
+_settled = store.grade_from_scores(conn, SEASON, week) if week else []
+if _settled:
     entry = store.week_entry(conn, SEASON, week)
     save()
+
+# Each pick, as it finalises. The running score alone answers "how am I
+# doing" but never "what just happened", which is the thing worth a
+# buzz on a Sunday afternoon: a game ended and it went your way, or it
+# did not. One push per game, deduped on the game rather than on the
+# score, so a result is announced exactly once however many times the
+# page reloads.
+for _g in _settled:
+    _w2, _l2, _left2 = store.week_record(conn, SEASON, week)
+    _mark = "Correct" if _g["result"] == "W" else "Wrong"
+    _score = f"{_g['away_code']} {_g['away_score']}, {_g['home_code']} {_g['home_score']}"
+    if _g["winner"] is None:
+        _body = f"{_score} — a tie, which Splash scores as a loss for both sides."
+    else:
+        _body = f"{_score}. You had {_g['team']}."
+    _body += f" Week {week}: {_w2}-{_l2}"
+    _body += f", {_left2} to play." if _left2 else " — final."
+    push(f"{_mark}: {_g['team']}", _body,
+         "white_check_mark" if _g["result"] == "W" else "x",
+         key=f"final:{SEASON}:{week}:{_g['away_code']}:{_g['home_code']}")
 
 # A running score through the day, pushed only when it has actually
 # moved. Keyed on the record itself, so a reload between games sends

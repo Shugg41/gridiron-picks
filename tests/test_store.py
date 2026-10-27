@@ -123,7 +123,7 @@ store.save_entry(gr, 2026, 7, [
     {"away_code": "CC", "home_code": "DD", "team": "CC", "result": None},
     {"away_code": "EE", "home_code": "FF", "team": "EE", "result": None},
     {"away_code": "GG", "home_code": "HH", "team": "GG", "result": None}])
-assert store.grade_from_scores(gr, 2026, 7) == 3
+assert len(store.grade_from_scores(gr, 2026, 7)) == 3
 got = store.week_entry(gr, 2026, 7)
 assert got[("AA", "BB")] == ("AA", "W"), got[("AA", "BB")]
 assert got[("CC", "DD")] == ("CC", "L"), got[("CC", "DD")]
@@ -140,7 +140,7 @@ assert got[("GG", "HH")] == ("GG", None), "an unplayed game is not a loss"
 # and its own scoring rules, and a scoreline does not
 store.save_entry(gr, 2026, 7, [{"away_code": "AA", "home_code": "BB",
                                 "team": "AA", "result": "L"}])
-assert store.grade_from_scores(gr, 2026, 7) == 0
+assert store.grade_from_scores(gr, 2026, 7) == []
 assert store.week_entry(gr, 2026, 7)[("AA", "BB")] == ("AA", "L")
 print("results can be graded from the finals, without overwriting Splash OK")
 
@@ -362,7 +362,7 @@ conn.execute("INSERT INTO game (season,week,away_code,home_code,away_score,"
              "home_score) VALUES (2026,6,'NYG','WAS',27,27)")
 conn.execute("INSERT INTO entry (season,week,away_code,home_code,team) "
              "VALUES (2026,6,'NYG','WAS','WAS')")
-assert store.grade_from_scores(conn, 2026, 6) == 1
+assert len(store.grade_from_scores(conn, 2026, 6)) == 1
 assert conn.execute("SELECT result FROM entry").fetchone()[0] == "L"
 print("a tied game is graded a loss, not left open OK")
 

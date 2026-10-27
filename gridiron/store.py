@@ -277,9 +277,15 @@ def grade_from_scores(conn, season, week):
     Only empty results are filled. Splash's own grading is
     authoritative where it exists: it knows about forfeits, voided
     games and its own scoring rules, and a scoreline does not.
-    Returns how many were graded.
+
+    Returns a list of the games graded, each as a dict with the codes,
+    the final score, the pick and 'W' or 'L'. A count was enough while
+    the only caller wanted to know whether to save; announcing each
+    result as it lands needs to know which ones they were. The list is
+    falsy when empty, so `if grade_from_scores(...)` still reads the
+    same.
     """
-    done = 0
+    done = []
     rows = conn.execute(
         "SELECT g.away_code, g.home_code, g.away_score, g.home_score, e.team "
         "FROM game g JOIN entry e "
@@ -300,14 +306,19 @@ def grade_from_scores(conn, season, week):
             conn.execute(
                 "UPDATE entry SET result='L' WHERE season=? AND week=? "
                 "AND away_code=? AND home_code=?", (season, week, away, home))
-            done += 1
+            done.append({"away_code": away, "home_code": home,
+                         "away_score": a_sc, "home_score": h_sc,
+                         "team": team, "result": "L", "winner": None})
             continue
         winner = away if a_sc > h_sc else home
+        result = "W" if team == winner else "L"
         conn.execute(
             "UPDATE entry SET result=? WHERE season=? AND week=? "
             "AND away_code=? AND home_code=?",
-            ("W" if team == winner else "L", season, week, away, home))
-        done += 1
+            (result, season, week, away, home))
+        done.append({"away_code": away, "home_code": home,
+                     "away_score": a_sc, "home_score": h_sc,
+                     "team": team, "result": result, "winner": winner})
     return done
 
 

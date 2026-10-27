@@ -514,4 +514,38 @@ assert head and "Week 9" in head[0], \
 assert not at7.selectbox, "the replacement has only one week"
 print("a replaced database file is reopened, not read from the grave OK")
 
+
+# ── a finalised pick is announced once, and says which way it went ────
+# "You are 3-1" answers how the week is going but never what just
+# happened, which is the part worth a buzz on a Sunday. And the old
+# push() kept ONE marker for every alert, so per-game dedupe was
+# impossible: two alerts took turns clearing each other's record.
+sent = []
+import gridiron.store as _store
+_conn = _store.connect(":memory:")
+_store.meta_set(_conn, "push:final:2026:9:CAR:GB", "sent")
+assert _store.meta_get(_conn, "push:final:2026:9:CAR:GB") == "sent"
+assert _store.meta_get(_conn, "push:final:2026:9:ATL:TB") is None, \
+    "one key's marker must not answer for another's"
+_store.meta_set(_conn, "push:score:9:3-1", "sent")
+assert _store.meta_get(_conn, "push:final:2026:9:CAR:GB") == "sent", \
+    "a second alert must not clear the first one's marker"
+print("push markers are per alert, not one for all of them OK")
+
+# grade_from_scores reports WHICH games it settled, not just how many.
+from gridiron.splash import Game as _Game
+_store.save_games(_conn, 2026, 9, [
+    _Game(away="Panthers", home="Packers", away_code="CAR", home_code="GB",
+          day="Sun", kickoff="Sun 1:00pm", kickoff_iso="2026-11-01T18:00Z",
+          status="final", away_score=10, home_score=24)])
+_store.save_entry(_conn, 2026, 9,
+                  [{"away_code": "CAR", "home_code": "GB", "team": "GB"}])
+settled = _store.grade_from_scores(_conn, 2026, 9)
+assert len(settled) == 1, settled
+got = settled[0]
+assert got["team"] == "GB" and got["result"] == "W" and got["winner"] == "GB", got
+assert (got["away_score"], got["home_score"]) == (10, 24), got
+assert _store.grade_from_scores(_conn, 2026, 9) == [], "graded twice"
+print("a settled pick reports its score, its side and which way it went OK")
+
 print("\nALL APP TESTS PASS")
