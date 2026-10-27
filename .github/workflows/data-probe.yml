@@ -10,7 +10,7 @@ on:
       scope:
         description: "all probes, or just the line backfill"
         type: choice
-        options: [all, lines, deepdive, opinions]
+        options: [all, lines, deepdive, opinions, coverage]
         default: all
 
 jobs:
@@ -52,3 +52,6 @@ jobs:
       # argument.
       - run: python scripts/second_opinion.py
         if: always() && inputs.scope == 'opinions'
+      # Why the college slate comes back short, asked rather than guessed.
+      - run: python scripts/probe_coverage.py
+        if: always() && inputs.scope == 'coverage'
