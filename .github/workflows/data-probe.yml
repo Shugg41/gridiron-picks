@@ -10,8 +10,12 @@ on:
       scope:
         description: "all probes, or just the line backfill"
         type: choice
-        options: [all, lines, deepdive, opinions, coverage]
+        options: [all, lines, deepdive, opinions, coverage, lookahead]
         default: all
+      days:
+        description: "lookahead only: space-separated YYYYMMDD, blank for the next Thu-Mon"
+        type: string
+        default: ""
 
 jobs:
   probe:
@@ -55,3 +59,8 @@ jobs:
       # Why the college slate comes back short, asked rather than guessed.
       - run: python scripts/probe_coverage.py
         if: always() && inputs.scope == 'coverage'
+      # Rate the coming weekend before Splash posts a board. The board
+      # decides which thirty games are on the card, not which are
+      # played, so the card can be priced days before it exists.
+      - run: python scripts/lookahead.py ${{ inputs.days }}
+        if: always() && inputs.scope == 'lookahead'
