@@ -73,9 +73,15 @@ the game. Wisconsin's Colton Joseph went 6 of 16 for 66 yards in the
 loss to UCLA. Iowa will not commit between Brown and Hecklinski, but
 Hecklinski won on the road in his first career start. Iowa -3.5 at home.
 
-**14. CLEM @ FSU — Florida State, and the records argue against it.**
-FSU -5.5 to -6.5 at home at 3-4, against a 4-3 Clemson. That is a talent
-and home-field price, not a form one, and the experts are split.
+**14. CLEM @ FSU — CLEMSON. Deviating from the price, on purpose.**
+Florida State lays 5.5 to 6.5 at home at 3-4, against a 4-3 Clemson.
+That is a talent-and-home-field price rather than a form one, and the
+experts are split — SportsBettingDime takes Clemson with the points.
+This is a straight-up pool, so the spread is irrelevant and what
+matters is that the market gives Clemson about 36% to win outright.
+Taken anyway, as the week's one deliberate deviation: a card that
+matches the favourite everywhere cannot win a winner-take-all week,
+and this is the game where the disagreement is best supported.
 
 **3. BC @ DUKE — Duke.** Duke -6.5 at home, 5-2. Worth knowing Boston
 College just won 49-27 at Georgia Tech, so this is not a walkover.
@@ -157,6 +163,20 @@ around 73%.
 
 **27. NE @ MIA — New England.** Miami are 1-5; models have New England
 around 75%.
+
+## The one deviation
+
+Twenty-nine of thirty are the market favourite. That is not a strategy,
+it is what happens when every piece of news turns out to be already in
+the price — Sayin, Hurts, Houser, Jackson, Baylor's coach, all of it was
+priced before I looked. Research made the card correct; it did not make
+it different.
+
+Game 14 is the exception, taken deliberately. Four other defensible
+deviations were offered and declined: Cleveland at Pittsburgh (CBS picks
+Cleveland outright), Arizona at Texas Tech (Tech lost to unranked
+Cincinnati, Arizona won 39-3), Chicago at Seattle (the 5-2 side is the
+underdog) and Atlanta at Tampa Bay (Tampa is 2-5).
 
 ## Tiebreaker
 
