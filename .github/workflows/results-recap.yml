@@ -11,7 +11,13 @@ on:
     - cron: "0 13 * * 0"   # Sunday 9:00 AM ET
     - cron: "0 13 * * 1"   # Monday 9:00 AM ET
     - cron: "0 13 * * 2"   # Tuesday 9:00 AM ET (final, after MNF)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "recap, or test to send one message unconditionally"
+        type: choice
+        options: [recap, test]
+        default: recap
 
 jobs:
   recap:
@@ -22,4 +28,5 @@ jobs:
       - name: Send weekly record
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-        run: python scripts/notify.py recap
+        # A scheduled run has no inputs, so the fallback is the real job.
+        run: python scripts/notify.py ${{ inputs.mode || 'recap' }}

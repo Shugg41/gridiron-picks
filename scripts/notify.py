@@ -8,6 +8,7 @@ workflow needs no pip install.
     python scripts/notify.py remind    # Sat AM: nag if picks are missing/unentered
     python scripts/notify.py locksoon  # games that lock BEFORE Saturday noon
     python scripts/notify.py recap     # weekend: the week's record
+    python scripts/notify.py test      # always sends; proves the pipe
 
 Both read only the database. ESPN returns 403 to GitHub's runners, so
 scores are graded by the Streamlit app (which ESPN does serve) and land
@@ -77,6 +78,22 @@ def latest_week(conn, table="game"):
     row = conn.execute(
         f"SELECT season, week FROM {table} ORDER BY season DESC, week DESC LIMIT 1"
     ).fetchone()
+    return (row[0], row[1]) if row else (None, None)
+
+
+def graded_week(conn):
+    """The most recent week that has a graded result, not the newest board.
+
+    Everything here used to key off latest_week, which is whatever board
+    was loaded last. Loading next week's board on the Tuesday therefore
+    silenced the recap for the week just played: it looked at thirty
+    games with no results, said "nothing graded yet", and the weekend's
+    record was never sent. The board moving forward should not make the
+    past disappear.
+    """
+    row = conn.execute(
+        "SELECT season, week FROM entry WHERE result IN ('W','L') "
+        "ORDER BY season DESC, week DESC LIMIT 1").fetchone()
     return (row[0], row[1]) if row else (None, None)
 
 
@@ -218,9 +235,9 @@ def recap(conn):
     score. It does not need to: pasting the entry brings Splash's own
     grading with it.
     """
-    season, week = latest_week(conn)
+    season, week = graded_week(conn)
     if not season:
-        print("No games recorded — nothing to recap.")
+        print("No graded week yet — nothing to recap.")
         return
     rows = [r[0] for r in conn.execute(
         "SELECT result FROM entry WHERE season=? AND week=?", (season, week))]
@@ -234,15 +251,32 @@ def recap(conn):
     send("Pick results", msg)
 
 
+def test(conn):
+    """Send one message, unconditionally, so the pipe can be proved.
+
+    Every other mode is allowed to decide there is nothing worth
+    saying, which makes silence ambiguous: a broken topic and a quiet
+    week look identical from the phone. This one always sends, so
+    "did it arrive" becomes answerable in ten seconds.
+    """
+    season, week = latest_week(conn)
+    graded_season, graded = graded_week(conn)
+    send("Notifications are working",
+         f"Test from GitHub Actions. Newest board: week {week}. "
+         f"Last graded week: {graded}. "
+         f"If you are reading this, the pipe is fine.")
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else ""
-    if mode not in ("remind", "locksoon", "recap"):
-        sys.exit("usage: notify.py remind|locksoon|recap")
+    if mode not in ("remind", "locksoon", "recap", "test"):
+        sys.exit("usage: notify.py remind|locksoon|recap|test")
     if not os.path.exists(DB_PATH):
         print("No picks DB in repo yet — nothing to do.")
         return
     conn = open_db()
-    {"remind": remind, "locksoon": locksoon, "recap": recap}[mode](conn)
+    {"remind": remind, "locksoon": locksoon, "recap": recap,
+     "test": test}[mode](conn)
 
 
 if __name__ == "__main__":
