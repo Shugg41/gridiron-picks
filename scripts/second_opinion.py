@@ -72,14 +72,28 @@ def team_of(ref):
 
 
 def events_for(league, week):
-    out = []
-    try:
-        listing = get(f"{CORE}/{league}/seasons/{SEASON}/types/2/weeks/{week}/"
-                      f"events?limit=200")
-    except urllib.error.HTTPError as exc:
-        print(f"# {league} week {week}: HTTP {exc.code}", file=sys.stderr)
-        return out
-    for item in listing.get("items", []):
+    """Every event in an ESPN week, following the pagination.
+
+    `limit=200` is ignored by this endpoint: it answers with a page of
+    25 and states pageCount. Asking once and trusting the limit got
+    five of college football's sixteen board games and looked exactly
+    like a matching failure, which is the wrong bug to go hunting.
+    """
+    out, items, page, pages = [], [], 1, 1
+    while page <= pages:
+        try:
+            listing = get(f"{CORE}/{league}/seasons/{SEASON}/types/2/weeks/"
+                          f"{week}/events?limit=100&page={page}")
+        except urllib.error.HTTPError as exc:
+            print(f"# {league} week {week} page {page}: HTTP {exc.code}",
+                  file=sys.stderr)
+            break
+        pages = int(listing.get("pageCount") or 1)
+        items += listing.get("items", [])
+        page += 1
+    print(f"# {league} week {week}: {len(items)} events over {pages} page(s)",
+          file=sys.stderr)
+    for item in items:
         try:
             event = get(item["$ref"])
             comp = (event.get("competitions") or [])[0]
@@ -156,7 +170,7 @@ def main():
     print(f"# week {week}: {len(games)} board games", file=sys.stderr)
 
     pool = events_for("nfl", week - 1) + events_for("college-football", week)
-    print(f"# espn events: {len(pool)}", file=sys.stderr)
+    print(f"# espn events usable: {len(pool)}", file=sys.stderr)
 
     print("week\taway\thome\tsplash_home\tmarket_home\tfpi_home")
     matched = priced = rated = 0
