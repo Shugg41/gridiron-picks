@@ -211,3 +211,46 @@ side and flipped the sign. Fixed, and it now declines to guess.
 **Kansas State was not a second instance of it.** I said it was. The
 source wrote the same line from the underdog's side ("Colorado +2.5")
 and I read it as the opposite. The code had that one right.
+
+
+---
+
+# Wednesday 28 October — what moved
+
+Re-priced all thirty. **No favourite changed on any game**, so the card
+stands. Nine lines moved; three of them say something.
+
+**BAL @ BUF — the market is pricing Lamar in.** Buffalo 60.5% to 59.0%,
+moving toward Baltimore. Jackson practised Wednesday with the left
+ankle taped, warming up with the starting centre; Rapoport has him
+"believed to be close to 100 percent", Minter still will not commit and
+has him questionable. So the edge on Buffalo is shrinking exactly as
+you would expect if he plays. Still Buffalo, by less.
+
+**KSU @ COLO — Kansas State is barely a favourite now.** 56.0% to 53.6%,
+drifting to Colorado. Avery Johnson is still only day-to-day and Klein
+has not disclosed the injury; the Big 12 availability report lands
+Friday. This was already flagged as the likeliest pick to go wrong and
+the market is edging that way too.
+
+**CONN @ AFA — nearly a coin flip.** Air Force 56.0% to 53.6%. Covers
+had already flagged Evan Medders as doubtful for Air Force. Still Air
+Force, but it has thinned.
+
+**Thursday's game, which locks at kickoff.** Final reports are in and
+both sides are hurt. Green Bay rules out centre Sean Rhyan (ankle),
+right guard Travis Glover (knee) and linebacker Zaire Franklin (shin),
+with Micah Parsons already on PUP and Matthew Golden questionable —
+that is two of five offensive line spots, both hurt in Sunday's loss at
+Detroit. Carolina rules out its best pass rusher Jaelan Phillips
+(hamstring), left guard Damien Lewis (knee) and corner Akayleb Evans.
+A patchwork Green Bay interior against a Carolina front missing its
+edge largely cancels. Line unmoved at Green Bay -3.5. Pick stands.
+
+**Ohio State still has not named a quarterback.** Day declined again,
+wants to see a couple more practices, and says it is "definitely
+possible" both Fahey and St. Clair play. Fahey remains the
+expectation. The line has not moved, so the market is not worried.
+
+Unchanged and still the two deviations: Wisconsin at Iowa, Clemson at
+Florida State.
