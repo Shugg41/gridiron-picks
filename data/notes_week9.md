@@ -254,3 +254,36 @@ expectation. The line has not moved, so the market is not worried.
 
 Unchanged and still the two deviations: Wisconsin at Iowa, Clemson at
 Florida State.
+
+
+## Thursday night, final call — GREEN BAY
+
+Yesterday I wrote that the two injury lists "roughly cancel". That was
+wrong, and in Green Bay's favour. Carolina's absences land exactly on
+the weakness they already had.
+
+Carolina lost 43-13 to Tampa Bay in their last game. Bryce Young was
+sacked five times, threw two interceptions and fumbled — one of the
+worst starts of his career. Right tackle Taylor Moton fractured his
+fibula in it and rookie Monroe Freeling is filling in; left guard
+Damien Lewis is out with a knee; their best pass rusher Jaelan
+Phillips is out with a hamstring. So a quarterback who was just
+pressured into a five-sack afternoon goes to Lambeau on a short week
+behind a patched line, with no edge rush of his own to make Green Bay
+sit back.
+
+Green Bay is missing its centre Sean Rhyan and right guard Travis
+Glover, both hurt in Sunday's loss at Detroit, with Micah Parsons
+already on PUP and Matthew Golden questionable. That is real, but it
+costs them interior push, not their quarterback, and Lukas Van Ness is
+still coming off the edge at a patchwork tackle.
+
+Weather is a non-factor: clear, about 56F, light wind.
+
+Market has Green Bay at 60.5% and the line has not moved all week. If
+anything this looks a touch low. **Take Green Bay.**
+
+One caveat recorded honestly: one outlet reported Moton returning for
+this game, which contradicts the fibula fracture. The fracture report
+is the better sourced of the two, and the rest of the case does not
+rest on him.
