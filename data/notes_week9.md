@@ -88,10 +88,27 @@ predictor has them at 61%. I earlier told you the data said UConn —
 that was a sign-flip bug in my code, not a finding. Covers' expert
 likes UConn on the points, noting Air Force's Evan Medders is doubtful.
 
-**5. ARIZ @ TTU — Texas Tech, but the momentum runs the other way.**
-Tech is favoured by about 3 at home, and lost last week to an unranked
-Cincinnati. Arizona beat Iowa State 39-3. Both are ranked. The price
-still likes Tech; the recent form does not.
+**5. ARIZ @ TTU — ARIZONA. The best-supported deviation on the card.**
+
+The common opponent is clean. Arizona beat Cincinnati 34-7 at home in
+week 5; Cincinnati then beat Texas Tech 37-24 in Cincinnati on 24
+October, with Tech ranked #8 and unbeaten at the time. Tech trailed
+24-6 at half, lost the turnover battle and had Will Hammond fumble
+into an early field goal.
+
+Arizona have won five straight by an average of nearly twenty-four
+points, including 52-31 at West Virginia and 39-3 over Iowa State.
+Texas Tech's defence concedes 266.1 passing yards a game, one of the
+worst marks in the country.
+
+And the money disagrees with the public, which is the signal worth
+paying attention to: 62% of tickets are on Texas Tech while over 80%
+of the money is on Arizona, and the line has moved from Arizona +4.5
+to +3.5 — toward the underdog, against the ticket count. Two previews
+pick Arizona to win outright rather than merely cover, 27-24 and
+31-24.
+
+Costs about sixteen points of win probability. Taken.
 
 **12. UTAH @ CIN — Utah, on the road, against a team playing well.**
 Utah is 7-0 and up to #5. Cincinnati is unranked but receiving votes and
@@ -111,15 +128,15 @@ seventeen, against an unranked Iowa coming off a loss, and Iowa lays
 a 36.5 total is a real argument for Iowa and the market is not mad.
 But the form runs the other way and the price does not reflect it.
 
-**14. CLEM @ FSU — CLEMSON. Deviating from the price, on purpose.**
-Florida State lays 5.5 to 6.5 at home at 3-4, against a 4-3 Clemson.
-That is a talent-and-home-field price rather than a form one, and the
-experts are split — SportsBettingDime takes Clemson with the points.
-This is a straight-up pool, so the spread is irrelevant and what
-matters is that the market gives Clemson about 36% to win outright.
-Taken anyway, as the week's one deliberate deviation: a card that
-matches the favourite everywhere cannot win a winner-take-all week,
-and this is the game where the disagreement is best supported.
+**14. CLEM @ FSU — Florida State.** Taken as a deviation earlier in the
+week and reverted once Arizona turned up, because there is only so much
+separation worth buying and Arizona's case is much the stronger of the
+two. Clemson's was "Florida State is overpriced at 3-4 laying six and a
+half to a 4-3 side, and the experts are split", which is a reasonable
+read of a number. Arizona's is a clean common opponent, a five-game
+run of twenty-four point wins, a defence that cannot cover anybody, and
+80% of the money against 62% of the tickets. One of those is an
+argument about a price; the other is an argument about a football team.
 
 **3. BC @ DUKE — Duke.** Duke -6.5 at home, 5-2. Worth knowing Boston
 College just won 49-27 at Georgia Tech, so this is not a walkover.
@@ -210,7 +227,7 @@ the price — Sayin, Hurts, Houser, Jackson, Baylor's coach, all of it was
 priced before I looked. Research made the card correct; it did not make
 it different.
 
-Games 2, 6 and 14 are the exceptions. Clemson was taken from a list of
+Games 2, 5 and 6 are the exceptions. Clemson was taken from a list of
 five defensible deviations; Wisconsin was his own, and it was right —
 my note on that game had understated it by quoting a two-week-old stat
 and omitting both teams' most recent results. Baylor came out of his
@@ -218,7 +235,9 @@ own observation that the obvious read (one team lost and fired its
 coach, one beat the number two side) ought to make it an easy pick,
 which is exactly the tell: the market has priced that story and still
 cannot choose a side, so the story is spent and the game is free
-separation.
+separation. Arizona came last and is the best of the three; Clemson
+was dropped to make room for it, because three deviations with real
+arguments beats four where one is only an argument about a price.
 
 Still on the table and declined: Cleveland at Pittsburgh (CBS picks
 Cleveland outright), Arizona at Texas Tech (Tech lost to unranked
