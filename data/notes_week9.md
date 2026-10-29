@@ -17,11 +17,40 @@ is worse off up front, with right tackle Taylor Moton on IR, left guard
 Damien Lewis's knee, and Jaelan Phillips questionable. Covers leans
 Carolina with the points. Take Green Bay, expect it close and low.
 
-**2. BAY @ UCF — UCF.** Baylor fired Dave Aranda on Sunday at 40-40;
-Joe Klanderman is interim, and QB DJ Lagway turned an ankle against
-Auburn. Books cannot agree on the side — Big 12's own page has Baylor
--1.5, DocSports has UCF -2.5. A coin flip, so take the side that is not
-in upheaval.
+**2. BAY @ UCF — BAYLOR.** My first note here was a slogan: "take the
+side that is not in upheaval". It did not survive looking at.
+
+The narrative is loud. UCF beat #2 BYU 39-31 and the fans stormed the
+field; Baylor lost 25-24 at Kansas and fired Dave Aranda two days
+later at 40-40, with defensive coordinator Joe Klanderman taking over
+and keeping the defensive play-calling. On that story this is not a
+hard pick.
+
+Underneath it, the two teams are the same team. Both 4-3, both 2-2 in
+the Big 12. UCF's win was a double-overtime eight-point margin — one
+possession from being a loss. Baylor's loss was by one, and they put
+55 on Arizona State earlier this year. FPI, which knows nothing about
+sacked coaches or storming fields, has it 50.3 to 49.7.
+
+The market has read the same story and cannot pick a side: Yahoo's
+consensus has Baylor -1.5, SportsLine has UCF -1.5, ESPN's number has
+UCF by about a point. When the books disagree on who is favoured, the
+game really is a coin flip and the narrative is already spent.
+
+Two situational arguments exist and they point the same way, against
+the story. UCF is in a field-storm letdown spot on a short Friday
+turnaround — three analysts on record taking Baylor with the points
+for exactly that reason. And teams usually play hard in the first game
+after a mid-season firing, so "Baylor is in chaos" may have it
+backwards.
+
+Taken as the cheapest deviation on the card: about three points of win
+probability, against twenty-eight for Clemson. Not because Baylor is
+better. They are not, and neither is UCF.
+
+One unknown at the time of writing: DJ Lagway has had a high ankle
+sprain since the opener, is week to week, has already missed two games
+and is completing 52.1%. No availability report had been posted.
 
 ## Saturday — the games where the news decides it
 
@@ -181,10 +210,15 @@ the price — Sayin, Hurts, Houser, Jackson, Baylor's coach, all of it was
 priced before I looked. Research made the card correct; it did not make
 it different.
 
-Games 14 and 6 are the exceptions. Clemson was taken from a list of
+Games 2, 6 and 14 are the exceptions. Clemson was taken from a list of
 five defensible deviations; Wisconsin was his own, and it was right —
 my note on that game had understated it by quoting a two-week-old stat
-and omitting both teams' most recent results.
+and omitting both teams' most recent results. Baylor came out of his
+own observation that the obvious read (one team lost and fired its
+coach, one beat the number two side) ought to make it an easy pick,
+which is exactly the tell: the market has priced that story and still
+cannot choose a side, so the story is spent and the game is free
+separation.
 
 Still on the table and declined: Cleveland at Pittsburgh (CBS picks
 Cleveland outright), Arizona at Texas Tech (Tech lost to unranked
