@@ -172,11 +172,21 @@ himself in practice. Buffalo -3.5 is the with-Jackson number. Without
 him Buffalo would be favoured by a touchdown or more, so this pick only
 gets safer if the news goes the other way.
 
-**19. MIN @ DET — Detroit, with money moving the other way.** Opened
-Detroit -4.5, now -3 to -3.5. Minnesota is 6-0 with Kyler Murray at
-quarterback and has struggled on offence regardless. Goff is averaging
-298 yards with 14 touchdowns and no interceptions, and Detroit's
-defence leads the NFL in blitz rate.
+**19. MIN @ DET — MINNESOTA. The cleanest signal on the board.**
+Eighty-one per cent of bets AND eighty-five per cent of the money are
+on Detroit, and the line has moved Detroit -4.5 to -3/-3.5 — against
+that money. When the handle is that one-sided and the number goes the
+other way, the books are taking a deliberate position against the
+public. That is textbook reverse line movement and it is the only
+place on this card where it appears.
+
+Minnesota are 7-0, beat Indianapolis 16-10 last week, and are getting
+three points. Their offence has struggled all year with Kyler Murray
+and Detroit's defence leads the league in blitz rate, which is the
+case for Detroit and is presumably what the eighty-five per cent is
+buying. The market is still moving the other way.
+
+Costs about eighteen points of win probability. Taken.
 
 **18. ATL @ TB — Tampa Bay, and ignore FPI here. Market only.** FPI has
 the Buccaneers at 69%; the price says 58%. Tampa is 2-5. Atlanta's Penix
@@ -192,11 +202,23 @@ experts split: CBS picks Cleveland outright.
 -3 at home at 3-3 or 4-3; Chicago is 5-2. Chicago lost Cole Kmet for the
 season; Seattle lost left tackle Charles Cross to a high ankle sprain.
 
-**28. KC @ DEN — Kansas City, the thinnest edge in the NFL this week.**
-About a point. Mahomes was a full participant with a knee listed;
-Kansas City is without Rashee Rice (hamstring, knee), Jaylon Moore
-(concussion) and Brashard Smith (hamstring). Denver's Nix has struggled
-since ankle surgery.
+**28. KC @ DEN — Kansas City. Denver was floated as a flip and dropped.**
+
+The case for Denver was that Kansas City scored three points at
+Seattle, Mahomes was held to 165 yards, Denver won 30-16 at Arizona
+and is 3-0 against the spread at home. That case is recency dressed
+as analysis — the same trap as reading Wisconsin off a two-week-old
+stat, pointing the other way. One bad game from Mahomes is a bad
+game, not a condition, and his instinct on that was better than mine.
+
+The roster says the opposite too. Mahomes was a full participant
+Wednesday with no game designation; Rashee Rice is back after missing
+two games and Jaylon Moore is back from a concussion, with only
+L'Jarius Sneed held out. Kansas City is getting healthier.
+
+The line did flip from Denver -1.5 to Kansas City -1.5, which is three
+points of movement toward Kansas City after the Seattle game. Left
+alone.
 
 **23. LV @ NYJ — the Jets, and do not think about it.** A true pick'em:
 ESPN lists the Raiders -1.5, Fox lists the Jets -1.5, ESPN's predictor
