@@ -40,13 +40,18 @@ jobs:
       - name: Record what was announced
         run: |
           set -eo pipefail
-          if git diff --quiet -- data/announced.txt; then
+          git config user.name "gridiron-bot"
+          git config user.email "noreply@anthropic.com"
+          # Stage FIRST, then ask about the staged change. `git diff` on
+          # a path that is not tracked yet reports nothing, so the very
+          # first run announced seven results, wrote the marker file and
+          # then decided there was nothing to commit — which would have
+          # re-announced all seven every fifteen minutes.
+          git add -A data/announced.txt
+          if git diff --cached --quiet -- data/announced.txt; then
             echo "nothing new announced"
             exit 0
           fi
-          git config user.name "gridiron-bot"
-          git config user.email "noreply@anthropic.com"
-          git add data/announced.txt
           git commit -m "Announced results $(date -u +%Y-%m-%dT%H:%MZ)"
           for n in 1 2 3 4 5; do
             git pull --rebase --autostash -q origin main && \
