@@ -1,0 +1,58 @@
+# Announce each pick as it finalises. Every fifteen minutes through the
+# windows games actually fall in, rather than the four-to-six hours
+# keep-awake manages — and from Actions, where NTFY_TOPIC actually
+# exists. The app's own copy of this has never fired once: its secrets
+# are a different store and it has never had the topic.
+name: Results watch
+
+on:
+  schedule:
+    # Thursday and Friday nights (NFL and the Friday college game).
+    - cron: "7,22,37,52 1-5 * * 5,6"
+    # Saturday noon ET through the small hours: the college slate.
+    - cron: "7,22,37,52 16-23 * * 6"
+    - cron: "7,22,37,52 0-6 * * 0"
+    # Sunday the NFL slate, into Monday morning for the night game.
+    - cron: "7,22,37,52 17-23 * * 0"
+    - cron: "7,22,37,52 0-6 * * 1"
+    # Monday night, finishing Tuesday morning.
+    - cron: "7,22,37,52 1-5 * * 2"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet requests
+      - name: Announce anything that finished
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python scripts/results_watch.py
+      # data/announced.txt is the only thing written, and it is a text
+      # file on purpose: the app writes the database from the other
+      # side and a collision on a binary file loses a week, while a
+      # collision here is three lines to merge.
+      - name: Record what was announced
+        run: |
+          set -eo pipefail
+          if git diff --quiet -- data/announced.txt; then
+            echo "nothing new announced"
+            exit 0
+          fi
+          git config user.name "gridiron-bot"
+          git config user.email "noreply@anthropic.com"
+          git add data/announced.txt
+          git commit -m "Announced results $(date -u +%Y-%m-%dT%H:%MZ)"
+          for n in 1 2 3 4 5; do
+            git pull --rebase --autostash -q origin main && \
+              git push -q origin HEAD:main && exit 0
+            echo "push attempt $n lost a race; retrying"
+            sleep $((n * 5))
+          done
+          echo "could not record the announcements after five tries" >&2
+          exit 1
