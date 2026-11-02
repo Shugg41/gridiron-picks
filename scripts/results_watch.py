@@ -58,9 +58,17 @@ def remember(keys):
 
 
 def winner(event):
-    """The side that won, or None for a tie or an unfinished game.
+    """"home", "away", or None for a tie or an unfinished game.
 
-    A tie is None rather than a team because Splash scores one as a
+    A side rather than a team name, and that is the whole point. This
+    returned ESPN's abbreviation for four weeks and was compared against
+    the Splash pick code, so every game won by a team the two spell
+    differently graded as a loss: LAR vs LA, JAX vs JAC, WSH vs WAS.
+    Week 9 went out as 16-13 when it was 19-10. The caller maps the side
+    onto the board's own codes, which are Splash's by construction, so
+    there is no spelling to agree on.
+
+    A tie is None rather than a side because Splash scores one as a
     loss for everybody — week 6's 27-27 came back marked incorrect on
     both sides of the room.
     """
@@ -70,7 +78,7 @@ def winner(event):
     hs, as_ = h.get("score"), a.get("score")
     if hs is None or as_ is None or hs == as_:
         return None
-    return h["abbr"] if hs > as_ else a["abbr"]
+    return "home" if hs > as_ else "away"
 
 
 def main():
@@ -116,7 +124,9 @@ def main():
         if not ev or not ev.get("completed"):
             left += 1
             continue
-        win = winner(ev)
+        side = winner(ev)
+        win = None if side is None else (
+            g.home_code if side == "home" else g.away_code)
         result = "W" if win == pick else "L"
         done.append((key, pick, ev, win, result))
         marker = f"{SEASON}:{week}:{g.away_code}:{g.home_code}"

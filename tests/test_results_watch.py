@@ -30,8 +30,8 @@ def event(away, home, a_score, h_score, completed=True):
 
 
 # ── who won ───────────────────────────────────────────────────────────
-assert rw.winner(event("CAR", "GB", 19, 27)) == "GB"
-assert rw.winner(event("CAR", "GB", 27, 19)) == "CAR"
+assert rw.winner(event("CAR", "GB", 19, 27)) == "home"
+assert rw.winner(event("CAR", "GB", 27, 19)) == "away"
 assert rw.winner(event("CAR", "GB", 20, 20)) is None, "a tie has no winner"
 assert rw.winner(event("CAR", "GB", 0, 0, completed=False)) is None
 print("a finished game has a winner, a tie does not OK")
@@ -98,5 +98,57 @@ titles = {t for t, _ in SENT}
 assert "Wrong: GB" in titles, titles
 assert any("loss for both" in b for _, b in SENT), SENT
 print("a tie is announced as a loss for both sides OK")
+
+# ── ESPN and Splash spelling the same team differently ────────────────
+# This is the bug that sent week 9 out as 16-13. ESPN says LAR, JAX and
+# WSH; Splash says LA, JAC and WAS. Grading by abbreviation marked all
+# three wins as losses.
+tmp2 = tempfile.mkdtemp()
+rw.DB = os.path.join(tmp2, "picks.db")
+rw.SEEN = os.path.join(tmp2, "announced.txt")
+SENT.clear()
+
+conn = store.connect(rw.DB)
+store.save_games(conn, 2026, 9, [
+    splash.Game(away="Chargers", home="Rams", away_code="LAC",
+                home_code="LA", day="Sun", kickoff="Sun 4:05pm",
+                kickoff_iso="2026-11-01T21:05Z"),
+    splash.Game(away="Colts", home="Jaguars", away_code="IND",
+                home_code="JAC", day="Sun", kickoff="Sun 1:00pm",
+                kickoff_iso="2026-11-01T18:00Z"),
+    splash.Game(away="Eagles", home="Commanders", away_code="PHI",
+                home_code="WAS", day="Sun", kickoff="Sun 1:00pm",
+                kickoff_iso="2026-11-01T18:00Z")])
+store.save_entry(conn, 2026, 9, [
+    {"away_code": "LAC", "home_code": "LA", "team": "LA"},
+    {"away_code": "IND", "home_code": "JAC", "team": "JAC"},
+    {"away_code": "PHI", "home_code": "WAS", "team": "WAS"}])
+conn.commit()
+
+def side(abbr, location, name, score):
+    return {"abbr": abbr, "location": location, "name": name,
+            "full_name": f"{location} {name}", "score": score}
+
+
+def real(away, home):
+    return {"league": "NFL", "completed": True,
+            "event_id": away["abbr"] + home["abbr"],
+            "away": away, "home": home}
+
+
+espn.clear_cache()
+rw.espn.scoreboard = lambda league, day=None, ttl=900: (
+    [real(side("LAC", "Los Angeles", "Chargers", 9),
+          side("LAR", "Los Angeles", "Rams", 24)),
+     real(side("IND", "Indianapolis", "Colts", 7),
+          side("JAX", "Jacksonville", "Jaguars", 42)),
+     real(side("PHI", "Philadelphia", "Eagles", 10),
+          side("WSH", "Washington", "Commanders", 27))]
+    if league == "NFL" else [])
+rw.main()
+titles = sorted(t for t, _ in SENT)
+assert titles == ["Correct: JAC", "Correct: LA", "Correct: WAS"], titles
+assert all("3-0" in b for _, b in SENT), SENT
+print("a win is a win even when ESPN spells the team differently OK")
 
 print("\nALL RESULTS-WATCH TESTS PASS")
