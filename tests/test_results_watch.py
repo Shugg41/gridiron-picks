@@ -41,6 +41,13 @@ tmp = tempfile.mkdtemp()
 rw.DB = os.path.join(tmp, "picks.db")
 rw.SEEN = os.path.join(tmp, "announced.txt")
 
+rw.chaos.PATH = os.path.join(tmp, "chaos.tsv")
+# Two flagged underdogs: one in a game he took the other side of, one in
+# a game still being played.
+led = rw.chaos.add([], 2026, 9, "CAR", "GB", "CAR", 0.33, "form", "x", "d")
+led = rw.chaos.add(led, 2026, 9, "MIN", "DET", "MIN", 0.41, "style", "y", "d")
+rw.chaos.write(led)
+
 conn = store.connect(rw.DB)
 store.save_games(conn, 2026, 9, [
     splash.Game(away="Panthers", home="Packers", away_code="CAR",
@@ -71,6 +78,14 @@ assert "CAR 19, GB 27" in body, body
 assert "You had GB" in body, body
 assert "1-0" in body and "1 to play" in body, body
 print("a finished pick is announced with its score and the record OK")
+
+assert "CAR was on the chaos list and did not come in." in body, body
+led = rw.chaos.read()
+car = rw.chaos.for_game(led, 2026, 9, "CAR", "GB")
+mn = rw.chaos.for_game(led, 2026, 9, "MIN", "DET")
+assert (car["result"], car["taken"]) == ("L", "N"), car
+assert (mn["result"], mn["taken"]) == ("", "Y"), mn
+print("the ledger is settled when the game ends, not before OK")
 
 rw.main()
 assert len(SENT) == 1, "announced twice — the marker did not hold"
@@ -104,6 +119,7 @@ print("a tie is announced as a loss for both sides OK")
 # WSH; Splash says LA, JAC and WAS. Grading by abbreviation marked all
 # three wins as losses.
 tmp2 = tempfile.mkdtemp()
+rw.chaos.PATH = os.path.join(tmp2, "chaos.tsv")
 rw.DB = os.path.join(tmp2, "picks.db")
 rw.SEEN = os.path.join(tmp2, "announced.txt")
 SENT.clear()

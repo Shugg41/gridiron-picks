@@ -1,0 +1,36 @@
+# Send something to the phone: the week's chaos list, or a short note.
+#
+# The list has to arrive where it gets read. Week 10's went out as a
+# long post in a chat, it had not been read when the card was filled
+# in, and four winning underdogs went unused. A text is the thing that
+# does get read, and NTFY_TOPIC only exists here.
+#
+# With no inputs it sends the open candidates from data/chaos.tsv.
+# With a body it sends that instead — a Saturday-morning change, say.
+name: Text
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "note title (leave blank to send the chaos list)"
+        type: string
+        default: ""
+      body:
+        description: "note body (leave blank to send the chaos list)"
+        type: string
+        default: ""
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          # Through the environment, never spliced into the command.
+          NOTE_TITLE: ${{ inputs.title }}
+          NOTE_BODY: ${{ inputs.body }}
+        run: python scripts/chaos.py text

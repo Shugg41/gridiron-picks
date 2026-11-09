@@ -18,6 +18,12 @@ on:
     # Monday night, finishing Tuesday morning.
     - cron: "7,22,37,52 1-5 * * 2"
   workflow_dispatch: {}
+  # Callable, because GitHub's scheduler cannot be trusted with this on
+  # its own. It dropped the whole Saturday-night window two weeks
+  # running — eight games finished and nothing was sent until somebody
+  # ran it by hand. So every other scheduled workflow calls this as a
+  # second job, and whichever of them does fire catches up.
+  workflow_call: {}
 
 permissions:
   contents: write
@@ -26,6 +32,11 @@ jobs:
   watch:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # One at a time across every caller. Two runs reading announced.txt
+    # before either has pushed would both announce the same game.
+    concurrency:
+      group: results-watch
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - run: pip install --quiet requests
@@ -47,8 +58,8 @@ jobs:
           # first run announced seven results, wrote the marker file and
           # then decided there was nothing to commit — which would have
           # re-announced all seven every fifteen minutes.
-          git add -A data/announced.txt
-          if git diff --cached --quiet -- data/announced.txt; then
+          git add -A data/announced.txt data/chaos.tsv
+          if git diff --cached --quiet -- data/announced.txt data/chaos.tsv; then
             echo "nothing new announced"
             exit 0
           fi

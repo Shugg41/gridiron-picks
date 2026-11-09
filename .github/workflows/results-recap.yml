@@ -30,3 +30,10 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         # A scheduled run has no inputs, so the fallback is the real job.
         run: python scripts/notify.py ${{ inputs.mode || 'recap' }}
+
+  # A second way in for the results watch; see results-watch.yml.
+  results:
+    uses: ./.github/workflows/results-watch.yml
+    secrets: inherit
+    permissions:
+      contents: write

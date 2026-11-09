@@ -19,7 +19,9 @@ the database but never writes to it — grading stays the app's job and
 two writers on a binary file is how a week gets lost.
 
 What it does write is data/announced.txt, one game per line, which is
-how it knows what it has already said. A text file rather than a row
+how it knows what it has already said, and the result column of
+data/chaos.tsv, so every flagged underdog is graded the moment its
+game ends whether or not it was taken. A text file rather than a row
 in the database precisely so that a collision with the app is a
 three-line merge instead of a corrupted week.
 
@@ -33,7 +35,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from gridiron import espn, splash, store                      # noqa: E402
+from gridiron import chaos, espn, splash, store               # noqa: E402
 import notify                                                 # noqa: E402
 
 SEASON = 2026
@@ -115,18 +117,24 @@ def main():
         return
 
     seen = already_said()
-    done, fresh, left = [], [], 0
+    done, fresh, left, finals = [], [], 0, {}
     for g, ev in espn.link(games, pool):
         key = (g.away_code, g.home_code)
+        over = bool(ev and ev.get("completed"))
+        if over:
+            side = winner(ev)
+            # Every finished game, picked or not: the chaos ledger is
+            # settled from these, and a candidate does not stop having
+            # a result because it was not taken.
+            finals[key] = None if side is None else (
+                g.home_code if side == "home" else g.away_code)
         pick = picks.get(key)
         if not pick:
             continue
-        if not ev or not ev.get("completed"):
+        if not over:
             left += 1
             continue
-        side = winner(ev)
-        win = None if side is None else (
-            g.home_code if side == "home" else g.away_code)
+        win = finals[key]
         result = "W" if win == pick else "L"
         done.append((key, pick, ev, win, result))
         marker = f"{SEASON}:{week}:{g.away_code}:{g.home_code}"
@@ -138,12 +146,21 @@ def main():
     print(f"week {week}: {w}-{l} with {left} to play, "
           f"{len(fresh)} new to announce")
 
+    ledger = chaos.read()
+    if chaos.settle(ledger, SEASON, week, finals, picks):
+        chaos.write(ledger)
+
     said = []
     for marker, (a, h), pick, ev, win, result in fresh:
         score = (f"{a} {ev['away'].get('score')}, "
                  f"{h} {ev['home'].get('score')}")
         body = (f"{score} — a tie, which Splash scores as a loss for both."
                 if win is None else f"{score}. You had {pick}.")
+        flagged = chaos.for_game(ledger, SEASON, week, a, h)
+        if flagged and win is not None:
+            body += (f" {flagged['team']} was on the chaos list"
+                     + (" and came in." if win == flagged["team"]
+                        else " and did not come in."))
         body += f" Week {week}: {w}-{l}"
         body += f", {left} to play." if left else " — final."
         notify.send("Correct: " + pick if result == "W" else "Wrong: " + pick,

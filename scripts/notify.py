@@ -29,7 +29,7 @@ ET = ZoneInfo("America/New_York")
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "football_picks.db")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from gridiron import store                                    # noqa: E402
+from gridiron import chaos, store                             # noqa: E402
 
 
 def open_db():
@@ -212,6 +212,10 @@ def locksoon(conn, now=None):
     advice = {(a, h): t for a, h, t in conn.execute(
         "SELECT away_code, home_code, team FROM proposal "
         "WHERE season=? AND week=?", (season, week))}
+    # A flagged underdog in a game that locks early is the one thing
+    # that cannot wait for Saturday. Week 10's Friday candidate was the
+    # only one of six that got used, and it got used by luck.
+    ledger = chaos.read()
     due, soonest, ahead = [], None, False
     for away, home, kickoff in conn.execute(
             "SELECT away_code, home_code, kickoff FROM game "
@@ -229,7 +233,12 @@ def locksoon(conn, now=None):
         if known and (away, home) in picked:
             continue
         pick = advice.get((away, home))
-        due.append(f"{away} @ {home}" + (f" — take {pick}" if pick else ""))
+        line = f"{away} @ {home}" + (f" — take {pick}" if pick else "")
+        flag = chaos.for_game(ledger, season, week, away, home)
+        if flag and not flag.get("result"):
+            line += (f" (chaos list: {flag['team']}, "
+                     f"{float(flag['price']):.0%} — {flag['reason']})")
+        due.append(line)
         soonest = lock if soonest is None else min(soonest, lock)
     if not due:
         print("No early game needs attention right now. Silent.")
@@ -273,6 +282,7 @@ def recap(conn):
     left = len([r for r in rows if r is None])
     msg = f"Week {week}: {w}-{l}"
     msg += f" so far, {left} game(s) left." if left else " final."
+    msg += chaos.recap_line(chaos.read(), season, week)
     send("Pick results", msg)
 
 

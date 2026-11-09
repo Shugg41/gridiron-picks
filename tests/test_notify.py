@@ -17,6 +17,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 from gridiron import store                                     # noqa: E402
 import notify                                                  # noqa: E402
 
+import tempfile                                                # noqa: E402
+# The real ledger must not leak into these, in either direction.
+notify.chaos.PATH = os.path.join(tempfile.mkdtemp(), "chaos.tsv")
+
 SENT = []
 ALL_TITLES = []          # never cleared, so the sweep at the end sees them all
 _real_send = notify.send
@@ -150,6 +154,24 @@ assert "MISS" not in SENT[-1][1], "Saturday games are the noon reminder's job"
 assert "~3h" in SENT[-1][0], SENT[-1][0]
 print("locksoon warns on the early game OK")
 
+# A flagged underdog in a game that locks early has to be in the alert:
+# it is the one candidate that cannot wait for Saturday.
+notify.chaos.write(notify.chaos.add(
+    [], 2026, 4, "ATL", "GB", "ATL", 0.39, "form",
+    "won 3 straight", "2026-09-22"))
+SENT.clear()
+notify.locksoon(conn, now=now)
+assert "chaos list: ATL, 39% — won 3 straight" in SENT[-1][1], SENT[-1][1]
+# Once the game is settled it is history, not advice.
+led = notify.chaos.read()
+notify.chaos.settle(led, 2026, 4, {("ATL", "GB"): "GB"})
+notify.chaos.write(led)
+SENT.clear()
+notify.locksoon(conn, now=now)
+assert "chaos list" not in SENT[-1][1], SENT[-1][1]
+os.unlink(notify.chaos.PATH)
+print("an early-locking chaos candidate rides along in the lock alert OK")
+
 conn = db()
 add(conn, "ATL", "GB", THU, picked="GB")
 SENT.clear()
@@ -249,6 +271,16 @@ conn.execute("UPDATE entry SET result='W' WHERE away_code='D'")
 SENT.clear()
 notify.recap(conn)
 assert "3-1 final" in SENT[-1][1], SENT
+assert "Chaos" not in SENT[-1][1], "nothing flagged, nothing claimed"
+led = notify.chaos.add([], 2026, 4, "A", "Ah", "A", 0.4, "form", "x", "d")
+led = notify.chaos.add(led, 2026, 4, "C", "Ch", "Ch", 0.3, "style", "y", "d")
+notify.chaos.settle(led, 2026, 4, {("A", "Ah"): "A", ("C", "Ch"): "Ch"},
+                    {("A", "Ah"): "A", ("C", "Ch"): "C"})
+notify.chaos.write(led)
+SENT.clear()
+notify.recap(conn)
+assert "Chaos list: 2 of 2 hit, you took 1." in SENT[-1][1], SENT[-1][1]
+os.unlink(notify.chaos.PATH)
 
 conn = db()
 add(conn, "A", "B", SAT_LATE, picked="B")

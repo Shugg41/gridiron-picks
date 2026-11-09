@@ -16,8 +16,9 @@ Two numbers per game, neither of them Splash's:
     market   the sportsbook spread ESPN carries, as a win probability
     fpi      ESPN's power index, which never looks at the price
 
-Lines appear only a few days out, so a Monday run is usually FPI
-alone and a Thursday run has both. `sources` on each row says which,
+Lines are usually up by Monday for the whole weekend — week 10 had
+all thirty-one priced five days out — though an early one can be an
+opener the market has since left. `sources` on each row says which,
 because a one-signal rating and a two-signal rating should not look
 alike on the screen.
 """
@@ -93,6 +94,26 @@ def market_home(event):
     return _normal(-handicap, espn.MARGIN_SD.get(event["league"], 14.5))
 
 
+def line_detail(event):
+    """The total, and how far the spread has moved and toward whom.
+
+    Both are scouting inputs rather than ratings. A low total means few
+    possessions, which is where a seven-point favourite is thinnest;
+    a line that has moved toward the underdog is money disagreeing
+    with the number. Returns (total, points, team) with None for
+    whatever ESPN does not have.
+    """
+    try:
+        odds = espn.odds_history(event["event_id"], event["league"])
+    except Exception:
+        return None, None, None
+    item = ((odds or {}).get("items") or [{}])[0]
+    total = espn._num(item.get("overUnder"))
+    points, team = espn.movement(odds, event["home"]["abbr"],
+                                 event["away"]["abbr"])
+    return total, points, team
+
+
 def fpi_home(event):
     """P(home wins) from the power index alone."""
     try:
@@ -117,13 +138,23 @@ def worth_rating(event):
     return event["league"] == "NFL" or bool(event["rank"])
 
 
-def collect(days=None, season_days=None):
-    """Every game worth rating across those days, unrated."""
+def collect(days=None, season_days=None, everything=False):
+    """Every game worth rating across those days, unrated.
+
+    `everything` takes the whole slate, ranked side or not. The ranked
+    filter is right for a page load and wrong for scouting: week 10's
+    board carried eight games with nobody ranked in them, among them
+    Air Force at Army and Wyoming at UNLV, and both underdogs won. A
+    Monday read that could not see those games scouted three that were
+    never on the card instead.
+    """
     pool, seen = [], set()
     for day in (days or weekend()):
         for league in ("nfl", "college-football"):
             for ev in espn.events_on(league, day):
-                if ev["event_id"] in seen or not worth_rating(ev):
+                if ev["event_id"] in seen:
+                    continue
+                if not everything and not worth_rating(ev):
                     continue
                 seen.add(ev["event_id"])
                 pool.append(ev)
@@ -148,7 +179,10 @@ def rate(events):
             blend = W_MARKET * mkt + (1 - W_MARKET) * fpi
             sources = ("market", "fpi")
         home = blend >= 0.5
+        total, moved, toward = (line_detail(ev) if mkt is not None
+                                else (None, None, None))
         rows.append({
+            "total": total, "moved": moved, "toward": toward,
             "event": ev,
             "away": ev["away"]["abbr"], "home": ev["home"]["abbr"],
             "kickoff": ev["kickoff"], "league": ev["league"],

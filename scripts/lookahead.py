@@ -6,8 +6,12 @@ cannot drift apart — the same collect-and-rate the page runs, with the
 answer written out instead of drawn.
 
     python scripts/lookahead.py 20261107 20261108
+    python scripts/lookahead.py --ranked
 
-With no dates, the next Thursday through Monday.
+With no dates, the next Thursday through Monday. This prints the WHOLE
+slate — every game with a sportsbook line — because it exists for
+scouting, and the games worth scouting are not only the ranked ones.
+--ranked gives the short list the app's page shows.
 Run via .github/workflows/data-probe.yml.
 """
 import os
@@ -18,17 +22,27 @@ from gridiron import lookahead                                # noqa: E402
 
 
 def main():
-    days = sys.argv[1:] or lookahead.weekend()
+    args = sys.argv[1:]
+    ranked = "--ranked" in args
+    days = [a for a in args if not a.startswith("--")] or lookahead.weekend()
     print(f"# days: {', '.join(days)}", file=sys.stderr)
-    rows = lookahead.rate(lookahead.collect(days))
+    rows = lookahead.rate(lookahead.collect(days, everything=not ranked))
+    if not ranked:
+        # The full listing includes lower-division games nobody prices.
+        # A game with no line is not going on the card.
+        rows = [r for r in rows if r["market"] is not None]
     fmt = lambda v: "" if v is None else f"{v:.4f}"
     print("kickoff\tleague\taway\thome\tranked\tmarket_home\tfpi_home\t"
-          "pick\tconf\tsources")
+          "pick\tconf\ttotal\tmoved\tsources")
     for r in rows:
         rank = "/".join(f"{k}#{v}" for k, v in sorted(r["rank"].items()))
+        total = "" if r["total"] is None else f"{r['total']:g}"
+        moved = ("" if r["moved"] is None
+                 else f"{r['moved']:g} to {r['toward']}")
         print(f"{r['kickoff']}\t{r['league']}\t{r['away']}\t{r['home']}\t"
               f"{rank}\t{fmt(r['market'])}\t{fmt(r['fpi'])}\t{r['pick']}\t"
-              f"{r['confidence']:.3f}\t{'+'.join(r['sources'])}")
+              f"{r['confidence']:.3f}\t{total}\t{moved}\t"
+              f"{'+'.join(r['sources'])}")
     splits = [r for r in rows if r["split"]]
     priced = sum("market" in r["sources"] for r in rows)
     print(f"\n# {len(rows)} rated, {priced} with a line, "

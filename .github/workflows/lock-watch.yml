@@ -24,3 +24,10 @@ jobs:
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python scripts/notify.py locksoon
+
+  # A second way in for the results watch; see results-watch.yml.
+  results:
+    uses: ./.github/workflows/results-watch.yml
+    secrets: inherit
+    permissions:
+      contents: write

@@ -1,0 +1,7 @@
+season	week	away	home	team	price	kind	reason	flagged	taken	result
+2026	10	AFA	ARMY	AFA	0.4279	style	Army -3.5 off a 49-22 loss, two option teams, short game	2026-11-04	N	W
+2026	10	NEB	ILL	ILL	0.3925	form	Illinois won 3 straight, Nebraska lost 3, Illinois 4 of last 5 in series	2026-11-04	Y	W
+2026	10	ORE	OSU	ORE	0.3247	quarterback	both starting QBs out, OSU freshman lost at USC	2026-11-04	N	W
+2026	10	PSU	WASH	PSU	0.4398	injury	Washington QB rib injury, only game FPI takes the dog	2026-11-04	N	W
+2026	10	UGA	MISS	MISS	0.4160	situation	UGA -5.5 to -3.5, road night game after the Florida win	2026-11-04	N	L
+2026	10	WYO	UNLV	WYO	0.3581	form	Wyoming won 3 straight, UNLV defence gave up 500 to NIU	2026-11-04	N	W

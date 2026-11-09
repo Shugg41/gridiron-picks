@@ -176,6 +176,7 @@ def main():
 
     print("week\taway\thome\tsplash_home\tmarket_home\tfpi_home")
     matched = priced = rated = 0
+    kept = []
     for g, ev in espn.link(games, pool):
         if not ev:
             continue
@@ -187,9 +188,41 @@ def main():
         fmt = lambda v: "" if v is None else f"{v:.4f}"
         print(f"{week}\t{g.away_code}\t{g.home_code}\t"
               f"{fmt(sp)}\t{fmt(mkt)}\t{fmt(fpi)}")
+        kept.append([str(week), g.away_code, g.home_code,
+                     fmt(sp), fmt(mkt), fmt(fpi)])
     print(f"# matched {matched}/{len(games)}, priced {priced}, fpi {rated}",
           file=sys.stderr)
     conn.close()
+    if kept:
+        record(week, kept)
+
+
+HEADER = ["week", "away", "home", "splash_home", "market_home", "fpi_home"]
+OPINIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
+                        "data", "opinions.tsv")
+
+
+def record(week, rows, path=None):
+    """Write the week into data/opinions.tsv, replacing an earlier run.
+
+    This used to print and stop. Week 9 is in the file because it was
+    pasted there by hand; week 10 went to a CI log and was gone, which
+    is not a record of anything. The latest run of a week wins, since
+    it is the one closest to kickoff.
+    """
+    path = path or OPINIONS
+    old = []
+    try:
+        with open(path) as f:
+            old = [l.rstrip("\n").split("\t") for l in f if l.strip()]
+    except FileNotFoundError:
+        pass
+    old = [r for r in old if r != HEADER and r[0] != str(week)]
+    out = sorted(old + rows, key=lambda r: int(r[0]))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        for r in [HEADER] + out:
+            f.write("\t".join(r) + "\n")
 
 
 if __name__ == "__main__":

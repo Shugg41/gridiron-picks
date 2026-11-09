@@ -193,3 +193,10 @@ jobs:
               sys.exit(1)
           EOF
           python visit.py
+
+  # A second way in for the results watch; see results-watch.yml.
+  results:
+    uses: ./.github/workflows/results-watch.yml
+    secrets: inherit
+    permissions:
+      contents: write

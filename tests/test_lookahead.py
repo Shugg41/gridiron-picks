@@ -138,4 +138,27 @@ got = lookahead.collect(["20261105", "20261107"])
 assert [g["event_id"] for g in got] == ["n1", "c1"], [g["event_id"] for g in got]
 print("collect takes the NFL game and the ranked one, once each OK")
 
+# Scouting wants the whole slate. Week 10's board carried eight games
+# with nobody ranked, and two of the week's upsets were among them.
+got = lookahead.collect(["20261105", "20261107"], everything=True)
+assert [g["event_id"] for g in got] == ["n1", "c1", "c2"], got
+print("everything=True keeps the unranked game too, still once each OK")
+
+# ── the total and the move, which are what a scout reads ───────────────
+espn.clear_cache()
+espn.odds_history = lambda eid, lg: {"items": [{
+    "overUnder": 38.5,
+    "homeTeamOdds": {"open": {"pointSpread": {"american": "-6"}},
+                     "current": {"pointSpread": {"american": "-3.5"}}}}]}
+espn.power_index = lambda tid, lg, season: None
+total, moved, toward = lookahead.line_detail(
+    game(("AFA", "1"), ("ARMY", "2"), "CFB", eid="x"))
+assert (total, moved, toward) == (38.5, 2.5, "AFA"), (total, moved, toward)
+row = lookahead.rate([game(("AFA", "1"), ("ARMY", "2"), "CFB", eid="x")])[0]
+assert (row["total"], row["moved"], row["toward"]) == (38.5, 2.5, "AFA"), row
+espn.odds_history = lambda eid, lg: {"items": []}
+assert lookahead.line_detail(game(("A", "1"), ("B", "2"), "CFB")) == \
+    (None, None, None)
+print("a home favourite shrinking from 6 to 3.5 is 2.5 toward the visitor OK")
+
 print("\nALL LOOKAHEAD TESTS PASS")
