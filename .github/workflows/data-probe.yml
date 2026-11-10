@@ -61,25 +61,31 @@ jobs:
         if: always() && inputs.scope == 'opinions'
       # ...and kept. It used to print and stop, so the only week on
       # file was the one pasted in by hand.
-      - name: Record the opinions
-        if: always() && inputs.scope == 'opinions'
+      # Every game on the slate, read from ESPN's own records: who is
+      # playing quarterback, form, rest, the line. Writes
+      # data/research_week<N>.md, which is what the chaos list is
+      # built from.
+      - run: python scripts/research.py
+        if: always() && inputs.scope == 'research'
+      - name: Record what was written
+        if: always() && (inputs.scope == 'opinions' || inputs.scope == 'research')
         run: |
           set -eo pipefail
           git config user.name "gridiron-bot"
           git config user.email "noreply@anthropic.com"
-          git add -A data/opinions.tsv
-          if git diff --cached --quiet -- data/opinions.tsv; then
-            echo "no change to the recorded opinions"
+          git add -A data
+          if git diff --cached --quiet -- data; then
+            echo "nothing new to record"
             exit 0
           fi
-          git commit -m "Opinions recorded $(date -u +%Y-%m-%dT%H:%MZ)"
+          git commit -m "Recorded ${{ inputs.scope }} $(date -u +%Y-%m-%dT%H:%MZ)"
           for n in 1 2 3 4 5; do
             git pull --rebase --autostash -q origin main && \
               git push -q origin HEAD:main && exit 0
             echo "push attempt $n lost a race; retrying"
             sleep $((n * 5))
           done
-          echo "could not record the opinions after five tries" >&2
+          echo "could not record after five tries" >&2
           exit 1
       # Why the college slate comes back short, asked rather than guessed.
       - run: python scripts/probe_coverage.py

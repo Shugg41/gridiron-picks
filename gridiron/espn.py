@@ -189,6 +189,27 @@ def summary(event_id, league, ttl=1800):
     return cached(ttl, ("summary", league, event_id), build)
 
 
+def team_schedule(team_id, league, season, ttl=3600):
+    """A team's whole season: every game, with scores for those played.
+
+    The source for form, rest and what comes next. Confirmed against a
+    live probe: `events`, each with one competition whose competitors
+    carry homeAway, a score object and the rank they held that day.
+    """
+    def build():
+        return _get(f"{SITE}/{PATH[league]}/teams/{team_id}/schedule",
+                    {"season": season})
+    return cached(ttl, ("schedule", league, season, team_id), build)
+
+
+def league_injuries(league, ttl=1800):
+    """The league-wide injury list. Only worth asking for the NFL: the
+    college endpoint answers, with three teams and entries from 2020."""
+    def build():
+        return _get(f"{SITE}/{PATH[league]}/injuries")
+    return cached(ttl, ("injuries", league), build)
+
+
 def power_index(team_id, league, season, ttl=86400):
     """FPI and EPA. Preseason-informed, which is what makes it worth
     anything in September when box scores are a two-game sample."""
