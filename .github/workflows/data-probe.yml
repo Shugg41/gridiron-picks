@@ -10,7 +10,7 @@ on:
       scope:
         description: "all probes, or just the line backfill"
         type: choice
-        options: [all, lines, deepdive, opinions, coverage, lookahead]
+        options: [all, lines, deepdive, opinions, coverage, lookahead, research-probe, research]
         default: all
       days:
         description: "lookahead only: space-separated YYYYMMDD, blank for the next Thu-Mon"
@@ -89,3 +89,7 @@ jobs:
       # played, so the card can be priced days before it exists.
       - run: python scripts/lookahead.py ${{ inputs.days }}
         if: always() && inputs.scope == 'lookahead'
+      # What ESPN hands over for game research, printed before any of
+      # it is parsed.
+      - run: python scripts/probe_research.py
+        if: always() && inputs.scope == 'research-probe'
