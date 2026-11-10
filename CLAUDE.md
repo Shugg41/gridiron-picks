@@ -11,8 +11,17 @@ Scout for underdogs that might do something unexpected, each with a
 specific football reason. He chooses which to take. Do not try to prove
 an edge, do not build expected-value tables, and do not choose for him.
 
-- **Monday**: scout the whole slate (`scope=lookahead` prints every
-  game with a line, plus the total and the line move).
+- **Research first.** `gh workflow run research.yml --ref main` writes
+  `data/research_week<N>.md`: every game read from ESPN's own records
+  (quarterback changes from box scores, the NFL injury list, form,
+  rest, look-ahead and letdown spots, totals, turnovers, line moves,
+  FPI) and the underdogs whose reasons outweigh the reasons against.
+  With the board loaded it reads the board's games in Splash's codes;
+  before that, the whole slate. It also runs on a schedule and the app
+  shows the newest page. It is the reading list: web search is for
+  confirming what it infers, above all who is playing quarterback.
+- **Monday**: scout from that page. The board is not posted until
+  Tuesday morning.
 - **Wednesday**: the card, then three to six chaos candidates. Record
   each one in the ledger and text the list.
 - **Saturday morning**: report what changed. News only — see below.
@@ -58,3 +67,8 @@ an edge, do not build expected-value tables, and do not choose for him.
   runs.
 - `python scripts/chaos.py report` is the record: flagged, hit, and
   what the prices said to expect.
+- College has no usable injury list on ESPN (three teams, entries from
+  2020). A college quarterback change is inferred: the top passer in
+  the last game against the season's leading passer.
+- An "opening" line can be a summer look-ahead number. The research
+  ignores a move of more than seven points for that reason.
