@@ -1,6 +1,6 @@
 {
  "week": 11,
- "made": "Mon Nov 9, 7:13PM ET",
+ "made": "Mon Nov 9, 7:20PM ET",
  "source": "the whole slate; this week's board is not loaded yet",
  "games": [
   {
@@ -22,11 +22,7 @@
     "record": "5-3",
     "streak": 2,
     "rest": 4,
-    "qb": {
-     "now": "J.J. McCarthy",
-     "leader": "Jameis Winston",
-     "settled": true
-    },
+    "qb": null,
     "qb_inj": [
      {
       "name": "J.J. McCarthy",
@@ -44,12 +40,8 @@
    "toward": "NYG",
    "for": [
     [
-     "quarterback",
-     "NYG are on J.J. McCarthy, not season leader Jameis Winston (at least two games running)"
-    ],
-    [
      "injury",
-     "NYG QB J.J. McCarthy listed Questionable (2026-11-09)"
+     "NYG QB listed: J.J. McCarthy Questionable (2026-11-09)"
     ],
     [
      "style",
@@ -598,11 +590,7 @@
     "record": "8-2",
     "streak": 1,
     "rest": 8,
-    "qb": {
-     "now": "JC Evans",
-     "leader": "Camden Coleman",
-     "settled": false
-    },
+    "qb": null,
     "qb_inj": []
    },
    "price": 0.4042257258869504,
@@ -610,12 +598,7 @@
    "total": 57.5,
    "moved": 2.5,
    "toward": "JMU",
-   "for": [
-    [
-     "quarterback",
-     "JMU are on JC Evans, not season leader Camden Coleman (new last week)"
-    ]
-   ],
+   "for": [],
    "against": [
     [
      "line",
@@ -989,11 +972,7 @@
     "record": "3-6",
     "streak": 2,
     "rest": 6,
-    "qb": {
-     "now": "Landon Varnes",
-     "leader": "Rickie Collins",
-     "settled": false
-    },
+    "qb": null,
     "qb_inj": []
    },
    "price": 0.32471814186337733,
@@ -1001,12 +980,7 @@
    "total": 46.5,
    "moved": null,
    "toward": null,
-   "for": [
-    [
-     "quarterback",
-     "KENN are on Landon Varnes, not season leader Rickie Collins (new last week)"
-    ]
-   ],
+   "for": [],
    "against": [
     [
      "form",
@@ -1467,7 +1441,7 @@
     "qb_inj": []
    },
    "price": 0.33569451200559874,
-   "fpi": null,
+   "fpi": 0.28497633260298205,
    "total": 47.5,
    "moved": 3.5,
    "toward": "NIU",
@@ -1519,7 +1493,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": null,
+   "fpi": 0.42617485384013787,
    "total": 56.5,
    "moved": null,
    "toward": null,
@@ -2690,7 +2664,7 @@
    "for": [
     [
      "injury",
-     "KC QB Patrick Mahomes listed Questionable (2026-11-09)"
+     "KC QB listed: Patrick Mahomes Questionable (2026-11-09)"
     ]
    ],
    "against": []
@@ -2738,11 +2712,7 @@
    "against": [
     [
      "quarterback",
-     "CLE are on Shedeur Sanders, not season leader Deshaun Watson (new last week)"
-    ],
-    [
-     "injury",
-     "CLE QB Deshaun Watson listed Out (2026-11-09)"
+     "CLE are on Shedeur Sanders, not season leader Deshaun Watson (new last week); listed: Deshaun Watson Out (2026-11-09)"
     ]
    ]
   },
@@ -2756,7 +2726,7 @@
     "abbr": "MIN",
     "record": "6-1",
     "streak": -1,
-    "rest": 14,
+    "rest": 5,
     "qb": null,
     "qb_inj": [
      {
@@ -2781,16 +2751,11 @@
    "total": 42.5,
    "moved": 1.0,
    "toward": "MIN",
-   "for": [
-    [
-     "situation",
-     "MIN are off a bye"
-    ]
-   ],
+   "for": [],
    "against": [
     [
      "injury",
-     "MIN QB Kyler Murray listed Out (2026-11-09)"
+     "MIN QB listed: Kyler Murray Out (2026-11-09)"
     ]
    ]
   },
@@ -2885,7 +2850,7 @@
    "against": [
     [
      "injury",
-     "MIA QB Malik Willis listed Questionable (2026-11-08)"
+     "MIA QB listed: Malik Willis Questionable (2026-11-08)"
     ]
    ]
   },
@@ -2942,7 +2907,7 @@
     "abbr": "BUF",
     "record": "6-1",
     "streak": 3,
-    "rest": 14,
+    "rest": 5,
     "qb": null,
     "qb_inj": []
    },
@@ -2953,6 +2918,10 @@
    "toward": "BUF",
    "for": [
     [
+     "situation",
+     "BUF on 5 days' rest, NYJ on 7"
+    ],
+    [
      "style",
      "BUF give it away 1.6 times a game, NYJ 0.8"
     ]
@@ -2961,10 +2930,6 @@
     [
      "form",
      "NYJ have lost 4 straight"
-    ],
-    [
-     "situation",
-     "BUF are off a bye"
     ]
    ]
   },
@@ -3017,15 +2982,7 @@
    "for": [
     [
      "quarterback",
-     "SEA are on Drew Lock, not season leader Sam Darnold (new last week)"
-    ],
-    [
-     "injury",
-     "SEA QB Drew Lock listed Questionable (2026-11-09)"
-    ],
-    [
-     "injury",
-     "SEA QB Sam Darnold listed Out (2026-11-09)"
+     "SEA are on Drew Lock, not season leader Sam Darnold (new last week); listed: Drew Lock Questionable (2026-11-09), Sam Darnold Out (2026-11-09)"
     ],
     [
      "line",
@@ -3078,7 +3035,7 @@
    "against": [
     [
      "injury",
-     "ARI QB Gardner Minshew II listed Doubtful (2026-11-09)"
+     "ARI QB listed: Gardner Minshew II Doubtful (2026-11-09)"
     ]
    ]
   },
@@ -3211,11 +3168,7 @@
    "for": [
     [
      "quarterback",
-     "BAL are on Joe Fagnano, not season leader Lamar Jackson (at least two games running)"
-    ],
-    [
-     "injury",
-     "BAL QB Lamar Jackson listed Injured Reserve (2026-11-08)"
+     "BAL are on Joe Fagnano, not season leader Lamar Jackson (at least two games running); listed: Lamar Jackson Injured Reserve (2026-11-08)"
     ],
     [
      "form",
@@ -3233,7 +3186,7 @@
    "against": [
     [
      "injury",
-     "LAC QB Justin Herbert listed Questionable (2026-11-09)"
+     "LAC QB listed: Justin Herbert Questionable (2026-11-09)"
     ],
     [
      "form",
