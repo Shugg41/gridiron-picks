@@ -68,6 +68,15 @@ fl = research.form(research.parse_schedule(LOSER, "9"),
 assert fl["streak"] == -2 and fl["rest"] == 14 and fl["road_run"] == 2, fl
 print("a losing streak, a bye and a run of road games are all read OK")
 
+# A game still being played counts for rest. Buffalo were reported as
+# "off a bye" on the night they were playing Minnesota.
+MNF = {"events": LOSER["events"] + [
+    sched_event("4", "2026-11-03T01:15Z", ("9", "X", True, None), ("4", "D", False, None), done=False)]}
+fmnf = research.form(research.parse_schedule(MNF, "9"),
+                     datetime.datetime(2026, 11, 7, 17, 0, tzinfo=UTC))
+assert fmnf["rest"] == 4 and fmnf["last"]["opp"] == "C", fmnf
+print("rest runs from the last game scheduled, not the last one finished OK")
+
 # A game with no team match, or no date, is dropped rather than guessed.
 assert research.parse_schedule({"events": [{"id": "x"}]}, "9") == []
 assert research.form([], kick)["streak"] == 0
@@ -107,6 +116,10 @@ assert new == {"now": "Luke Fahey", "leader": "Julian Sayin", "settled": False}
 old = research.quarterback(leader, [fahey, fahey])
 assert old["settled"] is True
 assert research.quarterback(leader, [sayin, sayin]) is None, "no change"
+# Nor is a blowout: the leader played, the backup mopped up.
+blowout = [{"id": "2", "name": "Luke Fahey", "att": 15},
+           {"id": "1", "name": "Julian Sayin", "att": 12}]
+assert research.quarterback(leader, [blowout, sayin]) is None
 # A wide receiver's one trick-play throw is not a quarterback change.
 assert research.quarterback(leader, [[{"id": "9", "name": "WR", "att": 1}]]) is None
 assert research.quarterback(None, [fahey]) is None
@@ -125,9 +138,9 @@ INJ = {"injuries": [{"id": "26", "displayName": "Seattle Seahawks", "injuries": 
      "athlete": {"displayName": "Some Guard", "position": {"abbreviation": "G"}}}]}]}
 inj = research.nfl_injuries(INJ)
 assert list(inj) == ["26"] and len(inj["26"]) == 3
-rep = research.qb_report(inj["26"], ["Sam Darnold", "Drew Lock", None])
-assert [r["name"] for r in rep] == ["Sam Darnold"], rep
-assert rep[0]["date"] == "2026-11-09" and "\n" not in rep[0]["note"]
+rep_ = research.qb_report(inj["26"], ["Sam Darnold", "Drew Lock", None])
+assert [r["name"] for r in rep_] == ["Sam Darnold"], rep_
+assert rep_[0]["date"] == "2026-11-09" and "\n" not in rep_[0]["note"]
 assert research.qb_report(None, ["Sam Darnold"]) == []
 assert research.qb_report(inj["26"], ["Somebody Else"]) == []
 print("only a quarterback who matters, and is not active, is reported OK")
@@ -214,8 +227,13 @@ assert f == []
 print("a low total, turnovers, the line and FPI are read without guessing OK")
 
 # An NFL quarterback on the injury list.
-f, a = research.reasons(ctx(side("LV"), side("SEA", qb_inj=rep), league="NFL"))
-assert kinds(f) == ["injury"] and "Sam Darnold listed Out (2026-11-09)" in f[0][1]
+f, a = research.reasons(ctx(side("LV"), side("SEA", qb_inj=rep_), league="NFL"))
+assert kinds(f) == ["injury"] and "Sam Darnold Out (2026-11-09)" in f[0][1]
+# With a change at quarterback as well it is still one reason, not two.
+f, a = research.reasons(ctx(side("LV"), side("SEA", qb=new, qb_inj=rep_),
+                            league="NFL"))
+assert kinds(f) == ["quarterback"], f
+assert "listed: Sam Darnold Out" in f[0][1], f
 
 # ── the reading order and the page ────────────────────────────────────
 def row(dog, fav, price, n_for, n_against=0, kickoff="2026-11-14T17:00"):
@@ -231,16 +249,26 @@ rows = [row("A", "B", 0.40, 1), row("C", "D", 0.30, 3, 1),
         row("E", "F", 0.10, 4),            # too long a shot
         row("G", "H", 0.49, 4),            # a coin flip
         row("I", "J", 0.35, 0),            # nothing to say
-        row("K", "L", 0.35, 2, 2)]
+        row("K", "L", 0.35, 2, 2)]         # as much against as for
 order = [r["dog"]["abbr"] for r in research.rank_games(rows)]
-assert order == ["C", "A", "K"], order
+assert order == ["C", "A"], order
+# News about who is playing reads first, unless it is two games old.
+fresh = row("M", "N", 0.35, 0)
+fresh["for"] = [("quarterback", "N are on X, not season leader Y (new last week)")]
+stale = row("O", "P", 0.35, 0)
+stale["for"] = [("quarterback", "P are on X, not season leader Y "
+                                "(at least two games running)")]
+two = row("Q", "R", 0.35, 2)
+assert research.score(fresh) == 2 and research.score(stale) == 1
+assert [r["dog"]["abbr"] for r in research.rank_games([stale, two, fresh])] \
+    == ["Q", "M", "O"]
 assert research.in_band(0.22) and research.in_band(0.47)
 assert not research.in_band(None)
 print("only priced-right underdogs with a reason make the list, best-read first OK")
 
 page = research.render(11, rows, "Tue Nov 10, 9:00am ET", "the whole slate")
 assert page.startswith("# Week 11 research")
-assert "6 games read, 3 underdogs" in page, page[:300]
+assert "6 games read, 2 underdogs" in page, page[:300]
 assert "### C over D — 30%" in page and "**for** (form): reason 0" in page
 assert "*against* (line): counter 0" in page
 assert page.count("\n| ") == 7, "a header row and one row per game"
@@ -291,7 +319,7 @@ assert got["when"] == "Sun 4:05pm", got["when"]
 texts = [t for _, t in got["for"]]
 assert any("SEA are on Drew Lock, not season leader Sam Darnold (new last week)"
            in t for t in texts), texts
-assert any("Sam Darnold listed Out" in t for t in texts), texts
+assert any("listed: Sam Darnold Out" in t for t in texts), texts
 assert any("line has moved 4 toward LV" in t for t in texts), texts
 assert got["against"] == [], got["against"]
 flat = cli.plain(got)
@@ -304,5 +332,17 @@ espn.clear_cache()
 espn.odds_history = lambda eid, lg: {"items": []}
 assert cli.study(event, inj) is None
 print("one game end to end: backup quarterback, injury note and line move OK")
+
+# ── the app shows the newest page, without the table ──────────────────
+import tempfile                                               # noqa: E402
+d = tempfile.mkdtemp()
+assert research.latest_page(d) == (None, "")
+for wk in (9, 11, 10):
+    with open(os.path.join(d, f"research_week{wk}.md"), "w") as fh:
+        fh.write(research.render(wk, rows, "now", "the whole slate"))
+wk, text = research.latest_page(d)
+assert wk == 11 and text.startswith("# Week 11 research"), (wk, text[:40])
+assert "### C over D" in text and "| game |" not in text
+print("the newest page is found, 11 ahead of 9, and the table is left out OK")
 
 print("\nALL RESEARCH TESTS PASS")

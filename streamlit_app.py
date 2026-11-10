@@ -40,7 +40,7 @@ import gridiron
 # Dependency order matters only for the modules that bind names at
 # import time, so leaf modules come first and ingest last.
 _MODULES = ("splash", "espn", "store", "model", "simulate", "view",
-            "watch", "ingest")
+            "watch", "lookahead", "research", "ingest")
 _seen = getattr(gridiron, "_mtimes", None)
 # The first version of this recorded mtimes and reloaded nothing on the
 # first pass, which is precisely the case it exists for: the container
@@ -63,8 +63,8 @@ for _name in _MODULES:
         # for; the next rerun tries again.
         pass
 
-from gridiron import (espn, ingest, lookahead, model, simulate, splash, store,
-                      view, watch)
+from gridiron import (espn, ingest, lookahead, model, research, simulate,
+                      splash, store, view, watch)
 
 DB = os.path.join(os.path.dirname(__file__), "football_picks.db")
 SEASON = 2026
@@ -441,6 +441,17 @@ def load_paste(text, wk):
     here and the app cannot drift apart."""
     return ingest.load(conn, SEASON, int(wk), text)
 
+
+# ── this week's research ───────────────────────────────────────────────
+# Written by scripts/research.py in Actions, from ESPN's own records:
+# who is playing quarterback, form, rest, the line. It is the list the
+# chaos candidates are chosen from, shown here so it can be read without
+# asking anybody for it.
+_rweek, _rpage = research.latest_page(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"))
+if _rpage:
+    with st.expander(f"Week {_rweek} research: underdogs with reasons"):
+        st.markdown(_rpage.split("\n", 1)[1] if "\n" in _rpage else _rpage)
 
 # ── the weekend ahead, board or no board ───────────────────────────────
 # This used to wait on a paste. Splash chooses which thirty games are on

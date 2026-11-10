@@ -1,0 +1,51 @@
+# Research the coming weekend from ESPN's records and commit the page.
+#
+# On a schedule so the page in the app is current without anybody
+# asking for it: after the board goes up on Tuesday, before Wednesday's
+# card, each evening as news lands, and early on Saturday before the
+# noon lock. GitHub's scheduler drops runs, so this is also dispatched
+# by hand from the weekly routines; it is cheap and safe to run twice.
+name: Research
+
+on:
+  schedule:
+    - cron: "17 15 * * 2"    # Tue 10:17 ET: the board is up
+    - cron: "17 19 * * 3"    # Wed  2:17 ET: before the card
+    - cron: "17 21 * * 4,5"  # Thu, Fri 4:17 ET: before the early locks
+    - cron: "17 11 * * 6"    # Sat  6:17 ET: before the noon lock
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet requests
+      - run: python scripts/research.py
+      - name: Record the page
+        run: |
+          set -eo pipefail
+          git config user.name "gridiron-bot"
+          git config user.email "noreply@anthropic.com"
+          git add -A data
+          if git diff --cached --quiet -- data; then
+            echo "nothing new to record"
+            exit 0
+          fi
+          git commit -m "Research $(date -u +%Y-%m-%dT%H:%MZ)"
+          for n in 1 2 3 4 5; do
+            git pull --rebase --autostash -q origin main && \
+              git push -q origin HEAD:main && exit 0
+            echo "push attempt $n lost a race; retrying"
+            sleep $((n * 5))
+          done
+          echo "could not record after five tries" >&2
+          exit 1

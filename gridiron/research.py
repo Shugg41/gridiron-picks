@@ -103,6 +103,11 @@ def form(games, kickoff):
         else:
             break
     last = played[-1] if played else None
+    # Rest is measured from the last game on the schedule, finished or
+    # not. Measured from the last RESULT, a team playing on Monday night
+    # looked like it was coming off a bye until that game went final.
+    before = [g for g in games if g["when"] < kickoff]
+    prior = before[-1] if before else None
     recent = played[-3:]
     road = 0
     for g in reversed(played):
@@ -112,7 +117,7 @@ def form(games, kickoff):
     return {
         "wins": wins, "losses": len(played) - wins, "streak": streak,
         "last": last,
-        "rest": (kickoff - last["when"]).days if last else None,
+        "rest": (kickoff - prior["when"]).days if prior else None,
         "margin3": (sum(g["pf"] - g["pa"] for g in recent) / len(recent)
                     if recent else None),
         "road_run": road,
@@ -173,6 +178,11 @@ def quarterback(leader, last_boxes):
     now = last_boxes[0][0]
     if now["id"] == leader["id"] or now["att"] < 8:
         return None
+    # If the season's leader threw a pass in that game he played, and
+    # the other man out-throwing him is a blowout, not a change: Wake
+    # Forest won 77-0 and the backup had most of the attempts.
+    if any(p["id"] == leader["id"] for p in last_boxes[0]):
+        return None
     before = last_boxes[1][0] if len(last_boxes) > 1 and last_boxes[1] else None
     settled = bool(before and before["id"] == now["id"])
     return {"now": now["name"], "leader": leader["name"], "settled": settled}
@@ -206,6 +216,8 @@ def qb_report(injuries, names):
 
 # ── reasons ────────────────────────────────────────────────────────────
 def _streak_text(n):
+    if abs(n) == 1:
+        return "won last time out" if n > 0 else "lost last time out"
     return f"won {n} straight" if n > 0 else f"lost {-n} straight"
 
 
@@ -221,18 +233,22 @@ def reasons(ctx):
     f, a = [], []
 
     # quarterback
-    for side, bucket, whose in ((fav, f, "favourite"), (dog, a, "underdog")):
+    # One reason per side however many facts feed it: a starter ruled
+    # out, his backup questionable and a change at quarterback are one
+    # piece of news, not three.
+    for side, bucket in ((fav, f), (dog, a)):
         q = side.get("qb")
+        listed = ", ".join(f"{r['name']} {r['status']} ({r['date']})"
+                           for r in side.get("qb_inj") or [])
         if q:
             age = ("at least two games running" if q["settled"]
                    else "new last week")
+            text = (f"{side['abbr']} are on {q['now']}, not season leader "
+                    f"{q['leader']} ({age})")
             bucket.append(("quarterback",
-                           f"{side['abbr']} are on {q['now']}, not season "
-                           f"leader {q['leader']} ({age})"))
-        for r in side.get("qb_inj") or []:
-            bucket.append(("injury",
-                           f"{side['abbr']} QB {r['name']} listed "
-                           f"{r['status']} ({r['date']})"))
+                           text + (f"; listed: {listed}" if listed else "")))
+        elif listed:
+            bucket.append(("injury", f"{side['abbr']} QB listed: {listed}"))
 
     # form
     ds, fs = dog["form"]["streak"], fav["form"]["streak"]
@@ -308,17 +324,35 @@ def in_band(price):
     return price is not None and BAND[0] <= price <= BAND[1]
 
 
-def rank_games(rows):
-    """Underdogs in the band, most reasons first.
+def weight(reason):
+    """How much a reason counts toward the reading order.
 
-    Ordered by reasons for minus reasons against, then by reasons for.
-    This is a reading order, not a rating: three reasons are not three
-    times one reason, and a single quarterback change outweighs a pile
-    of small ones. It only decides what gets read first.
+    Who is playing quarterback is the one thing here that changes a
+    game outright, so news about it counts double — unless it has stood
+    for two games, by which time the price has it.
     """
-    live = [r for r in rows if in_band(r["price"]) and r["for"]]
-    live.sort(key=lambda r: (-(len(r["for"]) - len(r["against"])),
-                             -len(r["for"]), r["kickoff"]))
+    kind, text = reason
+    if kind == "injury":
+        return 2
+    if kind == "quarterback":
+        return 1 if "two games running" in text else 2
+    return 1
+
+
+def score(row):
+    return (sum(weight(r) for r in row["for"])
+            - sum(weight(r) for r in row["against"]))
+
+
+def rank_games(rows):
+    """Underdogs in the band whose reasons outweigh the reasons against.
+
+    This is a reading order, not a rating. It decides what gets read
+    first and what is left in the table at the bottom; it says nothing
+    about how likely anybody is to win.
+    """
+    live = [r for r in rows if in_band(r["price"]) and score(r) >= 1]
+    live.sort(key=lambda r: (-score(r), -len(r["for"]), r["kickoff"]))
     return live
 
 
@@ -327,7 +361,7 @@ def _record(side):
     fm = side["form"]
     last = fm["last"]
     bits = [f"{fm['wins']}-{fm['losses']}"]
-    if fm["streak"]:
+    if abs(fm["streak"]) > 1:
         bits.append(_streak_text(fm["streak"]))
     if last:
         res = "beat" if last["won"] else "lost to"
@@ -340,8 +374,8 @@ def render(week, rows, made, source):
     live = rank_games(rows)
     out = [f"# Week {week} research", "",
            f"Built {made} from ESPN data ({source}). {len(rows)} games read, "
-           f"{len(live)} underdogs priced {BAND[0]:.0%}-{BAND[1]:.0%} with "
-           f"at least one reason.", "",
+           f"{len(live)} underdogs priced {BAND[0]:.0%}-{BAND[1]:.0%} whose "
+           f"reasons outweigh the reasons against.", "",
            "Reasons are observations, not a rating. Check anything about "
            "who is playing against a dated source before acting on it.", "",
            "## Underdogs with reasons", ""]
@@ -358,7 +392,7 @@ def render(week, rows, made, source):
             out.append(f"- *against* ({kind}): {text}")
         for side in (fav, dog):
             for inj in side.get("qb_inj") or []:
-                if inj["note"]:
+                if len(inj["note"]) > 25:      # "out" is not a note
                     out.append(f"- ESPN, {inj['date']}: {inj['note']}")
         out.append("")
     out += ["## Every game", "",
@@ -373,3 +407,24 @@ def render(week, rows, made, source):
             f"| {'' if r['total'] is None else format(r['total'], 'g')} "
             f"| {move} | {len(r['for'])} | {len(r['against'])} |")
     return "\n".join(out) + "\n"
+
+
+def latest_page(folder):
+    """The newest research page on disk as (week, text), or (None, "").
+
+    Only the part a person reads: the underdogs and their reasons. The
+    table of every game stays in the file.
+    """
+    import glob
+    import os
+    import re
+    best = None
+    for path in glob.glob(os.path.join(folder, "research_week*.md")):
+        m = re.search(r"research_week(\d+)\.md$", path)
+        if m and (best is None or int(m.group(1)) > best[0]):
+            best = (int(m.group(1)), path)
+    if not best:
+        return None, ""
+    with open(best[1]) as f:
+        text = f.read()
+    return best[0], text.split("## Every game")[0].strip()
