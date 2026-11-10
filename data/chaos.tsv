@@ -5,3 +5,8 @@ season	week	away	home	team	price	kind	reason	flagged	taken	result
 2026	10	PSU	WASH	PSU	0.4398	injury	Washington QB rib injury, only game FPI takes the dog	2026-11-04	N	W
 2026	10	UGA	MISS	MISS	0.4160	situation	UGA -5.5 to -3.5, road night game after the Florida win	2026-11-04	N	L
 2026	10	WYO	UNLV	WYO	0.3581	form	Wyoming won 3 straight, UNLV defence gave up 500 to NIU	2026-11-04	N	W
+2026	11	ILL	UCLA	ILL	0.2722	form	Illinois have won 4 straight; line moved 2.5 toward them; UCLA turn it over twice as often	2026-11-10		
+2026	11	KC	ATL	ATL	0.3954	injury	Mahomes day-to-day with a strained throwing elbow, practice reps in doubt	2026-11-10		
+2026	11	PIT	CIN	PIT	0.3954	situation	Pittsburgh 6-2, won 4 straight and off a bye, against a Bengals side with the same record	2026-11-10		
+2026	11	SEA	LV	LV	0.3954	quarterback	Darnold out, Lock questionable with an oblique; line has moved 3.5 toward the Raiders	2026-11-10		
+2026	11	TENN	TXAM	TXAM	0.4398	situation	Tennessee off a 34-6 rout of #6 Kentucky with LSU next; a 41-point total	2026-11-10		
