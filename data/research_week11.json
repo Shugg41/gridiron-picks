@@ -1,6 +1,6 @@
 {
  "week": 11,
- "made": "Tue Nov 10, 7:37AM ET",
+ "made": "Tue Nov 10, 4:21PM ET",
  "source": "the 30 games on the week 11 board",
  "games": [
   {
@@ -29,7 +29,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-10",
-      "note": "McCarthy (hip) is listed as limited on Monday's practice estimate, Dan Salomone of the Giants' official site reports."
+      "note": "McCarthy (hip) was spotted on the field for the media-access portion of Tuesday's practice, Art Stapleton of The Bergen Record reports."
      }
     ]
    },
@@ -78,7 +78,7 @@
    },
    "price": 0.41600623568032036,
    "fpi": 0.43214762416411256,
-   "total": 54.5,
+   "total": 53.5,
    "moved": 0.5,
    "toward": "PITT",
    "for": [
@@ -174,7 +174,7 @@
    },
    "price": 0.22435249875681773,
    "fpi": 0.18456046569056872,
-   "total": 46.5,
+   "total": 45.5,
    "moved": 3.0,
    "toward": "OSU",
    "for": [
@@ -213,14 +213,6 @@
    "kickoff": "2026-11-14T17:00",
    "when": "Sat 12:00pm",
    "dog": {
-    "abbr": "SMU",
-    "record": "7-2",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
     "abbr": "WAKE",
     "record": "8-1",
     "streak": 6,
@@ -232,25 +224,49 @@
     },
     "qb_inj": []
    },
-   "price": 0.4637824133031056,
-   "fpi": 0.41652639868608143,
+   "fav": {
+    "abbr": "SMU",
+    "record": "7-2",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.46378241330310566,
+   "fpi": 0.5834736013139186,
    "total": 61.5,
-   "moved": 2.0,
+   "moved": 5.0,
    "toward": "SMU",
    "for": [
+    [
+     "form",
+     "WAKE have won 6 straight"
+    ],
+    [
+     "form",
+     "last three games: WAKE +52 a game, SMU +20"
+    ],
+    [
+     "situation",
+     "SMU have #11 ND next"
+    ],
+    [
+     "style",
+     "SMU give it away 1.3 times a game, WAKE 0.3"
+    ],
+    [
+     "line",
+     "FPI makes WAKE the favourite (58%)"
+    ]
+   ],
+   "against": [
     [
      "quarterback",
      "WAKE are on Steele Pizzella, not season leader Gio Lopez (new last week)"
     ],
     [
      "line",
-     "line has moved 2 toward SMU"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "WAKE have won 6 straight"
+     "line has moved 5 toward SMU"
     ]
    ]
   },
@@ -443,7 +459,7 @@
    },
    "price": 0.4637824133031056,
    "fpi": 0.44873876994744943,
-   "total": 48.5,
+   "total": 49.5,
    "moved": 5.5,
    "toward": "MISS",
    "for": [],
@@ -517,7 +533,7 @@
    },
    "price": 0.41600623568032036,
    "fpi": 0.46648002979193137,
-   "total": 53.5,
+   "total": 52.5,
    "moved": 2.0,
    "toward": "UK",
    "for": [],
@@ -629,10 +645,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.41600623568032036,
+   "price": 0.4042257258869504,
    "fpi": 0.4705534172679179,
    "total": 46.5,
-   "moved": 6.5,
+   "moved": 7.0,
    "toward": "LSU",
    "for": [
     [
@@ -647,7 +663,7 @@
    "against": [
     [
      "line",
-     "line has moved 6.5 toward LSU"
+     "line has moved 7 toward LSU"
     ]
    ]
   },
@@ -675,7 +691,7 @@
    },
    "price": 0.43978467981733405,
    "fpi": 0.4014342872933078,
-   "total": 77.5,
+   "total": 76.5,
    "moved": 1.0,
    "toward": "UNT",
    "for": [],
@@ -823,9 +839,9 @@
      {
       "name": "Deshaun Watson",
       "pos": "QB",
-      "status": "Out",
-      "date": "2026-11-09",
-      "note": "out"
+      "status": "Questionable",
+      "date": "2026-11-10",
+      "note": "questionable"
      }
     ]
    },
@@ -846,7 +862,7 @@
    "against": [
     [
      "quarterback",
-     "CLE are on Shedeur Sanders, not season leader Deshaun Watson (new last week); listed: Deshaun Watson Out (2026-11-09)"
+     "CLE are on Shedeur Sanders, not season leader Deshaun Watson (new last week); listed: Deshaun Watson Questionable (2026-11-10)"
     ]
    ]
   },
@@ -870,9 +886,9 @@
      {
       "name": "Kyler Murray",
       "pos": "QB",
-      "status": "Out",
-      "date": "2026-11-09",
-      "note": "inactive"
+      "status": "Doubtful",
+      "date": "2026-11-10",
+      "note": "doubtful"
      }
     ]
    },
@@ -884,16 +900,16 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3665860103968184,
+   "price": 0.3954463718532454,
    "fpi": 0.32676501469785524,
    "total": 41.5,
-   "moved": null,
-   "toward": null,
+   "moved": 1.0,
+   "toward": "MIN",
    "for": [],
    "against": [
     [
      "quarterback",
-     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Kyler Murray Out (2026-11-09)"
+     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Kyler Murray Doubtful (2026-11-10)"
     ]
    ]
   },
@@ -948,9 +964,9 @@
      {
       "name": "Malik Willis",
       "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-08",
-      "note": "Willis completed 13 of 25 passes for 128 yards with no touchdowns and one interception and added two rushes for seven yards in the Dolphins' 19-9 loss to the Lions on Sunday."
+      "status": "Injured Reserve",
+      "date": "2026-11-10",
+      "note": "ir"
      }
     ]
    },
@@ -962,10 +978,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4248920370873779,
+   "price": 0.3954463718532454,
    "fpi": 0.2912376334444715,
-   "total": 40.5,
-   "moved": 4.0,
+   "total": 38.5,
+   "moved": 3.0,
    "toward": "MIA",
    "for": [
     [
@@ -978,17 +994,21 @@
     ],
     [
      "style",
+     "total of 38.5: few possessions, less room for the better team"
+    ],
+    [
+     "style",
      "IND give it away 1.9 times a game, MIA 1.2"
     ],
     [
      "line",
-     "line has moved 4 toward MIA"
+     "line has moved 3 toward MIA"
     ]
    ],
    "against": [
     [
      "injury",
-     "MIA QB listed: Malik Willis Questionable (2026-11-08)"
+     "MIA QB listed: Malik Willis Injured Reserve (2026-11-10)"
     ]
    ]
   },
@@ -1016,7 +1036,7 @@
    },
    "price": 0.4547630300184792,
    "fpi": 0.47472037416112844,
-   "total": 47.5,
+   "total": 48.5,
    "moved": null,
    "toward": null,
    "for": [],
@@ -1090,7 +1110,11 @@
     "record": "4-5",
     "streak": -1,
     "rest": 6,
-    "qb": null,
+    "qb": {
+     "now": "Kirk Cousins",
+     "leader": "Fernando Mendoza",
+     "settled": true
+    },
     "qb_inj": []
    },
    "fav": {
@@ -1120,10 +1144,10 @@
      }
     ]
    },
-   "price": 0.3954463718532454,
+   "price": 0.32471814186337733,
    "fpi": 0.4499319276488009,
-   "total": 43.5,
-   "moved": 3.5,
+   "total": 40.5,
+   "moved": 1.0,
    "toward": "LV",
    "for": [
     [
@@ -1132,10 +1156,15 @@
     ],
     [
      "line",
-     "line has moved 3.5 toward LV"
+     "FPI gives LV 45%, the market 32%"
     ]
    ],
-   "against": []
+   "against": [
+    [
+     "quarterback",
+     "LV are on Kirk Cousins, not season leader Fernando Mendoza (at least two games running)"
+    ]
+   ]
   },
   {
    "league": "NFL",
@@ -1169,7 +1198,7 @@
    },
    "price": 0.235855796216213,
    "fpi": 0.2196625666682928,
-   "total": 40.5,
+   "total": 39.5,
    "moved": 1.0,
    "toward": "ARI",
    "for": [
@@ -1244,7 +1273,7 @@
    },
    "price": 0.3954463718532454,
    "fpi": 0.3102198506353726,
-   "total": 48.5,
+   "total": 49.5,
    "moved": null,
    "toward": null,
    "for": [
@@ -1281,8 +1310,8 @@
       "name": "Justin Herbert",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-09",
-      "note": "Chargers coach Jim Harbaugh relayed Monday that Herbert (finger) avoided a fracture in his left middle finger, Alex Insdorf of BoltBeat.com reports."
+      "date": "2026-11-10",
+      "note": "Chargers head coach Jim Harbaugh said that Herbert \"should be good to go\" for Monday's game at Baltimore after imaging on the quarterback's injured left middle finger returned negative for a fracture, ESPN.com reports."
      }
     ]
    },
@@ -1306,10 +1335,10 @@
      }
     ]
    },
-   "price": 0.3384611195106897,
+   "price": 0.3665860103968184,
    "fpi": 0.522654984831072,
    "total": 38.5,
-   "moved": 3.0,
+   "moved": 2.0,
    "toward": "BAL",
    "for": [
     [
@@ -1332,7 +1361,7 @@
    "against": [
     [
      "injury",
-     "LAC QB listed: Justin Herbert Questionable (2026-11-09)"
+     "LAC QB listed: Justin Herbert Questionable (2026-11-10)"
     ],
     [
      "form",
@@ -1340,7 +1369,7 @@
     ],
     [
      "line",
-     "line has moved 3 toward BAL"
+     "line has moved 2 toward BAL"
     ]
    ]
   }
