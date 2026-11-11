@@ -1,6 +1,6 @@
 {
  "week": 11,
- "made": "Tue Nov 10, 4:21PM ET",
+ "made": "Wed Nov 11, 4:53PM ET",
  "source": "the 30 games on the week 11 board",
  "games": [
   {
@@ -29,13 +29,13 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-10",
-      "note": "McCarthy (hip) was spotted on the field for the media-access portion of Tuesday's practice, Art Stapleton of The Bergen Record reports."
+      "note": "McCarthy (hip) was listed as a full participant in Tuesday's practice, Dan Salomone of the Giants' official site reports."
      }
     ]
    },
    "price": 0.4248920370873779,
    "fpi": 0.45930016649751304,
-   "total": 41.5,
+   "total": 40.5,
    "moved": 1.0,
    "toward": "NYG",
    "for": [
@@ -77,7 +77,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.43214762416411256,
+   "fpi": 0.43293407421696894,
    "total": 53.5,
    "moved": 0.5,
    "toward": "PITT",
@@ -117,7 +117,7 @@
     "qb_inj": []
    },
    "price": 0.2722372544815055,
-   "fpi": 0.32550351947290357,
+   "fpi": 0.32530710224834225,
    "total": 47.5,
    "moved": 2.5,
    "toward": "ILL",
@@ -139,6 +139,70 @@
     [
      "form",
      "UCLA have won 9 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "WAKE",
+   "home": "SMU",
+   "kickoff": "2026-11-14T17:00",
+   "when": "Sat 12:00pm",
+   "dog": {
+    "abbr": "WAKE",
+    "record": "8-1",
+    "streak": 6,
+    "rest": 6,
+    "qb": {
+     "now": "Steele Pizzella",
+     "leader": "Gio Lopez",
+     "settled": false
+    },
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "SMU",
+    "record": "7-2",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.46378241330310566,
+   "fpi": 0.5812968001926122,
+   "total": 61.5,
+   "moved": 5.0,
+   "toward": "SMU",
+   "for": [
+    [
+     "form",
+     "WAKE have won 6 straight"
+    ],
+    [
+     "form",
+     "last three games: WAKE +52 a game, SMU +20"
+    ],
+    [
+     "situation",
+     "SMU have #5 ND next"
+    ],
+    [
+     "style",
+     "SMU give it away 1.3 times a game, WAKE 0.3"
+    ],
+    [
+     "line",
+     "FPI makes WAKE the favourite (58%)"
+    ]
+   ],
+   "against": [
+    [
+     "quarterback",
+     "WAKE are on Steele Pizzella, not season leader Gio Lopez (new last week)"
+    ],
+    [
+     "line",
+     "line has moved 5 toward SMU"
     ]
    ]
   },
@@ -173,7 +237,7 @@
     "qb_inj": []
    },
    "price": 0.22435249875681773,
-   "fpi": 0.18456046569056872,
+   "fpi": 0.1856447326131443,
    "total": 45.5,
    "moved": 3.0,
    "toward": "OSU",
@@ -208,70 +272,6 @@
   },
   {
    "league": "CFB",
-   "away": "WAKE",
-   "home": "SMU",
-   "kickoff": "2026-11-14T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "WAKE",
-    "record": "8-1",
-    "streak": 6,
-    "rest": 6,
-    "qb": {
-     "now": "Steele Pizzella",
-     "leader": "Gio Lopez",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "SMU",
-    "record": "7-2",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.46378241330310566,
-   "fpi": 0.5834736013139186,
-   "total": 61.5,
-   "moved": 5.0,
-   "toward": "SMU",
-   "for": [
-    [
-     "form",
-     "WAKE have won 6 straight"
-    ],
-    [
-     "form",
-     "last three games: WAKE +52 a game, SMU +20"
-    ],
-    [
-     "situation",
-     "SMU have #11 ND next"
-    ],
-    [
-     "style",
-     "SMU give it away 1.3 times a game, WAKE 0.3"
-    ],
-    [
-     "line",
-     "FPI makes WAKE the favourite (58%)"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "WAKE are on Steele Pizzella, not season leader Gio Lopez (new last week)"
-    ],
-    [
-     "line",
-     "line has moved 5 toward SMU"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
    "away": "TENN",
    "home": "TXAM",
    "kickoff": "2026-11-14T20:00",
@@ -293,7 +293,7 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.4305041007119862,
+   "fpi": 0.4305279113690638,
    "total": 43.5,
    "moved": 12.0,
    "toward": "TENN",
@@ -301,10 +301,6 @@
     [
      "situation",
      "TENN come off beating #6 UK"
-    ],
-    [
-     "situation",
-     "TENN have #14 LSU next"
     ]
    ],
    "against": []
@@ -331,17 +327,12 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.32471814186337733,
-   "fpi": 0.28912614336268294,
-   "total": 49.5,
-   "moved": 3.0,
+   "price": 0.2722372544815055,
+   "fpi": 0.2893333415087904,
+   "total": 50.5,
+   "moved": 0.5,
    "toward": "USC",
-   "for": [
-    [
-     "line",
-     "line has moved 3 toward USC"
-    ]
-   ],
+   "for": [],
    "against": []
   },
   {
@@ -374,10 +365,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.41600623568032036,
-   "fpi": 0.3870909647328242,
+   "price": 0.42786270766003587,
+   "fpi": 0.38716057668766635,
    "total": 48.5,
-   "moved": 1.0,
+   "moved": 0.5,
    "toward": "UCF",
    "for": [
     [
@@ -423,7 +414,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.42617485384013787,
+   "fpi": 0.42634120241106116,
    "total": 56.5,
    "moved": null,
    "toward": null,
@@ -442,14 +433,6 @@
    "kickoff": "2026-11-14T21:15",
    "when": "Sat 4:15pm",
    "dog": {
-    "abbr": "OKLA",
-    "record": "5-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
     "abbr": "MISS",
     "record": "6-3",
     "streak": -1,
@@ -457,18 +440,34 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4637824133031056,
-   "fpi": 0.44873876994744943,
+   "fav": {
+    "abbr": "OKLA",
+    "record": "5-4",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.46378241330310566,
+   "fpi": 0.5509494944465854,
    "total": 49.5,
-   "moved": 5.5,
+   "moved": 2.5,
    "toward": "MISS",
-   "for": [],
-   "against": [
+   "for": [
+    [
+     "situation",
+     "OKLA come off beating #24 FLA"
+    ],
     [
      "line",
-     "line has moved 5.5 toward MISS"
+     "line has moved 2.5 toward MISS"
+    ],
+    [
+     "line",
+     "FPI makes MISS the favourite (55%)"
     ]
-   ]
+   ],
+   "against": []
   },
   {
    "league": "CFB",
@@ -492,15 +491,15 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4278627076600358,
-   "fpi": 0.45606049544797655,
+   "price": 0.41600623568032036,
+   "fpi": 0.45608452704825364,
    "total": 43.5,
-   "moved": 0.5,
-   "toward": "MSU",
+   "moved": null,
+   "toward": null,
    "for": [
     [
      "situation",
-     "WASH have #4 IU next"
+     "WASH have #9 IU next"
     ]
    ],
    "against": []
@@ -532,7 +531,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.46648002979193137,
+   "fpi": 0.46662458954204766,
    "total": 52.5,
    "moved": 2.0,
    "toward": "UK",
@@ -571,8 +570,8 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.4302183925593342,
-   "total": 59.5,
+   "fpi": 0.4305279113690638,
+   "total": 60.5,
    "moved": 1.0,
    "toward": "LOU",
    "for": [],
@@ -606,7 +605,7 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.41737788949337884,
+   "fpi": 0.4176854677518249,
    "total": 54.5,
    "moved": 1.0,
    "toward": "UTAH",
@@ -646,7 +645,7 @@
     "qb_inj": []
    },
    "price": 0.4042257258869504,
-   "fpi": 0.4705534172679179,
+   "fpi": 0.4704569684268346,
    "total": 46.5,
    "moved": 7.0,
    "toward": "LSU",
@@ -657,7 +656,7 @@
     ],
     [
      "situation",
-     "LSU have #13 TENN next"
+     "LSU have #8 TENN next"
     ]
    ],
    "against": [
@@ -690,8 +689,8 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.4014342872933078,
-   "total": 76.5,
+   "fpi": 0.40150459856938225,
+   "total": 75.5,
    "moved": 1.0,
    "toward": "UNT",
    "for": [],
@@ -729,7 +728,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.47627089885232243,
+   "fpi": 0.47658466816336664,
    "total": 72.5,
    "moved": 19.0,
    "toward": "OKST",
@@ -761,14 +760,27 @@
     "streak": 4,
     "rest": 6,
     "qb": null,
-    "qb_inj": []
+    "qb_inj": [
+     {
+      "name": "Jared Goff",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-11",
+      "note": "Goff was limited at Wednesday's practice due to a chest injury."
+     }
+    ]
    },
    "price": 0.4248920370873779,
    "fpi": 0.4191412291609702,
    "total": 51.5,
    "moved": 1.0,
    "toward": "DET",
-   "for": [],
+   "for": [
+    [
+     "injury",
+     "DET QB listed: Jared Goff Questionable (2026-11-11)"
+    ]
+   ],
    "against": [
     [
      "form",
@@ -796,27 +808,14 @@
     "streak": 1,
     "rest": 7,
     "qb": null,
-    "qb_inj": [
-     {
-      "name": "Patrick Mahomes",
-      "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-09",
-      "note": "Chiefs coach Andy Reid said Monday that Mahomes (elbow) is considered day-to-day as this Sunday's game against the Falcons approaches, Sam McDowell of The Kansas City Star reports."
-     }
-    ]
+    "qb_inj": []
    },
    "price": 0.3954463718532454,
-   "fpi": 0.31658396442834513,
+   "fpi": 0.30184867377303803,
    "total": 45.5,
    "moved": 1.0,
    "toward": "ATL",
-   "for": [
-    [
-     "injury",
-     "KC QB listed: Patrick Mahomes Questionable (2026-11-09)"
-    ]
-   ],
+   "for": [],
    "against": []
   },
   {
@@ -839,9 +838,9 @@
      {
       "name": "Deshaun Watson",
       "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-10",
-      "note": "questionable"
+      "status": "Out",
+      "date": "2026-11-11",
+      "note": "The Browns announced Wednesday that Watson (concussion) will start Sunday's game against the Texans, Kelsey Russo of the team's official site reports."
      }
     ]
    },
@@ -855,14 +854,14 @@
    },
    "price": 0.3665860103968184,
    "fpi": 0.3199356367565457,
-   "total": 39.5,
+   "total": 40.5,
    "moved": null,
    "toward": null,
    "for": [],
    "against": [
     [
      "quarterback",
-     "CLE are on Shedeur Sanders, not season leader Deshaun Watson (new last week); listed: Deshaun Watson Questionable (2026-11-10)"
+     "CLE are on Shedeur Sanders, not season leader Deshaun Watson (new last week); listed: Deshaun Watson Out (2026-11-11)"
     ]
    ]
   },
@@ -884,10 +883,17 @@
     },
     "qb_inj": [
      {
+      "name": "Carson Wentz",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-11",
+      "note": "Wentz (ankle) is listed as limited on Wednesday's estimated practice report, Ben Goessling of The Minnesota Star Tribune reports."
+     },
+     {
       "name": "Kyler Murray",
       "pos": "QB",
       "status": "Doubtful",
-      "date": "2026-11-10",
+      "date": "2026-11-11",
       "note": "doubtful"
      }
     ]
@@ -900,16 +906,21 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3954463718532454,
-   "fpi": 0.32676501469785524,
-   "total": 41.5,
-   "moved": 1.0,
+   "price": 0.4101058393642264,
+   "fpi": 0.43670909834644855,
+   "total": 42.5,
+   "moved": 1.5,
    "toward": "MIN",
-   "for": [],
+   "for": [
+    [
+     "line",
+     "line has moved 1.5 toward MIN"
+    ]
+   ],
    "against": [
     [
      "quarterback",
-     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Kyler Murray Doubtful (2026-11-10)"
+     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Carson Wentz Questionable (2026-11-11), Kyler Murray Doubtful (2026-11-11)"
     ]
    ]
   },
@@ -965,7 +976,7 @@
       "name": "Malik Willis",
       "pos": "QB",
       "status": "Injured Reserve",
-      "date": "2026-11-10",
+      "date": "2026-11-11",
       "note": "ir"
      }
     ]
@@ -979,7 +990,7 @@
     "qb_inj": []
    },
    "price": 0.3954463718532454,
-   "fpi": 0.2912376334444715,
+   "fpi": 0.20920964276538934,
    "total": 38.5,
    "moved": 3.0,
    "toward": "MIA",
@@ -1008,7 +1019,7 @@
    "against": [
     [
      "injury",
-     "MIA QB listed: Malik Willis Injured Reserve (2026-11-10)"
+     "MIA QB listed: Malik Willis Injured Reserve (2026-11-11)"
     ]
    ]
   },
@@ -1034,11 +1045,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4547630300184792,
+   "price": 0.4248920370873779,
    "fpi": 0.47472037416112844,
    "total": 48.5,
-   "moved": null,
-   "toward": null,
+   "moved": 1.0,
+   "toward": "NO",
    "for": [],
    "against": [
     [
@@ -1144,19 +1155,15 @@
      }
     ]
    },
-   "price": 0.32471814186337733,
-   "fpi": 0.4499319276488009,
+   "price": 0.31120973253416895,
+   "fpi": 0.33865511112727353,
    "total": 40.5,
-   "moved": 1.0,
+   "moved": 0.5,
    "toward": "LV",
    "for": [
     [
      "quarterback",
      "SEA are on Drew Lock, not season leader Sam Darnold (new last week); listed: Sam Darnold Out (2026-11-10), Drew Lock Questionable (2026-11-09)"
-    ],
-    [
-     "line",
-     "FPI gives LV 45%, the market 32%"
     ]
    ],
    "against": [
@@ -1182,9 +1189,9 @@
      {
       "name": "Gardner Minshew II",
       "pos": "QB",
-      "status": "Doubtful",
-      "date": "2026-11-09",
-      "note": "Per Adam Schefter of ESPN, Minshew (elbow) is reportedly seeking additional medical opinions to confirm that he likely will require season-ending surgery to address a torn UCL."
+      "status": "Injured Reserve",
+      "date": "2026-11-11",
+      "note": "Minshew (elbow) will undergo UCL surgery and is out for the season, Theo Mackie of AzCentral reports."
      }
     ]
    },
@@ -1210,7 +1217,7 @@
    "against": [
     [
      "injury",
-     "ARI QB listed: Gardner Minshew II Doubtful (2026-11-09)"
+     "ARI QB listed: Gardner Minshew II Injured Reserve (2026-11-11)"
     ]
    ]
   },
@@ -1236,16 +1243,16 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3954463718532454,
+   "price": 0.3665860103968184,
    "fpi": 0.43033148100978136,
    "total": 55.5,
-   "moved": 5.0,
+   "moved": 6.0,
    "toward": "SF",
    "for": [],
    "against": [
     [
      "line",
-     "line has moved 5 toward SF"
+     "line has moved 6 toward SF"
     ]
    ]
   },
@@ -1336,7 +1343,7 @@
     ]
    },
    "price": 0.3665860103968184,
-   "fpi": 0.522654984831072,
+   "fpi": 0.5145037955154135,
    "total": 38.5,
    "moved": 2.0,
    "toward": "BAL",
@@ -1355,7 +1362,7 @@
     ],
     [
      "line",
-     "FPI makes LAC the favourite (52%)"
+     "FPI makes LAC the favourite (51%)"
     ]
    ],
    "against": [
