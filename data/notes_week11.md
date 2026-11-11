@@ -49,3 +49,21 @@ Texas Tech (8-1, #10) are underdogs at Oklahoma State because they are
 on Thomas Castellanos, not season leader Will Hammond. Minnesota are on
 Carson Wentz with Kyler Murray out. Cleveland are on Shedeur Sanders
 with Watson out. All three are in the price.
+
+## Wednesday update (research re-run Nov 11, 4:55pm ET)
+
+- **Atlanta over Kansas City: the reason it was flagged no longer holds.**
+  Mahomes was a full participant in Wednesday's practice (KCTV5 and NBC
+  Sports, Nov 11). ESPN's injury list no longer carries him.
+- **Raiders over Seattle: price fell from 40% to 31%.** The early move
+  toward Las Vegas has reversed. Darnold is still listed out and Lock
+  still questionable (Nov 9-10); no dated report found explaining the
+  move.
+- **Wake Forest at SMU:** the line has moved 5 toward SMU, so SMU are
+  now the market favourite. (He has SMU.)
+- **Ole Miss at Oklahoma:** Oklahoma are now the market favourite;
+  Ole Miss 46%. (He has Ole Miss.)
+- Giants: McCarthy was a full participant Tuesday. Detroit: Goff
+  limited Wednesday with a chest injury. Miami: Malik Willis to IR.
+- Texas A&M over Tennessee unchanged at 44%. Illinois 27%, Pittsburgh
+  40%, unchanged.
