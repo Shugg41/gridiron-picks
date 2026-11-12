@@ -1,6 +1,6 @@
 {
  "week": 11,
- "made": "Wed Nov 11, 4:53PM ET",
+ "made": "Wed Nov 11, 8:34PM ET",
  "source": "the 30 games on the week 11 board",
  "games": [
   {
@@ -170,7 +170,7 @@
    },
    "price": 0.46378241330310566,
    "fpi": 0.5812968001926122,
-   "total": 61.5,
+   "total": 60.5,
    "moved": 5.0,
    "toward": "SMU",
    "for": [
@@ -236,10 +236,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.22435249875681773,
+   "price": 0.19808400351959676,
    "fpi": 0.1856447326131443,
-   "total": 45.5,
-   "moved": 3.0,
+   "total": 44.5,
+   "moved": 4.5,
    "toward": "OSU",
    "for": [
     [
@@ -266,7 +266,7 @@
     ],
     [
      "line",
-     "line has moved 3 toward OSU"
+     "line has moved 4.5 toward OSU"
     ]
    ]
   },
@@ -365,10 +365,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.42786270766003587,
+   "price": 0.41600623568032036,
    "fpi": 0.38716057668766635,
-   "total": 48.5,
-   "moved": 0.5,
+   "total": 49.5,
+   "moved": 1.0,
    "toward": "UCF",
    "for": [
     [
@@ -413,11 +413,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.36944134018176367,
+   "price": 0.35806478442778267,
    "fpi": 0.42634120241106116,
    "total": 56.5,
-   "moved": null,
-   "toward": null,
+   "moved": 0.5,
+   "toward": "GASO",
    "for": [],
    "against": [
     [
@@ -433,14 +433,6 @@
    "kickoff": "2026-11-14T21:15",
    "when": "Sat 4:15pm",
    "dog": {
-    "abbr": "MISS",
-    "record": "6-3",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
     "abbr": "OKLA",
     "record": "5-4",
     "streak": 1,
@@ -448,26 +440,26 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.46378241330310566,
-   "fpi": 0.5509494944465854,
+   "fav": {
+    "abbr": "MISS",
+    "record": "6-3",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4637824133031056,
+   "fpi": 0.4490505055534146,
    "total": 49.5,
-   "moved": 2.5,
+   "moved": 5.5,
    "toward": "MISS",
-   "for": [
-    [
-     "situation",
-     "OKLA come off beating #24 FLA"
-    ],
+   "for": [],
+   "against": [
     [
      "line",
-     "line has moved 2.5 toward MISS"
-    ],
-    [
-     "line",
-     "FPI makes MISS the favourite (55%)"
+     "line has moved 5.5 toward MISS"
     ]
-   ],
-   "against": []
+   ]
   },
   {
    "league": "CFB",
@@ -493,7 +485,7 @@
    },
    "price": 0.41600623568032036,
    "fpi": 0.45608452704825364,
-   "total": 43.5,
+   "total": 42.5,
    "moved": null,
    "toward": null,
    "for": [
@@ -808,14 +800,31 @@
     "streak": 1,
     "rest": 7,
     "qb": null,
-    "qb_inj": []
+    "qb_inj": [
+     {
+      "name": "Patrick Mahomes",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-11",
+      "note": "Mahomes (right elbow/knee) was a full participant in Wednesday's practice."
+     }
+    ]
    },
-   "price": 0.3954463718532454,
+   "price": 0.4101058393642264,
    "fpi": 0.30184867377303803,
-   "total": 45.5,
-   "moved": 1.0,
+   "total": 46.5,
+   "moved": 1.5,
    "toward": "ATL",
-   "for": [],
+   "for": [
+    [
+     "injury",
+     "KC QB listed: Patrick Mahomes Questionable (2026-11-11)"
+    ],
+    [
+     "line",
+     "line has moved 1.5 toward ATL"
+    ]
+   ],
    "against": []
   },
   {
@@ -854,7 +863,7 @@
    },
    "price": 0.3665860103968184,
    "fpi": 0.3199356367565457,
-   "total": 40.5,
+   "total": 41.5,
    "moved": null,
    "toward": null,
    "for": [],
@@ -976,7 +985,7 @@
       "name": "Malik Willis",
       "pos": "QB",
       "status": "Injured Reserve",
-      "date": "2026-11-11",
+      "date": "2026-11-12",
       "note": "ir"
      }
     ]
@@ -1019,7 +1028,7 @@
    "against": [
     [
      "injury",
-     "MIA QB listed: Malik Willis Injured Reserve (2026-11-11)"
+     "MIA QB listed: Malik Willis Injured Reserve (2026-11-12)"
     ]
    ]
   },
@@ -1140,18 +1149,18 @@
     },
     "qb_inj": [
      {
+      "name": "Drew Lock",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-12",
+      "note": "Lock (right elbow/oblique) was limited at Wednesday's practice, John Boyle of the Seahawks' official site reports."
+     },
+     {
       "name": "Sam Darnold",
       "pos": "QB",
       "status": "Out",
       "date": "2026-11-10",
       "note": "out"
-     },
-     {
-      "name": "Drew Lock",
-      "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-09",
-      "note": "Seahawks coach Mike Macdonald said Monday that Lock's tests on his oblique injury were \"good,\" and the issue is something the QB is expected to manage ahead of Sunday's game against the Raiders, Gregg Bell of The Tacoma News Tribune reports."
      }
     ]
    },
@@ -1163,7 +1172,7 @@
    "for": [
     [
      "quarterback",
-     "SEA are on Drew Lock, not season leader Sam Darnold (new last week); listed: Sam Darnold Out (2026-11-10), Drew Lock Questionable (2026-11-09)"
+     "SEA are on Drew Lock, not season leader Sam Darnold (new last week); listed: Drew Lock Questionable (2026-11-12), Sam Darnold Out (2026-11-10)"
     ]
    ],
    "against": [
@@ -1243,16 +1252,16 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3665860103968184,
+   "price": 0.3954463718532454,
    "fpi": 0.43033148100978136,
    "total": 55.5,
-   "moved": 6.0,
+   "moved": 5.0,
    "toward": "SF",
    "for": [],
    "against": [
     [
      "line",
-     "line has moved 6 toward SF"
+     "line has moved 5 toward SF"
     ]
    ]
   },
