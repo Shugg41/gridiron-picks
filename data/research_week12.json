@@ -1,0 +1,925 @@
+{
+ "week": 12,
+ "made": "Thu Nov 12, 8:50PM ET",
+ "source": "the whole slate; this week's board is not loaded yet",
+ "games": [
+  {
+   "league": "NFL",
+   "away": "IND",
+   "home": "HOU",
+   "kickoff": "2026-11-20T01:15",
+   "when": "Thu 8:15pm",
+   "dog": {
+    "abbr": "IND",
+    "record": "2-7",
+    "streak": -5,
+    "rest": 4,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "HOU",
+    "record": "3-5",
+    "streak": 1,
+    "rest": 4,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.22435249875681773,
+   "fpi": 0.29038075653963447,
+   "total": 44.5,
+   "moved": 4.5,
+   "toward": "HOU",
+   "for": [],
+   "against": [
+    [
+     "form",
+     "IND have lost 5 straight"
+    ],
+    [
+     "line",
+     "line has moved 4.5 toward HOU"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "UTAH",
+   "home": "TCU",
+   "kickoff": "2026-11-21T05:00",
+   "when": "Sat 12:00am",
+   "dog": {
+    "abbr": "TCU",
+    "record": "4-5",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "UTAH",
+    "record": "9-0",
+    "streak": 9,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.36944134018176367,
+   "fpi": 0.30428308984948943,
+   "total": 44.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "situation",
+     "UTAH come off beating #9 BYU"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "UTAH have won 9 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "UCLA",
+   "home": "MICH",
+   "kickoff": "2026-11-21T05:00",
+   "when": "Sat 12:00am",
+   "dog": {
+    "abbr": "MICH",
+    "record": "5-4",
+    "streak": -1,
+    "rest": 6,
+    "qb": {
+     "now": "Tommy Carr",
+     "leader": "Bryce Underwood",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "UCLA",
+    "record": "9-0",
+    "streak": 9,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.36944134018176367,
+   "fpi": 0.48052002147287654,
+   "total": 41.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "style",
+     "total of 41.5: few possessions, less room for the better team"
+    ],
+    [
+     "line",
+     "FPI gives MICH 48%, the market 37%"
+    ]
+   ],
+   "against": [
+    [
+     "quarterback",
+     "MICH are on Tommy Carr, not season leader Bryce Underwood (at least two games running)"
+    ],
+    [
+     "form",
+     "UCLA have won 9 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "VT",
+   "home": "MIA",
+   "kickoff": "2026-11-21T05:00",
+   "when": "Sat 12:00am",
+   "dog": {
+    "abbr": "VT",
+    "record": "6-3",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "MIA",
+    "record": "8-1",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.1310987907017298,
+   "fpi": 0.07524282456643205,
+   "total": 61.5,
+   "moved": 2.0,
+   "toward": "MIA",
+   "for": [],
+   "against": [
+    [
+     "line",
+     "line has moved 2 toward MIA"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "TTU",
+   "home": "BAY",
+   "kickoff": "2026-11-21T05:00",
+   "when": "Sat 12:00am",
+   "dog": {
+    "abbr": "BAY",
+    "record": "6-3",
+    "streak": 2,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "TTU",
+    "record": "8-1",
+    "streak": 2,
+    "rest": 6,
+    "qb": {
+     "now": "Thomas Castellanos",
+     "leader": "Will Hammond",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "price": 0.4637824133031056,
+   "fpi": 0.4631804895953345,
+   "total": 55.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "quarterback",
+     "TTU are on Thomas Castellanos, not season leader Will Hammond (at least two games running)"
+    ],
+    [
+     "form",
+     "last three games: BAY +14 a game, TTU +0"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "OSU",
+   "home": "NEB",
+   "kickoff": "2026-11-21T05:00",
+   "when": "Sat 12:00am",
+   "dog": {
+    "abbr": "NEB",
+    "record": "5-4",
+    "streak": -4,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "OSU",
+    "record": "6-3",
+    "streak": -2,
+    "rest": 6,
+    "qb": {
+     "now": "Luke Fahey",
+     "leader": "Julian Sayin",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "price": 0.36944134018176367,
+   "fpi": 0.3022502776902994,
+   "total": 47.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "quarterback",
+     "OSU are on Luke Fahey, not season leader Julian Sayin (at least two games running)"
+    ],
+    [
+     "form",
+     "OSU have lost 2 straight"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "NEB have lost 4 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "IOWA",
+   "home": "ILL",
+   "kickoff": "2026-11-21T19:30",
+   "when": "Sat 2:30pm",
+   "dog": {
+    "abbr": "ILL",
+    "record": "6-3",
+    "streak": 4,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "IOWA",
+    "record": "7-2",
+    "streak": 2,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.36944134018176367,
+   "fpi": 0.39596001185367413,
+   "total": 43.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "form",
+     "ILL have won 4 straight"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "LSU",
+   "home": "TENN",
+   "kickoff": "2026-11-21T20:30",
+   "when": "Sat 3:30pm",
+   "dog": {
+    "abbr": "TENN",
+    "record": "7-2",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "LSU",
+    "record": "6-3",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4637824133031056,
+   "fpi": 0.4665764024685196,
+   "total": 48.5,
+   "moved": null,
+   "toward": null,
+   "for": [],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "UGA",
+   "home": "SC",
+   "kickoff": "2026-11-22T00:30",
+   "when": "Sat 7:30pm",
+   "dog": {
+    "abbr": "SC",
+    "record": "6-3",
+    "streak": 4,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "UGA",
+    "record": "8-1",
+    "streak": 2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.26226971821765654,
+   "fpi": 0.26333713927305463,
+   "total": 50.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "form",
+     "SC have won 4 straight"
+    ],
+    [
+     "situation",
+     "UGA come off beating #10 MISS"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "SMU",
+   "home": "ND",
+   "kickoff": "2026-11-22T00:30",
+   "when": "Sat 7:30pm",
+   "dog": {
+    "abbr": "SMU",
+    "record": "7-2",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "ND",
+    "record": "8-1",
+    "streak": 2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.15865525393145707,
+   "fpi": 0.13727009011644398,
+   "total": 57.5,
+   "moved": 1.0,
+   "toward": "SMU",
+   "for": [
+    [
+     "form",
+     "last three games: SMU +20 a game, ND +8"
+    ],
+    [
+     "situation",
+     "ND come off beating #1 MIA"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "UK",
+   "home": "MIZ",
+   "kickoff": "2026-11-22T00:30",
+   "when": "Sat 7:30pm",
+   "dog": {
+    "abbr": "UK",
+    "record": "7-2",
+    "streak": -1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "MIZ",
+    "record": "6-3",
+    "streak": -1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3468128925152081,
+   "fpi": 0.39923282833662244,
+   "total": 49.5,
+   "moved": null,
+   "toward": null,
+   "for": [],
+   "against": []
+  },
+  {
+   "league": "NFL",
+   "away": "MIA",
+   "home": "BUF",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "MIA",
+    "record": "1-7",
+    "streak": -2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": [
+     {
+      "name": "Malik Willis",
+      "pos": "QB",
+      "status": "Injured Reserve",
+      "date": "2026-11-11",
+      "note": "The Dolphins hope Willis (abdomen) will return this year but haven't ruled out season-ending surgery, Joe Schad of The Palm Beach Post reports."
+     }
+    ]
+   },
+   "fav": {
+    "abbr": "BUF",
+    "record": "7-1",
+    "streak": 4,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.10564977366685535,
+   "fpi": 0.07582721586199748,
+   "total": 46.5,
+   "moved": 5.0,
+   "toward": "BUF",
+   "for": [],
+   "against": [
+    [
+     "injury",
+     "MIA QB listed: Malik Willis Injured Reserve (2026-11-11)"
+    ],
+    [
+     "form",
+     "BUF have won 4 straight"
+    ],
+    [
+     "line",
+     "line has moved 5 toward BUF"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "NO",
+   "home": "CHI",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "NO",
+    "record": "3-5",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "CHI",
+    "record": "7-2",
+    "streak": 4,
+    "rest": 13,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.235855796216213,
+   "fpi": 0.24688713415168306,
+   "total": 48.5,
+   "moved": 3.0,
+   "toward": "CHI",
+   "for": [],
+   "against": [
+    [
+     "form",
+     "CHI have won 4 straight"
+    ],
+    [
+     "situation",
+     "CHI are off a bye"
+    ],
+    [
+     "line",
+     "line has moved 3 toward CHI"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "TEN",
+   "home": "DAL",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "TEN",
+    "record": "1-7",
+    "streak": -2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "DAL",
+    "record": "4-5",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.28495575798266715,
+   "fpi": 0.22788405061236405,
+   "total": 51.5,
+   "moved": 1.0,
+   "toward": "DAL",
+   "for": [],
+   "against": []
+  },
+  {
+   "league": "NFL",
+   "away": "TB",
+   "home": "DET",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "TB",
+    "record": "3-6",
+    "streak": -1,
+    "rest": 13,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "DET",
+    "record": "6-2",
+    "streak": 4,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3954463718532454,
+   "fpi": 0.45173151023238733,
+   "total": 47.5,
+   "moved": 1.0,
+   "toward": "TB",
+   "for": [
+    [
+     "form",
+     "last three games: TB +14 a game, DET +6"
+    ],
+    [
+     "situation",
+     "TB are off a bye"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "DET have won 4 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "ARI",
+   "home": "KC",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "ARI",
+    "record": "3-6",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": [
+     {
+      "name": "Gardner Minshew II",
+      "pos": "QB",
+      "status": "Injured Reserve",
+      "date": "2026-11-11",
+      "note": "Minshew (elbow) will undergo UCL surgery and is out for the season, Theo Mackie of AzCentral reports."
+     }
+    ]
+   },
+   "fav": {
+    "abbr": "KC",
+    "record": "6-2",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.14443448356198263,
+   "fpi": 0.132766386188101,
+   "total": 42.5,
+   "moved": 2.5,
+   "toward": "KC",
+   "for": [],
+   "against": [
+    [
+     "injury",
+     "ARI QB listed: Gardner Minshew II Injured Reserve (2026-11-11)"
+    ],
+    [
+     "line",
+     "line has moved 2.5 toward KC"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "PIT",
+   "home": "PHI",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "PHI",
+    "record": "2-7",
+    "streak": -7,
+    "rest": 14,
+    "qb": {
+     "now": "Joe Milton",
+     "leader": "Jalen Hurts",
+     "settled": false
+    },
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "PIT",
+    "record": "6-2",
+    "streak": 4,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3665860103968184,
+   "fpi": 0.3802984788856617,
+   "total": 38.5,
+   "moved": 10.0,
+   "toward": "PIT",
+   "for": [
+    [
+     "situation",
+     "PHI are off a bye"
+    ],
+    [
+     "style",
+     "total of 38.5: few possessions, less room for the better team"
+    ]
+   ],
+   "against": [
+    [
+     "quarterback",
+     "PHI are on Joe Milton, not season leader Jalen Hurts (new last week)"
+    ],
+    [
+     "form",
+     "PHI have lost 7 straight"
+    ],
+    [
+     "form",
+     "PIT have won 4 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "BAL",
+   "home": "CAR",
+   "kickoff": "2026-11-22T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "BAL",
+    "record": "4-5",
+    "streak": -4,
+    "rest": 5,
+    "qb": {
+     "now": "Joe Fagnano",
+     "leader": "Lamar Jackson",
+     "settled": true
+    },
+    "qb_inj": [
+     {
+      "name": "Lamar Jackson",
+      "pos": "QB",
+      "status": "Injured Reserve",
+      "date": "2026-11-08",
+      "note": "Jackson, who is scheduled to undergo surgery on his injured right thumb, has told teammates he plans to return later this season, Ian Rapoport of NFL Network reports."
+     }
+    ]
+   },
+   "fav": {
+    "abbr": "CAR",
+    "record": "3-5",
+    "streak": -3,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4547630300184792,
+   "fpi": 0.3315063136502501,
+   "total": 44.5,
+   "moved": 6.0,
+   "toward": "CAR",
+   "for": [
+    [
+     "form",
+     "CAR have lost 3 straight"
+    ]
+   ],
+   "against": [
+    [
+     "quarterback",
+     "BAL are on Joe Fagnano, not season leader Lamar Jackson (at least two games running); listed: Lamar Jackson Injured Reserve (2026-11-08)"
+    ],
+    [
+     "form",
+     "BAL have lost 4 straight"
+    ],
+    [
+     "situation",
+     "BAL on 5 days' rest, CAR on 7"
+    ],
+    [
+     "line",
+     "line has moved 6 toward CAR"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "NYJ",
+   "home": "LAC",
+   "kickoff": "2026-11-22T21:05",
+   "when": "Sun 4:05pm",
+   "dog": {
+    "abbr": "NYJ",
+    "record": "2-7",
+    "streak": -4,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "LAC",
+    "record": "0-8",
+    "streak": -8,
+    "rest": 5,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4547630300184792,
+   "fpi": 0.3868937505873914,
+   "total": 42.5,
+   "moved": 8.0,
+   "toward": "NYJ",
+   "for": [
+    [
+     "form",
+     "LAC have lost 8 straight"
+    ],
+    [
+     "form",
+     "last three games: NYJ -10 a game, LAC -18"
+    ],
+    [
+     "situation",
+     "LAC on 5 days' rest, NYJ on 7"
+    ],
+    [
+     "style",
+     "LAC give it away 2.4 times a game, NYJ 0.8"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "NYJ have lost 4 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "LV",
+   "home": "DEN",
+   "kickoff": "2026-11-22T21:25",
+   "when": "Sun 4:25pm",
+   "dog": {
+    "abbr": "LV",
+    "record": "4-5",
+    "streak": -1,
+    "rest": 7,
+    "qb": {
+     "now": "Kirk Cousins",
+     "leader": "Fernando Mendoza",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "DEN",
+    "record": "7-2",
+    "streak": 5,
+    "rest": 14,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.2598073675968221,
+   "fpi": 0.19892855055289838,
+   "total": 41.5,
+   "moved": null,
+   "toward": null,
+   "for": [],
+   "against": [
+    [
+     "quarterback",
+     "LV are on Kirk Cousins, not season leader Fernando Mendoza (at least two games running)"
+    ],
+    [
+     "form",
+     "DEN have won 5 straight"
+    ],
+    [
+     "situation",
+     "DEN are off a bye"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "MIN",
+   "home": "SF",
+   "kickoff": "2026-11-23T01:20",
+   "when": "Sun 8:20pm",
+   "dog": {
+    "abbr": "MIN",
+    "record": "6-2",
+    "streak": -2,
+    "rest": 7,
+    "qb": {
+     "now": "Carson Wentz",
+     "leader": "Kyler Murray",
+     "settled": false
+    },
+    "qb_inj": [
+     {
+      "name": "Carson Wentz",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-12",
+      "note": "Wentz (ankle) practiced in a limited capacity Thursday."
+     },
+     {
+      "name": "Kyler Murray",
+      "pos": "QB",
+      "status": "Doubtful",
+      "date": "2026-11-11",
+      "note": "Coach Kevin O'Connell said Wednesday that Murray (hamstring) remains week-to-week, Kevin Seifert of ESPN reports."
+     }
+    ]
+   },
+   "fav": {
+    "abbr": "SF",
+    "record": "7-1",
+    "streak": 1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3954463718532454,
+   "fpi": 0.3360536717317707,
+   "total": 45.5,
+   "moved": null,
+   "toward": null,
+   "for": [],
+   "against": [
+    [
+     "quarterback",
+     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Carson Wentz Questionable (2026-11-12), Kyler Murray Doubtful (2026-11-11)"
+    ]
+   ]
+  }
+ ]
+}
