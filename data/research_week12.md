@@ -1,6 +1,6 @@
 # Week 12 research
 
-Built Thu Nov 12, 8:50PM ET from ESPN data (the whole slate; this week's board is not loaded yet). 21 games read, 6 underdogs priced 22%-47% whose reasons outweigh the reasons against.
+Built Fri Nov 13, 8:27PM ET from ESPN data (the whole slate; this week's board is not loaded yet). 23 games read, 6 underdogs priced 22%-47% whose reasons outweigh the reasons against.
 
 Reasons are observations, not a rating. Check anything about who is playing against a dated source before acting on it.
 
@@ -21,7 +21,7 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (quarterback): TTU are on Thomas Castellanos, not season leader Will Hammond (at least two games running)
 - **for** (form): last three games: BAY +14 a game, TTU +0
 
-### SC over UGA — 26% · UGA @ SC · Sat 7:30pm
+### SC over UGA — 27% · UGA @ SC · Sat 7:30pm
 - SC: 6-3, won 4 straight, last: beat TA&M 17-9
 - UGA: 8-1, won 2 straight, last: beat MISS 42-7
 - **for** (form): SC have won 4 straight
@@ -58,9 +58,9 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 | OSU @ NEB | Sat 12:00am | OSU | 37% | 47.5 |  | 2 | 1 |
 | IOWA @ ILL | Sat 2:30pm | IOWA | 37% | 43.5 |  | 1 | 0 |
 | LSU @ TENN | Sat 3:30pm | LSU | 46% | 48.5 |  | 0 | 0 |
-| UGA @ SC | Sat 7:30pm | UGA | 26% | 50.5 |  | 2 | 0 |
+| UGA @ SC | Sat 7:30pm | UGA | 27% | 51.5 | 0.5 to SC | 2 | 0 |
 | SMU @ ND | Sat 7:30pm | ND | 16% | 57.5 | 1 to SMU | 2 | 0 |
-| UK @ MIZ | Sat 7:30pm | MIZ | 35% | 49.5 |  | 0 | 0 |
+| UK @ MIZ | Sat 7:30pm | MIZ | 36% | 49.5 | 0.5 to UK | 0 | 0 |
 | MIA @ BUF | Sun 1:00pm | BUF | 11% | 46.5 | 5 to BUF | 0 | 3 |
 | NO @ CHI | Sun 1:00pm | CHI | 24% | 48.5 | 3 to CHI | 0 | 3 |
 | TEN @ DAL | Sun 1:00pm | DAL | 28% | 51.5 | 1 to DAL | 0 | 0 |
@@ -70,4 +70,6 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 | BAL @ CAR | Sun 1:00pm | CAR | 45% | 44.5 | 6 to CAR | 1 | 4 |
 | NYJ @ LAC | Sun 4:05pm | LAC | 45% | 42.5 | 8 to NYJ | 4 | 1 |
 | LV @ DEN | Sun 4:25pm | DEN | 26% | 41.5 |  | 0 | 3 |
+| JAX @ NYG | Sun 4:25pm | JAX | 32% | 44.5 | 4.5 to JAX | 0 | 2 |
 | MIN @ SF | Sun 8:20pm | SF | 40% | 45.5 |  | 0 | 1 |
+| CIN @ WSH | Mon 8:15pm | CIN | 40% | 51.5 | 2 to CIN | 0 | 2 |

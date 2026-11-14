@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Thu Nov 12, 8:50PM ET",
+ "made": "Fri Nov 13, 8:27PM ET",
  "source": "the whole slate; this week's board is not loaded yet",
  "games": [
   {
@@ -26,7 +26,7 @@
     "qb_inj": []
    },
    "price": 0.22435249875681773,
-   "fpi": 0.29038075653963447,
+   "fpi": 0.29071817318196913,
    "total": 44.5,
    "moved": 4.5,
    "toward": "HOU",
@@ -65,7 +65,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.30428308984948943,
+   "fpi": 0.30441034254760857,
    "total": 44.5,
    "moved": null,
    "toward": null,
@@ -157,7 +157,7 @@
     "qb_inj": []
    },
    "price": 0.1310987907017298,
-   "fpi": 0.07524282456643205,
+   "fpi": 0.07528583537986067,
    "total": 61.5,
    "moved": 2.0,
    "toward": "MIA",
@@ -196,7 +196,7 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.4631804895953345,
+   "fpi": 0.4631564143910441,
    "total": 55.5,
    "moved": null,
    "toward": null,
@@ -239,7 +239,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.3022502776902994,
+   "fpi": 0.30201774093165945,
    "total": 47.5,
    "moved": null,
    "toward": null,
@@ -283,7 +283,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.39596001185367413,
+   "fpi": 0.3959833634265391,
    "total": 43.5,
    "moved": null,
    "toward": null,
@@ -318,7 +318,7 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.4665764024685196,
+   "fpi": 0.4665764024685197,
    "total": 48.5,
    "moved": null,
    "toward": null,
@@ -347,11 +347,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.26226971821765654,
-   "fpi": 0.26333713927305463,
-   "total": 50.5,
-   "moved": null,
-   "toward": null,
+   "price": 0.2722372544815055,
+   "fpi": 0.263159081834482,
+   "total": 51.5,
+   "moved": 0.5,
+   "toward": "SC",
    "for": [
     [
      "form",
@@ -387,7 +387,7 @@
     "qb_inj": []
    },
    "price": 0.15865525393145707,
-   "fpi": 0.13727009011644398,
+   "fpi": 0.13733664983711802,
    "total": 57.5,
    "moved": 1.0,
    "toward": "SMU",
@@ -425,11 +425,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3468128925152081,
+   "price": 0.35806478442778267,
    "fpi": 0.39923282833662244,
    "total": 49.5,
-   "moved": null,
-   "toward": null,
+   "moved": 0.5,
+   "toward": "UK",
    "for": [],
    "against": []
   },
@@ -464,7 +464,7 @@
     "qb_inj": []
    },
    "price": 0.10564977366685535,
-   "fpi": 0.07582721586199748,
+   "fpi": 0.07534177745432213,
    "total": 46.5,
    "moved": 5.0,
    "toward": "BUF",
@@ -507,7 +507,7 @@
     "qb_inj": []
    },
    "price": 0.235855796216213,
-   "fpi": 0.24688713415168306,
+   "fpi": 0.24890025697249962,
    "total": 48.5,
    "moved": 3.0,
    "toward": "CHI",
@@ -550,7 +550,7 @@
     "qb_inj": []
    },
    "price": 0.28495575798266715,
-   "fpi": 0.22788405061236405,
+   "fpi": 0.22751806181417078,
    "total": 51.5,
    "moved": 1.0,
    "toward": "DAL",
@@ -580,7 +580,7 @@
     "qb_inj": []
    },
    "price": 0.3954463718532454,
-   "fpi": 0.45173151023238733,
+   "fpi": 0.45203153813573305,
    "total": 47.5,
    "moved": 1.0,
    "toward": "TB",
@@ -632,7 +632,7 @@
     "qb_inj": []
    },
    "price": 0.14443448356198263,
-   "fpi": 0.132766386188101,
+   "fpi": 0.13428457907866354,
    "total": 42.5,
    "moved": 2.5,
    "toward": "KC",
@@ -675,7 +675,7 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.3802984788856617,
+   "fpi": 0.38211747115567474,
    "total": 38.5,
    "moved": 10.0,
    "toward": "PIT",
@@ -725,8 +725,8 @@
       "name": "Lamar Jackson",
       "pos": "QB",
       "status": "Injured Reserve",
-      "date": "2026-11-08",
-      "note": "Jackson, who is scheduled to undergo surgery on his injured right thumb, has told teammates he plans to return later this season, Ian Rapoport of NFL Network reports."
+      "date": "2026-11-13",
+      "note": "Jackson (thumb) is \"doing well\" and is expected to be out for \"6-to-10 weeks,\" per head coach Jesse Minter."
      }
     ]
    },
@@ -739,7 +739,7 @@
     "qb_inj": []
    },
    "price": 0.4547630300184792,
-   "fpi": 0.3315063136502501,
+   "fpi": 0.3303527256727855,
    "total": 44.5,
    "moved": 6.0,
    "toward": "CAR",
@@ -752,7 +752,7 @@
    "against": [
     [
      "quarterback",
-     "BAL are on Joe Fagnano, not season leader Lamar Jackson (at least two games running); listed: Lamar Jackson Injured Reserve (2026-11-08)"
+     "BAL are on Joe Fagnano, not season leader Lamar Jackson (at least two games running); listed: Lamar Jackson Injured Reserve (2026-11-13)"
     ],
     [
      "form",
@@ -791,7 +791,7 @@
     "qb_inj": []
    },
    "price": 0.4547630300184792,
-   "fpi": 0.3868937505873914,
+   "fpi": 0.38686475096872697,
    "total": 42.5,
    "moved": 8.0,
    "toward": "NYJ",
@@ -847,7 +847,7 @@
     "qb_inj": []
    },
    "price": 0.2598073675968221,
-   "fpi": 0.19892855055289838,
+   "fpi": 0.20173091474381333,
    "total": 41.5,
    "moved": null,
    "toward": null,
@@ -869,6 +869,49 @@
   },
   {
    "league": "NFL",
+   "away": "JAX",
+   "home": "NYG",
+   "kickoff": "2026-11-22T21:25",
+   "when": "Sun 4:25pm",
+   "dog": {
+    "abbr": "NYG",
+    "record": "5-4",
+    "streak": -1,
+    "rest": 9,
+    "qb": {
+     "now": "J.J. McCarthy",
+     "leader": "Jameis Winston",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "JAX",
+    "record": "6-2",
+    "streak": 2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.32471814186337733,
+   "fpi": 0.2983711937606841,
+   "total": 44.5,
+   "moved": 4.5,
+   "toward": "JAX",
+   "for": [],
+   "against": [
+    [
+     "quarterback",
+     "NYG are on J.J. McCarthy, not season leader Jameis Winston (at least two games running)"
+    ],
+    [
+     "line",
+     "line has moved 4.5 toward JAX"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
    "away": "MIN",
    "home": "SF",
    "kickoff": "2026-11-23T01:20",
@@ -885,18 +928,11 @@
     },
     "qb_inj": [
      {
-      "name": "Carson Wentz",
-      "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-12",
-      "note": "Wentz (ankle) practiced in a limited capacity Thursday."
-     },
-     {
       "name": "Kyler Murray",
       "pos": "QB",
-      "status": "Doubtful",
-      "date": "2026-11-11",
-      "note": "Coach Kevin O'Connell said Wednesday that Murray (hamstring) remains week-to-week, Kevin Seifert of ESPN reports."
+      "status": "Out",
+      "date": "2026-11-13",
+      "note": "Murray (hamstring) was ruled out for Sunday's contest in Green Bay."
      }
     ]
    },
@@ -909,7 +945,7 @@
     "qb_inj": []
    },
    "price": 0.3954463718532454,
-   "fpi": 0.3360536717317707,
+   "fpi": 0.33965345760726073,
    "total": 45.5,
    "moved": null,
    "toward": null,
@@ -917,7 +953,46 @@
    "against": [
     [
      "quarterback",
-     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Carson Wentz Questionable (2026-11-12), Kyler Murray Doubtful (2026-11-11)"
+     "MIN are on Carson Wentz, not season leader Kyler Murray (new last week); listed: Kyler Murray Out (2026-11-13)"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "CIN",
+   "home": "WSH",
+   "kickoff": "2026-11-24T01:15",
+   "when": "Mon 8:15pm",
+   "dog": {
+    "abbr": "WSH",
+    "record": "3-6",
+    "streak": 1,
+    "rest": 11,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "CIN",
+    "record": "6-2",
+    "streak": 4,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3954463718532454,
+   "fpi": 0.34343510114337317,
+   "total": 51.5,
+   "moved": 2.0,
+   "toward": "CIN",
+   "for": [],
+   "against": [
+    [
+     "form",
+     "CIN have won 4 straight"
+    ],
+    [
+     "line",
+     "line has moved 2 toward CIN"
     ]
    ]
   }
