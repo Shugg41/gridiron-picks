@@ -67,3 +67,17 @@ with Watson out. All three are in the price.
   limited Wednesday with a chest injury. Miami: Malik Willis to IR.
 - Texas A&M over Tennessee unchanged at 44%. Illinois 27%, Pittsburgh
   40%, unchanged.
+
+## Saturday morning (Nov 14, 9am ET)
+
+Thu/Fri: NYG lost 21-24, PITT lost 10-16, UCLA won 22-14. 1-2.
+
+- **Raiders over Seattle:** Lock has no injury designation and will start
+  (NFL.com, NBC Sports, Nov 13). Darnold still out. The "backup
+  quarterback" reason stands; the "backup also hurt" part does not.
+  Still 31%.
+- **Ole Miss at Oklahoma:** line now 5.5 toward Ole Miss since open;
+  Ole Miss are the market favourite again (54%).
+- **Kansas City:** Mahomes full participant Wednesday; no Friday
+  designation found. Line 1.5 toward Atlanta since open.
+- Northwestern at Ohio State moved further to Ohio State (4.5 since open).
