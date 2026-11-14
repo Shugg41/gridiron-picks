@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Fri Nov 13, 8:27PM ET",
+ "made": "Sat Nov 14, 8:59AM ET",
  "source": "the whole slate; this week's board is not loaded yet",
  "games": [
   {
@@ -65,7 +65,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.30441034254760857,
+   "fpi": 0.30445276537717825,
    "total": 44.5,
    "moved": null,
    "toward": null,
@@ -79,58 +79,6 @@
     [
      "form",
      "UTAH have won 9 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "UCLA",
-   "home": "MICH",
-   "kickoff": "2026-11-21T05:00",
-   "when": "Sat 12:00am",
-   "dog": {
-    "abbr": "MICH",
-    "record": "5-4",
-    "streak": -1,
-    "rest": 6,
-    "qb": {
-     "now": "Tommy Carr",
-     "leader": "Bryce Underwood",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "UCLA",
-    "record": "9-0",
-    "streak": 9,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.36944134018176367,
-   "fpi": 0.48052002147287654,
-   "total": 41.5,
-   "moved": null,
-   "toward": null,
-   "for": [
-    [
-     "style",
-     "total of 41.5: few possessions, less room for the better team"
-    ],
-    [
-     "line",
-     "FPI gives MICH 48%, the market 37%"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "MICH are on Tommy Carr, not season leader Bryce Underwood (at least two games running)"
-    ],
-    [
-     "form",
-     "UCLA have won 9 straight"
     ]
    ]
   },
@@ -157,7 +105,7 @@
     "qb_inj": []
    },
    "price": 0.1310987907017298,
-   "fpi": 0.07528583537986067,
+   "fpi": 0.07554429394884532,
    "total": 61.5,
    "moved": 2.0,
    "toward": "MIA",
@@ -196,7 +144,7 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.4631564143910441,
+   "fpi": 0.4670582951342652,
    "total": 55.5,
    "moved": null,
    "toward": null,
@@ -239,7 +187,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.30201774093165945,
+   "fpi": 0.30288487680143994,
    "total": 47.5,
    "moved": null,
    "toward": null,
@@ -259,41 +207,6 @@
      "NEB have lost 4 straight"
     ]
    ]
-  },
-  {
-   "league": "CFB",
-   "away": "IOWA",
-   "home": "ILL",
-   "kickoff": "2026-11-21T19:30",
-   "when": "Sat 2:30pm",
-   "dog": {
-    "abbr": "ILL",
-    "record": "6-3",
-    "streak": 4,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "IOWA",
-    "record": "7-2",
-    "streak": 2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.36944134018176367,
-   "fpi": 0.3959833634265391,
-   "total": 43.5,
-   "moved": null,
-   "toward": null,
-   "for": [
-    [
-     "form",
-     "ILL have won 4 straight"
-    ]
-   ],
-   "against": []
   },
   {
    "league": "CFB",
@@ -318,7 +231,7 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.4665764024685197,
+   "fpi": 0.46679324814737777,
    "total": 48.5,
    "moved": null,
    "toward": null,
@@ -348,7 +261,7 @@
     "qb_inj": []
    },
    "price": 0.2722372544815055,
-   "fpi": 0.263159081834482,
+   "fpi": 0.263139301472181,
    "total": 51.5,
    "moved": 0.5,
    "toward": "SC",
@@ -387,7 +300,7 @@
     "qb_inj": []
    },
    "price": 0.15865525393145707,
-   "fpi": 0.13733664983711802,
+   "fpi": 0.13832431080345797,
    "total": 57.5,
    "moved": 1.0,
    "toward": "SMU",
@@ -426,7 +339,7 @@
     "qb_inj": []
    },
    "price": 0.35806478442778267,
-   "fpi": 0.39923282833662244,
+   "fpi": 0.3992094256443215,
    "total": 49.5,
    "moved": 0.5,
    "toward": "UK",

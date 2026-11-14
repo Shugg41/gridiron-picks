@@ -1,6 +1,6 @@
 # Week 12 research
 
-Built Fri Nov 13, 8:27PM ET from ESPN data (the whole slate; this week's board is not loaded yet). 23 games read, 6 underdogs priced 22%-47% whose reasons outweigh the reasons against.
+Built Sat Nov 14, 8:59AM ET from ESPN data (the whole slate; this week's board is not loaded yet). 21 games read, 5 underdogs priced 22%-47% whose reasons outweigh the reasons against.
 
 Reasons are observations, not a rating. Check anything about who is playing against a dated source before acting on it.
 
@@ -41,22 +41,15 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (situation): TB are off a bye
 - *against* (form): DET have won 4 straight
 
-### ILL over IOWA — 37% · IOWA @ ILL · Sat 2:30pm
-- ILL: 6-3, won 4 straight, last: beat NEB 24-13
-- IOWA: 7-2, won 2 straight, last: beat NU 24-10
-- **for** (form): ILL have won 4 straight
-
 ## Every game
 
 | game | when | favourite | dog % | total | move | for | against |
 |---|---|---|---|---|---|---|---|
 | IND @ HOU | Thu 8:15pm | HOU | 22% | 44.5 | 4.5 to HOU | 0 | 2 |
 | UTAH @ TCU | Sat 12:00am | UTAH | 37% | 44.5 |  | 1 | 1 |
-| UCLA @ MICH | Sat 12:00am | UCLA | 37% | 41.5 |  | 2 | 2 |
 | VT @ MIA | Sat 12:00am | MIA | 13% | 61.5 | 2 to MIA | 0 | 1 |
 | TTU @ BAY | Sat 12:00am | TTU | 46% | 55.5 |  | 2 | 0 |
 | OSU @ NEB | Sat 12:00am | OSU | 37% | 47.5 |  | 2 | 1 |
-| IOWA @ ILL | Sat 2:30pm | IOWA | 37% | 43.5 |  | 1 | 0 |
 | LSU @ TENN | Sat 3:30pm | LSU | 46% | 48.5 |  | 0 | 0 |
 | UGA @ SC | Sat 7:30pm | UGA | 27% | 51.5 | 0.5 to SC | 2 | 0 |
 | SMU @ ND | Sat 7:30pm | ND | 16% | 57.5 | 1 to SMU | 2 | 0 |
