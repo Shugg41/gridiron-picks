@@ -1,7 +1,7 @@
 {
  "week": 12,
- "made": "Mon Nov 16, 7:03PM ET",
- "source": "the whole slate; this week's board is not loaded yet",
+ "made": "Tue Nov 17, 7:10AM ET",
+ "source": "the 30 games on the week 12 board",
  "games": [
   {
    "league": "NFL",
@@ -25,69 +25,21 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.1918191713881694,
-   "fpi": 0.28864467756196177,
+   "price": 0.1718271102752622,
+   "fpi": 0.28983608655752446,
    "total": 44.5,
-   "moved": 6.0,
+   "moved": 7.0,
    "toward": "HOU",
    "for": [
     [
      "line",
-     "FPI gives IND 29%, the market 19%"
+     "FPI gives IND 29%, the market 17%"
     ]
    ],
    "against": [
     [
      "line",
-     "line has moved 6 toward HOU"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "RICE",
-   "home": "TEM",
-   "kickoff": "2026-11-20T00:30",
-   "when": "Thu 7:30pm",
-   "dog": {
-    "abbr": "RICE",
-    "record": "1-9",
-    "streak": -9,
-    "rest": 5,
-    "qb": {
-     "now": "Gael Ochoa",
-     "leader": "Jacurri Brown",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "TEM",
-    "record": "2-8",
-    "streak": -5,
-    "rest": 5,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.42786270766003587,
-   "fpi": 0.37954855207148297,
-   "total": 50.5,
-   "moved": 1.0,
-   "toward": "RICE",
-   "for": [
-    [
-     "form",
-     "TEM have lost 5 straight"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "RICE are on Gael Ochoa, not season leader Jacurri Brown (at least two games running)"
-    ],
-    [
-     "form",
-     "RICE have lost 9 straight"
+     "line has moved 7 toward HOU"
     ]
    ]
   },
@@ -119,7 +71,7 @@
    },
    "price": 0.43978467981733405,
    "fpi": 0.4981624541756523,
-   "total": 53.5,
+   "total": 52.5,
    "moved": 1.0,
    "toward": "UCF",
    "for": [
@@ -133,171 +85,6 @@
     ]
    ],
    "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "CLEM",
-   "home": "DUKE",
-   "kickoff": "2026-11-21T00:30",
-   "when": "Fri 7:30pm",
-   "dog": {
-    "abbr": "CLEM",
-    "record": "6-4",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "DUKE",
-    "record": "7-3",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.22435249875681773,
-   "fpi": 0.24685365609584553,
-   "total": 40.5,
-   "moved": 4.0,
-   "toward": "DUKE",
-   "for": [
-    [
-     "situation",
-     "DUKE have #13 WAKE next"
-    ],
-    [
-     "style",
-     "total of 40.5: few possessions, less room for the better team"
-    ]
-   ],
-   "against": [
-    [
-     "line",
-     "line has moved 4 toward DUKE"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "BGSU",
-   "home": "TOL",
-   "kickoff": "2026-11-21T00:30",
-   "when": "Fri 7:30pm",
-   "dog": {
-    "abbr": "BGSU",
-    "record": "3-7",
-    "streak": 1,
-    "rest": 10,
-    "qb": {
-     "now": "Austin Novosad",
-     "leader": "Jay Kastantin",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "TOL",
-    "record": "8-2",
-    "streak": 4,
-    "rest": 9,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.17376426176168702,
-   "fpi": 0.15303216989625568,
-   "total": 48.5,
-   "moved": null,
-   "toward": null,
-   "for": [],
-   "against": [
-    [
-     "quarterback",
-     "BGSU are on Austin Novosad, not season leader Jay Kastantin (new last week)"
-    ],
-    [
-     "form",
-     "TOL have won 4 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "ORE",
-   "home": "MSU",
-   "kickoff": "2026-11-21T01:00",
-   "when": "Fri 8:00pm",
-   "dog": {
-    "abbr": "MSU",
-    "record": "3-7",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "ORE",
-    "record": "7-3",
-    "streak": 3,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.15865525393145707,
-   "fpi": 0.16215579354837611,
-   "total": 45.5,
-   "moved": 4.0,
-   "toward": "ORE",
-   "for": [],
-   "against": [
-    [
-     "line",
-     "line has moved 4 toward ORE"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "UTEP",
-   "home": "AFA",
-   "kickoff": "2026-11-21T01:00",
-   "when": "Fri 8:00pm",
-   "dog": {
-    "abbr": "UTEP",
-    "record": "1-9",
-    "streak": -8,
-    "rest": 5,
-    "qb": {
-     "now": "Raymond Moore III",
-     "leader": "EJ Colson Jr.",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "AFA",
-    "record": "8-2",
-    "streak": 3,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.08634102070937422,
-   "fpi": 0.0633842733973401,
-   "total": 47.5,
-   "moved": 1.0,
-   "toward": "AFA",
-   "for": [],
-   "against": [
-    [
-     "quarterback",
-     "UTEP are on Raymond Moore III, not season leader EJ Colson Jr. (at least two games running)"
-    ],
-    [
-     "form",
-     "UTEP have lost 8 straight"
-    ]
-   ]
   },
   {
    "league": "CFB",
@@ -388,41 +175,6 @@
   },
   {
    "league": "CFB",
-   "away": "WAKE",
-   "home": "GT",
-   "kickoff": "2026-11-21T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "GT",
-    "record": "3-7",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "WAKE",
-    "record": "9-1",
-    "streak": 7,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.10155741817156577,
-   "fpi": 0.11483446434327099,
-   "total": 56.5,
-   "moved": 0.5,
-   "toward": "WAKE",
-   "for": [],
-   "against": [
-    [
-     "form",
-     "WAKE have won 7 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
    "away": "OSU",
    "home": "NEB",
    "kickoff": "2026-11-21T17:00",
@@ -478,125 +230,7 @@
   },
   {
    "league": "CFB",
-   "away": "VAN",
-   "home": "FLA",
-   "kickoff": "2026-11-21T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "VAN",
-    "record": "4-6",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "FLA",
-    "record": "6-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.20662668774682014,
-   "fpi": 0.19720797517113764,
-   "total": 47.5,
-   "moved": null,
-   "toward": null,
-   "for": [
-    [
-     "situation",
-     "FLA come off beating #11 UK"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "COLO",
-   "home": "CIN",
-   "kickoff": "2026-11-21T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "COLO",
-    "record": "4-6",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "CIN",
-    "record": "5-5",
-    "streak": -3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.42786270766003587,
-   "fpi": 0.4003331619933337,
-   "total": 58.5,
-   "moved": 0.5,
-   "toward": "CIN",
-   "for": [
-    [
-     "form",
-     "CIN have lost 3 straight"
-    ],
-    [
-     "form",
-     "last three games: COLO +1 a game, CIN -20"
-    ],
-    [
-     "situation",
-     "CIN have #10 BYU next"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "SYR",
-   "home": "BC",
-   "kickoff": "2026-11-21T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "BC",
-    "record": "4-6",
-    "streak": -3,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "SYR",
-    "record": "5-5",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.43978467981733405,
-   "fpi": 0.40666930717798655,
-   "total": 50.5,
-   "moved": 1.0,
-   "toward": "BC",
-   "for": [
-    [
-     "situation",
-     "SYR have #5 ND next"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "BC have lost 3 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "NU",
+   "away": "NW",
    "home": "MINN",
    "kickoff": "2026-11-21T17:00",
    "when": "Sat 12:00pm",
@@ -609,7 +243,7 @@
     "qb_inj": []
    },
    "fav": {
-    "abbr": "NU",
+    "abbr": "NW",
     "record": "6-4",
     "streak": -3,
     "rest": 7,
@@ -628,52 +262,17 @@
    "for": [
     [
      "quarterback",
-     "NU are on Nicco Marchiol, not season leader Aidan Chiles (at least two games running)"
+     "NW are on Nicco Marchiol, not season leader Aidan Chiles (at least two games running)"
     ],
     [
      "form",
-     "NU have lost 3 straight"
+     "NW have lost 3 straight"
     ]
    ],
    "against": [
     [
      "form",
      "MINN have lost 3 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "WIS",
-   "home": "PUR",
-   "kickoff": "2026-11-21T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "PUR",
-    "record": "3-7",
-    "streak": -4,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "WIS",
-    "record": "6-4",
-    "streak": -1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.35806478442778267,
-   "fpi": 0.3944896187889767,
-   "total": 45.5,
-   "moved": null,
-   "toward": null,
-   "for": [],
-   "against": [
-    [
-     "form",
-     "PUR have lost 4 straight"
     ]
    ]
   },
@@ -766,41 +365,6 @@
   },
   {
    "league": "CFB",
-   "away": "UNT",
-   "home": "TULN",
-   "kickoff": "2026-11-21T17:00",
-   "when": "Sat 12:00pm",
-   "dog": {
-    "abbr": "TULN",
-    "record": "5-5",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "UNT",
-    "record": "7-3",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.3468128925152081,
-   "fpi": 0.2879464483331068,
-   "total": 57.5,
-   "moved": 7.0,
-   "toward": "TULN",
-   "for": [
-    [
-     "line",
-     "line has moved 7 toward TULN"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
    "away": "UNC",
    "home": "UVA",
    "kickoff": "2026-11-21T17:30",
@@ -837,179 +401,6 @@
     ]
    ],
    "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "HOU",
-   "home": "WVU",
-   "kickoff": "2026-11-21T18:00",
-   "when": "Sat 1:00pm",
-   "dog": {
-    "abbr": "WVU",
-    "record": "5-5",
-    "streak": -2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "HOU",
-    "record": "7-3",
-    "streak": -1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.32471814186337733,
-   "fpi": 0.310246586172208,
-   "total": 70.5,
-   "moved": 0.5,
-   "toward": "HOU",
-   "for": [],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "WKU",
-   "home": "LIB",
-   "kickoff": "2026-11-21T18:00",
-   "when": "Sat 1:00pm",
-   "dog": {
-    "abbr": "WKU",
-    "record": "4-6",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "LIB",
-    "record": "9-1",
-    "streak": 9,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.14443448356198263,
-   "fpi": 0.11246646254483827,
-   "total": 53.5,
-   "moved": 3.0,
-   "toward": "LIB",
-   "for": [],
-   "against": [
-    [
-     "form",
-     "LIB have won 9 straight"
-    ],
-    [
-     "line",
-     "line has moved 3 toward LIB"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "CLT",
-   "home": "TLSA",
-   "kickoff": "2026-11-21T19:00",
-   "when": "Sat 2:00pm",
-   "dog": {
-    "abbr": "CLT",
-    "record": "1-9",
-    "streak": -3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "TLSA",
-    "record": "6-4",
-    "streak": 2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.08634102070937422,
-   "fpi": 0.07358843016695904,
-   "total": 52.5,
-   "moved": 2.0,
-   "toward": "TLSA",
-   "for": [],
-   "against": [
-    [
-     "form",
-     "CLT have lost 3 straight"
-    ],
-    [
-     "line",
-     "line has moved 2 toward TLSA"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "MOST",
-   "home": "JXST",
-   "kickoff": "2026-11-21T19:00",
-   "when": "Sat 2:00pm",
-   "dog": {
-    "abbr": "MOST",
-    "record": "4-6",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "JXST",
-    "record": "7-3",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.26226971821765654,
-   "fpi": 0.21533062821822413,
-   "total": 52.5,
-   "moved": null,
-   "toward": null,
-   "for": [],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "MTSU",
-   "home": "SHSU",
-   "kickoff": "2026-11-21T19:00",
-   "when": "Sat 2:00pm",
-   "dog": {
-    "abbr": "SHSU",
-    "record": "1-9",
-    "streak": -7,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "MTSU",
-    "record": "5-5",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.36944134018176367,
-   "fpi": 0.3968476333683822,
-   "total": 48.5,
-   "moved": null,
-   "toward": null,
-   "for": [],
-   "against": [
-    [
-     "form",
-     "SHSU have lost 7 straight"
-    ]
-   ]
   },
   {
    "league": "CFB",
@@ -1057,193 +448,6 @@
   },
   {
    "league": "CFB",
-   "away": "USF",
-   "home": "FAU",
-   "kickoff": "2026-11-21T19:30",
-   "when": "Sat 2:30pm",
-   "dog": {
-    "abbr": "FAU",
-    "record": "6-4",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "USF",
-    "record": "6-4",
-    "streak": -2,
-    "rest": 8,
-    "qb": {
-     "now": "Luke Kromenhoek",
-     "leader": "Michael Van Buren Jr.",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "price": 0.4637824133031056,
-   "fpi": 0.4524336184491527,
-   "total": 64.5,
-   "moved": 3.0,
-   "toward": "USF",
-   "for": [
-    [
-     "quarterback",
-     "USF are on Luke Kromenhoek, not season leader Michael Van Buren Jr. (at least two games running)"
-    ],
-    [
-     "form",
-     "USF have lost 2 straight"
-    ]
-   ],
-   "against": [
-    [
-     "line",
-     "line has moved 3 toward USF"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "ULM",
-   "home": "APP",
-   "kickoff": "2026-11-21T19:30",
-   "when": "Sat 2:30pm",
-   "dog": {
-    "abbr": "ULM",
-    "record": "2-8",
-    "streak": -1,
-    "rest": 8,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "APP",
-    "record": "6-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.19808400351959676,
-   "fpi": 0.16321419500922207,
-   "total": 49.5,
-   "moved": 0.5,
-   "toward": "APP",
-   "for": [],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "CCU",
-   "home": "UL",
-   "kickoff": "2026-11-21T20:00",
-   "when": "Sat 3:00pm",
-   "dog": {
-    "abbr": "CCU",
-    "record": "4-6",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "UL",
-    "record": "7-3",
-    "streak": 2,
-    "rest": 8,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.26226971821765654,
-   "fpi": 0.2480028604498944,
-   "total": 51.5,
-   "moved": 3.0,
-   "toward": "UL",
-   "for": [],
-   "against": [
-    [
-     "line",
-     "line has moved 3 toward UL"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "DEL",
-   "home": "NMSU",
-   "kickoff": "2026-11-21T20:00",
-   "when": "Sat 3:00pm",
-   "dog": {
-    "abbr": "NMSU",
-    "record": "3-7",
-    "streak": -3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "DEL",
-    "record": "5-5",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.41600623568032036,
-   "fpi": 0.40641067775336964,
-   "total": 53.5,
-   "moved": 1.0,
-   "toward": "NMSU",
-   "for": [],
-   "against": [
-    [
-     "form",
-     "NMSU have lost 3 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "FIU",
-   "home": "KENN",
-   "kickoff": "2026-11-21T20:00",
-   "when": "Sat 3:00pm",
-   "dog": {
-    "abbr": "FIU",
-    "record": "4-6",
-    "streak": -1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "KENN",
-    "record": "4-6",
-    "streak": 3,
-    "rest": 7,
-    "qb": {
-     "now": "Landon Varnes",
-     "leader": "Rickie Collins",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "price": 0.41600623568032036,
-   "fpi": 0.39094822503998006,
-   "total": 44.5,
-   "moved": 0.5,
-   "toward": "FIU",
-   "for": [
-    [
-     "quarterback",
-     "KENN are on Landon Varnes, not season leader Rickie Collins (at least two games running)"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
    "away": "UCLA",
    "home": "MICH",
    "kickoff": "2026-11-21T20:30",
@@ -1264,10 +468,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4042257258869504,
+   "price": 0.41600623568032036,
    "fpi": 0.44933828941994025,
    "total": 37.5,
-   "moved": 1.5,
+   "moved": 2.0,
    "toward": "MICH",
    "for": [
     [
@@ -1276,53 +480,13 @@
     ],
     [
      "line",
-     "line has moved 1.5 toward MICH"
+     "line has moved 2 toward MICH"
     ]
    ],
    "against": [
     [
      "form",
      "UCLA have won 10 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "ARK",
-   "home": "TEX",
-   "kickoff": "2026-11-21T20:30",
-   "when": "Sat 3:30pm",
-   "dog": {
-    "abbr": "ARK",
-    "record": "4-6",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "TEX",
-    "record": "8-2",
-    "streak": 4,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.10704003789347649,
-   "fpi": 0.08350446104113107,
-   "total": 47.5,
-   "moved": 0.5,
-   "toward": "ARK",
-   "for": [
-    [
-     "situation",
-     "TEX come off beating #21 LSU"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "TEX have won 4 straight"
     ]
    ]
   },
@@ -1371,7 +535,7 @@
   },
   {
    "league": "CFB",
-   "away": "IU",
+   "away": "IND",
    "home": "WASH",
    "kickoff": "2026-11-21T20:30",
    "when": "Sat 3:30pm",
@@ -1384,7 +548,7 @@
     "qb_inj": []
    },
    "fav": {
-    "abbr": "IU",
+    "abbr": "IND",
     "record": "9-1",
     "streak": 3,
     "rest": 7,
@@ -1395,19 +559,19 @@
     },
     "qb_inj": []
    },
-   "price": 0.3032235733700106,
+   "price": 0.32471814186337733,
    "fpi": 0.2377822653749661,
    "total": 43.5,
-   "moved": 1.0,
-   "toward": "IU",
+   "moved": null,
+   "toward": null,
    "for": [
     [
      "quarterback",
-     "IU are on Grant Wilson, not season leader Josh Hoover (new last week)"
+     "IND are on Grant Wilson, not season leader Josh Hoover (new last week)"
     ],
     [
      "situation",
-     "IU come off beating #18 USC"
+     "IND come off beating #18 USC"
     ]
    ],
    "against": []
@@ -1449,454 +613,6 @@
     [
      "line",
      "line has moved 2 toward TTU"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "NCSU",
-   "home": "FSU",
-   "kickoff": "2026-11-21T20:30",
-   "when": "Sat 3:30pm",
-   "dog": {
-    "abbr": "NCSU",
-    "record": "4-6",
-    "streak": -2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "FSU",
-    "record": "5-5",
-    "streak": 2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.28238952631152436,
-   "fpi": 0.2446590058569702,
-   "total": 55.5,
-   "moved": 0.5,
-   "toward": "NCSU",
-   "for": [],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "RUTG",
-   "home": "PSU",
-   "kickoff": "2026-11-21T20:30",
-   "when": "Sat 3:30pm",
-   "dog": {
-    "abbr": "RUTG",
-    "record": "2-8",
-    "streak": -4,
-    "rest": 7,
-    "qb": {
-     "now": "AJ Surace",
-     "leader": "Dylan Lonergan",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "PSU",
-    "record": "6-4",
-    "streak": 3,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.06879198247347329,
-   "fpi": 0.08975870248433249,
-   "total": 50.5,
-   "moved": 4.0,
-   "toward": "PSU",
-   "for": [],
-   "against": [
-    [
-     "quarterback",
-     "RUTG are on AJ Surace, not season leader Dylan Lonergan (at least two games running)"
-    ],
-    [
-     "form",
-     "RUTG have lost 4 straight"
-    ],
-    [
-     "line",
-     "line has moved 4 toward PSU"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "ODU",
-   "home": "CONN",
-   "kickoff": "2026-11-21T20:30",
-   "when": "Sat 3:30pm",
-   "dog": {
-    "abbr": "ODU",
-    "record": "3-7",
-    "streak": 1,
-    "rest": 14,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "CONN",
-    "record": "5-5",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.20662668774682014,
-   "fpi": 0.19805026673237158,
-   "total": 47.5,
-   "moved": 1.0,
-   "toward": "ODU",
-   "for": [
-    [
-     "situation",
-     "ODU are off a bye"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "TA&M",
-   "home": "OU",
-   "kickoff": "2026-11-21T20:45",
-   "when": "Sat 3:45pm",
-   "dog": {
-    "abbr": "TA&M",
-    "record": "4-6",
-    "streak": -3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "OU",
-    "record": "6-4",
-    "streak": 2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.32471814186337733,
-   "fpi": 0.3938832265595795,
-   "total": 38.5,
-   "moved": 5.0,
-   "toward": "OU",
-   "for": [
-    [
-     "situation",
-     "OU come off beating #19 MISS"
-    ],
-    [
-     "style",
-     "total of 38.5: few possessions, less room for the better team"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "TA&M have lost 3 straight"
-    ],
-    [
-     "line",
-     "line has moved 5 toward OU"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "NIU",
-   "home": "NDSU",
-   "kickoff": "2026-11-21T21:00",
-   "when": "Sat 4:00pm",
-   "dog": {
-    "abbr": "NIU",
-    "record": "0-10",
-    "streak": -10,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "NDSU",
-    "record": "8-2",
-    "streak": 2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.06111817772400596,
-   "fpi": 0.0597604279928835,
-   "total": 45.5,
-   "moved": null,
-   "toward": null,
-   "for": [],
-   "against": [
-    [
-     "form",
-     "NIU have lost 10 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "GASO",
-   "home": "TROY",
-   "kickoff": "2026-11-21T21:00",
-   "when": "Sat 4:00pm",
-   "dog": {
-    "abbr": "TROY",
-    "record": "4-6",
-    "streak": -2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "GASO",
-    "record": "6-4",
-    "streak": 4,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.3032235733700106,
-   "fpi": 0.3110812381160725,
-   "total": 48.5,
-   "moved": null,
-   "toward": null,
-   "for": [],
-   "against": [
-    [
-     "form",
-     "GASO have won 4 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "GAST",
-   "home": "MRSH",
-   "kickoff": "2026-11-21T21:00",
-   "when": "Sat 4:00pm",
-   "dog": {
-    "abbr": "MRSH",
-    "record": "5-5",
-    "streak": -2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "GAST",
-    "record": "5-5",
-    "streak": -1,
-    "rest": 7,
-    "qb": {
-     "now": "Ayden Pereira",
-     "leader": "Cameran Brown",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "price": 0.4637824133031056,
-   "fpi": 0.39502625594852436,
-   "total": 56.5,
-   "moved": null,
-   "toward": null,
-   "for": [
-    [
-     "quarterback",
-     "GAST are on Ayden Pereira, not season leader Cameran Brown (at least two games running)"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "USA",
-   "home": "USM",
-   "kickoff": "2026-11-21T21:00",
-   "when": "Sat 4:00pm",
-   "dog": {
-    "abbr": "USM",
-    "record": "3-7",
-    "streak": -2,
-    "rest": 6,
-    "qb": {
-     "now": "John White",
-     "leader": "Landry Lyddy",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "USA",
-    "record": "5-5",
-    "streak": 1,
-    "rest": 6,
-    "qb": {
-     "now": "Bishop Davenport",
-     "leader": "Jared Hollins",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "price": 0.4042257258869504,
-   "fpi": 0.3998180131350597,
-   "total": 66.5,
-   "moved": 1.5,
-   "toward": "USM",
-   "for": [
-    [
-     "quarterback",
-     "USA are on Bishop Davenport, not season leader Jared Hollins (at least two games running)"
-    ],
-    [
-     "line",
-     "line has moved 1.5 toward USM"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "USM are on John White, not season leader Landry Lyddy (at least two games running)"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "WSU",
-   "home": "TXST",
-   "kickoff": "2026-11-21T23:00",
-   "when": "Sat 6:00pm",
-   "dog": {
-    "abbr": "WSU",
-    "record": "2-8",
-    "streak": 1,
-    "rest": 6,
-    "qb": {
-     "now": "Owen Eshelman",
-     "leader": "Caden Pinnick",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "TXST",
-    "record": "6-4",
-    "streak": 2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.26226971821765654,
-   "fpi": 0.26292176763449093,
-   "total": 61.5,
-   "moved": 4.0,
-   "toward": "WSU",
-   "for": [
-    [
-     "line",
-     "line has moved 4 toward WSU"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "WSU are on Owen Eshelman, not season leader Caden Pinnick (at least two games running)"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "MD",
-   "home": "USC",
-   "kickoff": "2026-11-21T23:15",
-   "when": "Sat 6:15pm",
-   "dog": {
-    "abbr": "MD",
-    "record": "4-6",
-    "streak": 2,
-    "rest": 7,
-    "qb": {
-     "now": "Cardell Williams",
-     "leader": "Malik Washington",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "USC",
-    "record": "7-3",
-    "streak": -1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.14443448356198263,
-   "fpi": 0.12118350311371628,
-   "total": 57.5,
-   "moved": 1.0,
-   "toward": "USC",
-   "for": [
-    [
-     "form",
-     "last three games: MD +2 a game, USC -6"
-    ],
-    [
-     "situation",
-     "USC have #4 UCLA next"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "MD are on Cardell Williams, not season leader Malik Washington (new last week)"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "VT",
-   "home": "MIA",
-   "kickoff": "2026-11-22T00:00",
-   "when": "Sat 7:00pm",
-   "dog": {
-    "abbr": "VT",
-    "record": "6-4",
-    "streak": -2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "MIA",
-    "record": "9-1",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.10704003789347649,
-   "fpi": 0.05428359069268085,
-   "total": 61.5,
-   "moved": 4.0,
-   "toward": "MIA",
-   "for": [],
-   "against": [
-    [
-     "line",
-     "line has moved 4 toward MIA"
     ]
    ]
   },
@@ -1950,166 +666,8 @@
   },
   {
    "league": "CFB",
-   "away": "UNLV",
-   "home": "SJSU",
-   "kickoff": "2026-11-22T00:00",
-   "when": "Sat 7:00pm",
-   "dog": {
-    "abbr": "SJSU",
-    "record": "5-6",
-    "streak": -1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "UNLV",
-    "record": "6-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.33569451200559874,
-   "fpi": 0.3395258282229866,
-   "total": 46.5,
-   "moved": 4.0,
-   "toward": "UNLV",
-   "for": [],
-   "against": [
-    [
-     "line",
-     "line has moved 4 toward UNLV"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "ARST",
-   "home": "LT",
-   "kickoff": "2026-11-22T00:00",
-   "when": "Sat 7:00pm",
-   "dog": {
-    "abbr": "ARST",
-    "record": "4-6",
-    "streak": -2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "LT",
-    "record": "8-2",
-    "streak": 7,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.20662668774682014,
-   "fpi": 0.18924913176748093,
-   "total": 52.5,
-   "moved": 3.0,
-   "toward": "ARST",
-   "for": [
-    [
-     "line",
-     "line has moved 3 toward ARST"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "LT have won 7 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "UGA",
-   "home": "SC",
-   "kickoff": "2026-11-22T00:30",
-   "when": "Sat 7:30pm",
-   "dog": {
-    "abbr": "SC",
-    "record": "6-4",
-    "streak": -1,
-    "rest": 6,
-    "qb": {
-     "now": "Cutter Woods",
-     "leader": "LaNorris Sellers",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "UGA",
-    "record": "9-1",
-    "streak": 3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.15865525393145707,
-   "fpi": 0.18707483505492584,
-   "total": 50.5,
-   "moved": 6.0,
-   "toward": "UGA",
-   "for": [
-    [
-     "situation",
-     "UGA come off beating #22 MIZ"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "SC are on Cutter Woods, not season leader LaNorris Sellers (new last week)"
-    ],
-    [
-     "line",
-     "line has moved 6 toward UGA"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "SMU",
-   "home": "ND",
-   "kickoff": "2026-11-22T00:30",
-   "when": "Sat 7:30pm",
-   "dog": {
-    "abbr": "SMU",
-    "record": "7-3",
-    "streak": -1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "ND",
-    "record": "9-1",
-    "streak": 3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.10704003789347649,
-   "fpi": 0.09763398337179319,
-   "total": 56.5,
-   "moved": 3.0,
-   "toward": "ND",
-   "for": [],
-   "against": [
-    [
-     "line",
-     "line has moved 3 toward ND"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
    "away": "UK",
-   "home": "MIZ",
+   "home": "MIZZ",
    "kickoff": "2026-11-22T00:30",
    "when": "Sat 7:30pm",
    "dog": {
@@ -2121,7 +679,7 @@
     "qb_inj": []
    },
    "fav": {
-    "abbr": "MIZ",
+    "abbr": "MIZZ",
     "record": "6-4",
     "streak": -2,
     "rest": 7,
@@ -2136,171 +694,9 @@
    "for": [
     [
      "form",
-     "MIZ have lost 2 straight"
+     "MIZZ have lost 2 straight"
     ]
    ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "PITT",
-   "home": "LOU",
-   "kickoff": "2026-11-22T00:30",
-   "when": "Sat 7:30pm",
-   "dog": {
-    "abbr": "PITT",
-    "record": "6-4",
-    "streak": -1,
-    "rest": 8,
-    "qb": {
-     "now": "Corey Dailey",
-     "leader": "Mason Heintschel",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "LOU",
-    "record": "7-3",
-    "streak": 5,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.20662668774682014,
-   "fpi": 0.2605546582970424,
-   "total": 50.5,
-   "moved": 1.0,
-   "toward": "LOU",
-   "for": [
-    [
-     "situation",
-     "LOU have #11 UK next"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "PITT are on Corey Dailey, not season leader Mason Heintschel (new last week)"
-    ],
-    [
-     "form",
-     "LOU have won 5 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "STAN",
-   "home": "CAL",
-   "kickoff": "2026-11-22T00:30",
-   "when": "Sat 7:30pm",
-   "dog": {
-    "abbr": "CAL",
-    "record": "3-7",
-    "streak": -4,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "STAN",
-    "record": "5-5",
-    "streak": 1,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.43978467981733405,
-   "fpi": 0.5354470035476234,
-   "total": 56.5,
-   "moved": 1.0,
-   "toward": "STAN",
-   "for": [
-    [
-     "situation",
-     "third straight road game for STAN"
-    ],
-    [
-     "line",
-     "FPI makes CAL the favourite (54%)"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "CAL have lost 4 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "CSU",
-   "home": "FRES",
-   "kickoff": "2026-11-22T00:30",
-   "when": "Sat 7:30pm",
-   "dog": {
-    "abbr": "CSU",
-    "record": "3-7",
-    "streak": -3,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "FRES",
-    "record": "5-5",
-    "streak": -2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.10704003789347649,
-   "fpi": 0.11982165822458901,
-   "total": 65.5,
-   "moved": 1.0,
-   "toward": "FRES",
-   "for": [
-    [
-     "form",
-     "FRES have lost 2 straight"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "CSU have lost 3 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "UTSA",
-   "home": "UAB",
-   "kickoff": "2026-11-22T01:00",
-   "when": "Sat 8:00pm",
-   "dog": {
-    "abbr": "UAB",
-    "record": "6-4",
-    "streak": 2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "UTSA",
-    "record": "8-2",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.3468128925152081,
-   "fpi": 0.33302489049509476,
-   "total": 52.5,
-   "moved": 1.0,
-   "toward": "UAB",
-   "for": [],
    "against": []
   },
   {
@@ -2349,54 +745,6 @@
   },
   {
    "league": "CFB",
-   "away": "SDSU",
-   "home": "BOIS",
-   "kickoff": "2026-11-22T02:30",
-   "when": "Sat 9:30pm",
-   "dog": {
-    "abbr": "SDSU",
-    "record": "5-5",
-    "streak": 2,
-    "rest": 7,
-    "qb": {
-     "now": "Stone Saunders",
-     "leader": "Jayden Denegal",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "BOIS",
-    "record": "9-1",
-    "streak": 9,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.15865525393145707,
-   "fpi": 0.09100265669977348,
-   "total": 62.5,
-   "moved": 2.0,
-   "toward": "SDSU",
-   "for": [
-    [
-     "line",
-     "line has moved 2 toward SDSU"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "SDSU are on Stone Saunders, not season leader Jayden Denegal (at least two games running)"
-    ],
-    [
-     "form",
-     "BOIS have won 9 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
    "away": "OKST",
    "home": "ASU",
    "kickoff": "2026-11-22T03:15",
@@ -2435,114 +783,6 @@
    ]
   },
   {
-   "league": "CFB",
-   "away": "USU",
-   "home": "ORST",
-   "kickoff": "2026-11-22T03:30",
-   "when": "Sat 10:30pm",
-   "dog": {
-    "abbr": "USU",
-    "record": "4-6",
-    "streak": -1,
-    "rest": 7,
-    "qb": {
-     "now": "McCae Hillstead",
-     "leader": "Grady Brosterhous",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "ORST",
-    "record": "5-5",
-    "streak": -3,
-    "rest": 7,
-    "qb": {
-     "now": "Maalik Murphy",
-     "leader": "Braden Atkinson",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "price": 0.28238952631152436,
-   "fpi": 0.2606530683408077,
-   "total": 51.5,
-   "moved": 0.5,
-   "toward": "USU",
-   "for": [
-    [
-     "quarterback",
-     "ORST are on Maalik Murphy, not season leader Braden Atkinson (new last week)"
-    ],
-    [
-     "form",
-     "ORST have lost 3 straight"
-    ],
-    [
-     "form",
-     "last three games: USU +2 a game, ORST -14"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "USU are on McCae Hillstead, not season leader Grady Brosterhous (at least two games running)"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "HAW",
-   "home": "NEV",
-   "kickoff": "2026-11-22T03:30",
-   "when": "Sat 10:30pm",
-   "dog": {
-    "abbr": "HAW",
-    "record": "3-7",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "NEV",
-    "record": "4-6",
-    "streak": 1,
-    "rest": 7,
-    "qb": {
-     "now": "AJ Bianco",
-     "leader": "Carter Jones",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "price": 0.4042257258869504,
-   "fpi": 0.4039909613176995,
-   "total": 40.5,
-   "moved": 1.5,
-   "toward": "NEV",
-   "for": [
-    [
-     "quarterback",
-     "NEV are on AJ Bianco, not season leader Carter Jones (at least two games running)"
-    ],
-    [
-     "form",
-     "last three games: HAW +10 a game, NEV -11"
-    ],
-    [
-     "style",
-     "total of 40.5: few possessions, less room for the better team"
-    ]
-   ],
-   "against": [
-    [
-     "line",
-     "line has moved 1.5 toward NEV"
-    ]
-   ]
-  },
-  {
    "league": "NFL",
    "away": "MIA",
    "home": "BUF",
@@ -2564,7 +804,7 @@
       "pos": "QB",
       "status": "Injured Reserve",
       "date": "2026-11-16",
-      "note": "Coach Jeff Hafley said Monday that it has yet to be determined whether Willis (abdomen) will need surgery to address his groin/core injury.David Furones of the South Florida Sun Sentinel reports."
+      "note": "Head coach Jeff Hafley said Monday that Willis (groin/core) has not undergone surgery and that the Dolphins are still determining if a procedure is needed, David Furones of the South Florida Sun Sentinel reports."
      }
     ]
    },
@@ -2577,7 +817,7 @@
     "qb_inj": []
    },
    "price": 0.10564977366685535,
-   "fpi": 0.08430766449933791,
+   "fpi": 0.08329295063607045,
    "total": 45.5,
    "moved": 5.0,
    "toward": "BUF",
@@ -2624,8 +864,8 @@
     "qb_inj": []
    },
    "price": 0.1918191713881694,
-   "fpi": 0.2473656573005456,
-   "total": 48.5,
+   "fpi": 0.2471263337754419,
+   "total": 49.5,
    "moved": 5.0,
    "toward": "CHI",
    "for": [],
@@ -2667,7 +907,7 @@
     "qb_inj": []
    },
    "price": 0.2598073675968221,
-   "fpi": 0.226034641178525,
+   "fpi": 0.2253745751878593,
    "total": 54.5,
    "moved": 2.0,
    "toward": "DAL",
@@ -2714,7 +954,7 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.3675560034525056,
+   "fpi": 0.3699846734596197,
    "total": 46.5,
    "moved": 2.0,
    "toward": "DET",
@@ -2774,8 +1014,8 @@
     "qb_inj": []
    },
    "price": 0.10564977366685535,
-   "fpi": 0.15785002912904167,
-   "total": 40.5,
+   "fpi": 0.16285219507787185,
+   "total": 41.5,
    "moved": 5.0,
    "toward": "KC",
    "for": [],
@@ -2817,7 +1057,7 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.41810551166989035,
+   "fpi": 0.4174252059398952,
    "total": 38.5,
    "moved": 10.0,
    "toward": "PIT",
@@ -2850,13 +1090,13 @@
    "when": "Sun 1:00pm",
    "dog": {
     "abbr": "BAL",
-    "record": "4-5",
-    "streak": -4,
+    "record": "4-6",
+    "streak": -5,
     "rest": 5,
     "qb": {
-     "now": "Joe Fagnano",
+     "now": "Jacoby Brissett",
      "leader": "Lamar Jackson",
-     "settled": true
+     "settled": false
     },
     "qb_inj": [
      {
@@ -2877,19 +1117,19 @@
     "qb_inj": []
    },
    "price": 0.4248920370873779,
-   "fpi": 0.32158987551522733,
-   "total": 44.5,
+   "fpi": 0.3200169094498716,
+   "total": 43.5,
    "moved": 7.0,
    "toward": "CAR",
    "for": [],
    "against": [
     [
      "quarterback",
-     "BAL are on Joe Fagnano, not season leader Lamar Jackson (at least two games running); listed: Lamar Jackson Injured Reserve (2026-11-13)"
+     "BAL are on Jacoby Brissett, not season leader Lamar Jackson (new last week); listed: Lamar Jackson Injured Reserve (2026-11-13)"
     ],
     [
      "form",
-     "BAL have lost 4 straight"
+     "BAL have lost 5 straight"
     ],
     [
      "situation",
@@ -2918,36 +1158,32 @@
       "name": "Geno Smith",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-16",
-      "note": "Jets head coach Aaron Glenn said that Smith will get further imaging on his left ankle Monday, Antwan V. Staley of the New York Daily News reports."
+      "date": "2026-11-17",
+      "note": "Smith (ankle) underwent tests Monday that did not reveal any major injuries, but he will continue to be evaluated during the week, Ian Rapoport of NFL Network reports."
      }
     ]
    },
    "fav": {
     "abbr": "LAC",
-    "record": "0-8",
-    "streak": -8,
+    "record": "1-8",
+    "streak": 1,
     "rest": 5,
     "qb": null,
     "qb_inj": []
    },
    "price": 0.4101058393642264,
-   "fpi": 0.38035618424514006,
+   "fpi": 0.31397253200415165,
    "total": 40.5,
    "moved": 6.5,
    "toward": "NYJ",
    "for": [
-    [
-     "form",
-     "LAC have lost 8 straight"
-    ],
     [
      "situation",
      "LAC on 5 days' rest, NYJ on 7"
     ],
     [
      "style",
-     "LAC give it away 2.4 times a game, NYJ 0.9"
+     "LAC give it away 2.1 times a game, NYJ 0.9"
     ],
     [
      "line",
@@ -2957,7 +1193,7 @@
    "against": [
     [
      "injury",
-     "NYJ QB listed: Geno Smith Questionable (2026-11-16)"
+     "NYJ QB listed: Geno Smith Questionable (2026-11-17)"
     ],
     [
      "form",
@@ -2988,7 +1224,7 @@
     "qb_inj": []
    },
    "price": 0.22435249875681773,
-   "fpi": 0.18547454951411568,
+   "fpi": 0.18854855993402597,
    "total": 40.5,
    "moved": 1.5,
    "toward": "DEN",
@@ -3010,7 +1246,7 @@
   },
   {
    "league": "NFL",
-   "away": "JAX",
+   "away": "JAC",
    "home": "NYG",
    "kickoff": "2026-11-22T21:25",
    "when": "Sun 4:25pm",
@@ -3027,7 +1263,7 @@
     "qb_inj": []
    },
    "fav": {
-    "abbr": "JAX",
+    "abbr": "JAC",
     "record": "7-2",
     "streak": 3,
     "rest": 7,
@@ -3035,14 +1271,14 @@
     "qb_inj": []
    },
    "price": 0.32471814186337733,
-   "fpi": 0.2782305527011436,
+   "fpi": 0.2750868034972003,
    "total": 46.5,
    "moved": 4.5,
-   "toward": "JAX",
+   "toward": "JAC",
    "for": [
     [
      "situation",
-     "third straight road game for JAX"
+     "third straight road game for JAC"
     ]
    ],
    "against": [
@@ -3052,7 +1288,7 @@
     ],
     [
      "line",
-     "line has moved 4.5 toward JAX"
+     "line has moved 4.5 toward JAC"
     ]
    ]
   },
@@ -3091,7 +1327,7 @@
     "qb_inj": []
    },
    "price": 0.4101058393642264,
-   "fpi": 0.3528728882395952,
+   "fpi": 0.3502309702896258,
    "total": 46.5,
    "moved": 0.5,
    "toward": "MIN",
@@ -3106,11 +1342,11 @@
   {
    "league": "NFL",
    "away": "CIN",
-   "home": "WSH",
+   "home": "WAS",
    "kickoff": "2026-11-24T01:15",
    "when": "Mon 8:15pm",
    "dog": {
-    "abbr": "WSH",
+    "abbr": "WAS",
     "record": "3-6",
     "streak": 1,
     "rest": 11,
@@ -3126,7 +1362,7 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.32099285463216753,
+   "fpi": 0.3196377108410079,
    "total": 52.5,
    "moved": 5.0,
    "toward": "CIN",
