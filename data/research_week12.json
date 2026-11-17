@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Tue Nov 17, 7:10AM ET",
+ "made": "Tue Nov 17, 5:57PM ET",
  "source": "the 30 games on the week 12 board",
  "games": [
   {
@@ -71,7 +71,7 @@
    },
    "price": 0.43978467981733405,
    "fpi": 0.4981624541756523,
-   "total": 52.5,
+   "total": 49.5,
    "moved": 1.0,
    "toward": "UCF",
    "for": [
@@ -300,7 +300,7 @@
    },
    "price": 0.36944134018176367,
    "fpi": 0.39192587797472367,
-   "total": 44.5,
+   "total": 45.5,
    "moved": 1.0,
    "toward": "ARMY",
    "for": [
@@ -348,7 +348,7 @@
    },
    "price": 0.41600623568032036,
    "fpi": 0.37448416527668005,
-   "total": 66.5,
+   "total": 67.5,
    "moved": 0.5,
    "toward": "MEM",
    "for": [
@@ -514,7 +514,7 @@
    },
    "price": 0.4637824133031056,
    "fpi": 0.5039893563146317,
-   "total": 46.5,
+   "total": 45.5,
    "moved": null,
    "toward": null,
    "for": [
@@ -600,7 +600,7 @@
    },
    "price": 0.41600623568032036,
    "fpi": 0.421214339047136,
-   "total": 57.5,
+   "total": 55.5,
    "moved": 2.0,
    "toward": "TTU",
    "for": [
@@ -940,8 +940,8 @@
       "name": "Baker Mayfield",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-15",
-      "note": "Mayfield's availability for next Sunday's game against the Lions is in question due to an injury he sustained to his foot and ankle area during the Buccaneers' Week 9 loss to the Bears, Mike Garafolo of NFL Network reports."
+      "date": "2026-11-17",
+      "note": "The Buccaneers appear to be preparing for the possibility of Mayfield (foot) being sidelined for Sunday's game against the Lions, after the team signed Cooper Rush to the practice squad and signed Easton Stick to the 53-man roster Monday, Rick Stroud of the Tampa Bay Times reports."
      }
     ]
    },
@@ -953,10 +953,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.31120973253416895,
+   "price": 0.29795092300728476,
    "fpi": 0.3699846734596197,
-   "total": 46.5,
-   "moved": 2.0,
+   "total": 44.5,
+   "moved": 2.5,
    "toward": "DET",
    "for": [
     [
@@ -967,7 +967,7 @@
    "against": [
     [
      "injury",
-     "TB QB listed: Baker Mayfield Questionable (2026-11-15)"
+     "TB QB listed: Baker Mayfield Questionable (2026-11-17)"
     ],
     [
      "form",
@@ -975,7 +975,7 @@
     ],
     [
      "line",
-     "line has moved 2 toward DET"
+     "line has moved 2.5 toward DET"
     ]
    ]
   },
@@ -1118,7 +1118,7 @@
    },
    "price": 0.4248920370873779,
    "fpi": 0.3200169094498716,
-   "total": 43.5,
+   "total": 44.5,
    "moved": 7.0,
    "toward": "CAR",
    "for": [],
@@ -1159,7 +1159,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-17",
-      "note": "Smith (ankle) underwent tests Monday that did not reveal any major injuries, but he will continue to be evaluated during the week, Ian Rapoport of NFL Network reports."
+      "note": "Smith underwent tests Monday that didn't reveal a major injury to his left ankle, and he'll continue to be evaluated during the week before the Jets decide on his status for Sunday's game against the Chargers, Ian Rapoport of NFL Network reports."
      }
     ]
    },
@@ -1171,10 +1171,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4101058393642264,
+   "price": 0.3954463718532454,
    "fpi": 0.31397253200415165,
-   "total": 40.5,
-   "moved": 6.5,
+   "total": 41.5,
+   "moved": 6.0,
    "toward": "NYJ",
    "for": [
     [
@@ -1187,7 +1187,7 @@
     ],
     [
      "line",
-     "line has moved 6.5 toward NYJ"
+     "line has moved 6 toward NYJ"
     ]
    ],
    "against": [
@@ -1328,7 +1328,7 @@
    },
    "price": 0.4101058393642264,
    "fpi": 0.3502309702896258,
-   "total": 46.5,
+   "total": 45.5,
    "moved": 0.5,
    "toward": "MIN",
    "for": [],
