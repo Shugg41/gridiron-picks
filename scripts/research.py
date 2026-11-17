@@ -25,7 +25,9 @@ import sys
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gridiron import espn, lookahead, research, splash, store   # noqa: E402
+import notify                                                  # noqa: E402
 
 SEASON = 2026
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -141,7 +143,14 @@ def plain(row):
 
 def main():
     conn = store.connect(DB)
-    events = lookahead.collect(lookahead.weekend(), everything=True)
+    newest = conn.execute("SELECT MAX(week) FROM game WHERE season=?",
+                          (SEASON,)).fetchone()[0]
+    kicks = [k for (k,) in conn.execute(
+        "SELECT kickoff FROM game WHERE season=? AND week=?", (SEASON, newest))
+        if k] if newest else []
+    noon = notify.lock_time(kicks[0])[1] if kicks else None
+    days = research.board_days(kicks, noon, datetime.datetime.now(UTC))
+    events = lookahead.collect(days or lookahead.weekend(), everything=True)
     week, board = board_for(conn, events)
     if board:
         events = [e for e in events if e["event_id"] in board]

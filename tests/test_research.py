@@ -345,4 +345,16 @@ assert wk == 11 and text.startswith("# Week 11 research"), (wk, text[:40])
 assert "### C over D" in text and "| game |" not in text
 print("the newest page is found, 11 ahead of 9, and the table is left out OK")
 
+# ── which weekend: the board in hand until it locks ───────────────────
+kicks = ["2026-11-13T01:15Z", "2026-11-14T17:00Z", "2026-11-17T01:15Z"]
+noon = datetime.datetime(2026, 11, 14, 17, 0, tzinfo=UTC)
+sat_9am = datetime.datetime(2026, 11, 14, 14, 0, tzinfo=UTC)
+fri = datetime.datetime(2026, 11, 13, 20, 0, tzinfo=UTC)
+days = research.board_days(kicks, noon, sat_9am)
+assert days and days[0] <= "20261112" and "20261114" in days, days
+assert research.board_days(kicks, noon, fri) == days, "Friday reads this board"
+assert research.board_days(kicks, noon, noon) is None, "locked: move on"
+assert research.board_days([], noon, sat_9am) is None
+print("Friday and Saturday morning research the board in hand, not next week OK")
+
 print("\nALL RESEARCH TESTS PASS")

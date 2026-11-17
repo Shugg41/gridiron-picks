@@ -428,3 +428,19 @@ def latest_page(folder):
     with open(best[1]) as f:
         text = f.read()
     return best[0], text.split("## Every game")[0].strip()
+
+
+def board_days(kickoffs, noon, now):
+    """The ESPN days to research: the loaded board's, until it locks.
+
+    `noon` is the Saturday-noon lock for that board. Before it the
+    research is for the board in hand, whatever day of the week it is;
+    after it the board is history and the caller moves on to the next
+    weekend. This replaces asking lookahead.weekend(), which on a
+    Friday or Saturday answers with NEXT Thursday — so the runs meant to
+    catch Friday and Saturday news read the wrong weekend entirely.
+    """
+    from . import espn
+    if not kickoffs or noon is None or now >= noon:
+        return None
+    return espn.window(kickoffs)
