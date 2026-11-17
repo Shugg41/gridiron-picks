@@ -394,6 +394,12 @@ def _board_game(lines, kick_at, day, stop, year=None):
     # the picks would have been right and the page would have read as
     # nonsense.
     k = kick_at
+    # Then it grew the stadium too: away / home / Preview / venue /
+    # kickoff. The venue sits between the link and the kickoff, so it is
+    # recognised by what is above it rather than by what it says.
+    if (k - 2 >= 0 and lines[k - 1].lower() not in ("preview", "gamecast")
+            and lines[k - 2].lower() in ("preview", "gamecast")):
+        k -= 1
     while k - 1 >= 0 and lines[k - 1].lower() in ("preview", "gamecast"):
         k -= 1
     if k < 2:

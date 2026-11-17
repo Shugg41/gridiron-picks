@@ -514,3 +514,40 @@ assert gap, "nobody is missing a pick"
 assert gap[0].picks[0] == (None, "missing"), gap[0].picks[0]
 assert gap[0].picks[1][0] == "PUR", gap[0].picks[1]
 print("a missing pick leaves a hole rather than shifting the row OK")
+
+# ── the board with a stadium line under the Preview link (week 12) ─────
+VENUE_BOARD = """NFL Week 11 | CFB Week 12
+Picks lock:
+Sat, Nov 21, 2026, 12:00 PM
+Thursday, Nov 19
+Colts
+Texans
+Preview
+Reliant Stadium, Houston, TX
+Thu 8:15pm
+IND
+12% Win Probwin probability
+3-7
+HOU
+88% Win Probwin probability
+3-6
+Saturday, Nov 21
+Ohio State
+Nebraska
+Preview
+Memorial Stadium (Lincoln, NE), Lincoln, NE
+Sat 12:00pm
+#16ranked #16
+OSU
+57% Win Probwin probability
+7-3
+NEB
+43% Win Probwin probability
+6-4
+Tiebreaker
+"""
+vb = splash.parse_board(VENUE_BOARD).games
+assert [(g.away, g.home, g.away_code, g.home_code) for g in vb] == [
+    ("Colts", "Texans", "IND", "HOU"),
+    ("Ohio State", "Nebraska", "OSU", "NEB")], [(g.away, g.home) for g in vb]
+print("a stadium line under Preview is skipped, not read as the home team OK")
