@@ -39,3 +39,11 @@ at Tennessee (market LSU 54%, Splash Tennessee 52%).
   Michigan; couldn't confirm Michigan's quarterback.
 
 Tiebreaker: Bengals at Commanders, total 52.5 → 52.
+
+## Wednesday update (Nov 18)
+
+Research re-run against Tuesday morning's: no quarterback changes, no
+favourite changes. ECU at Army: line has moved 1.5 toward Army, which
+now counts against the ECU candidate (36%). Bengals-Commanders total up
+to 54.5, so the tiebreaker is 54. No dated news found on UCF's or Ohio
+State's quarterback beyond Tuesday's.
