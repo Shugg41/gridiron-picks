@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Tue Nov 17, 5:57PM ET",
+ "made": "Wed Nov 18, 4:53PM ET",
  "source": "the 30 games on the week 12 board",
  "games": [
   {
@@ -26,7 +26,7 @@
     "qb_inj": []
    },
    "price": 0.1718271102752622,
-   "fpi": 0.28983608655752446,
+   "fpi": 0.28952506189219607,
    "total": 44.5,
    "moved": 7.0,
    "toward": "HOU",
@@ -70,8 +70,8 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.4981624541756523,
-   "total": 49.5,
+   "fpi": 0.4981382761154973,
+   "total": 48.5,
    "moved": 1.0,
    "toward": "UCF",
    "for": [
@@ -113,7 +113,7 @@
     "qb_inj": []
    },
    "price": 0.32471814186337733,
-   "fpi": 0.18417303154829384,
+   "fpi": 0.18420529837906258,
    "total": 37.5,
    "moved": 3.0,
    "toward": "WYO",
@@ -161,7 +161,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.32670489842398087,
+   "fpi": 0.3266611803231662,
    "total": 47.5,
    "moved": 1.5,
    "toward": "KU",
@@ -200,7 +200,7 @@
     "qb_inj": []
    },
    "price": 0.4278627076600358,
-   "fpi": 0.3278861849336412,
+   "fpi": 0.3270984683494911,
    "total": 41.5,
    "moved": 2.5,
    "toward": "NEB",
@@ -255,7 +255,7 @@
     "qb_inj": []
    },
    "price": 0.4278627076600358,
-   "fpi": 0.2756685943917053,
+   "fpi": 0.2749199665406772,
    "total": 42.5,
    "moved": null,
    "toward": null,
@@ -298,10 +298,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.36944134018176367,
-   "fpi": 0.39192587797472367,
+   "price": 0.35806478442778267,
+   "fpi": 0.39173960554199494,
    "total": 45.5,
-   "moved": 1.0,
+   "moved": 1.5,
    "toward": "ARMY",
    "for": [
     [
@@ -321,6 +321,10 @@
     [
      "situation",
      "ARMY are off a bye"
+    ],
+    [
+     "line",
+     "line has moved 1.5 toward ARMY"
     ]
    ]
   },
@@ -347,7 +351,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.37448416527668005,
+   "fpi": 0.37469092723393876,
    "total": 67.5,
    "moved": 0.5,
    "toward": "MEM",
@@ -386,7 +390,7 @@
     "qb_inj": []
    },
    "price": 0.46378241330310566,
-   "fpi": 0.5583502738147738,
+   "fpi": 0.5586851222377904,
    "total": 43.5,
    "moved": null,
    "toward": null,
@@ -425,7 +429,7 @@
     "qb_inj": []
    },
    "price": 0.3032235733700106,
-   "fpi": 0.3880658615814236,
+   "fpi": 0.3880890820380781,
    "total": 40.5,
    "moved": 3.0,
    "toward": "IOWA",
@@ -469,7 +473,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.44933828941994025,
+   "fpi": 0.44782772493375955,
    "total": 37.5,
    "moved": 2.0,
    "toward": "MICH",
@@ -489,49 +493,6 @@
      "UCLA have won 10 straight"
     ]
    ]
-  },
-  {
-   "league": "CFB",
-   "away": "LSU",
-   "home": "TENN",
-   "kickoff": "2026-11-21T20:30",
-   "when": "Sat 3:30pm",
-   "dog": {
-    "abbr": "TENN",
-    "record": "8-2",
-    "streak": 2,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "LSU",
-    "record": "6-4",
-    "streak": -2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.4637824133031056,
-   "fpi": 0.5039893563146317,
-   "total": 45.5,
-   "moved": null,
-   "toward": null,
-   "for": [
-    [
-     "form",
-     "LSU have lost 2 straight"
-    ],
-    [
-     "form",
-     "last three games: TENN +13 a game, LSU +1"
-    ],
-    [
-     "line",
-     "FPI makes TENN the favourite (50%)"
-    ]
-   ],
-   "against": []
   },
   {
    "league": "CFB",
@@ -560,7 +521,7 @@
     "qb_inj": []
    },
    "price": 0.32471814186337733,
-   "fpi": 0.2377822653749661,
+   "fpi": 0.23789475228275436,
    "total": 43.5,
    "moved": null,
    "toward": null,
@@ -572,6 +533,49 @@
     [
      "situation",
      "IND come off beating #18 USC"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "LSU",
+   "home": "TENN",
+   "kickoff": "2026-11-21T20:30",
+   "when": "Sat 3:30pm",
+   "dog": {
+    "abbr": "TENN",
+    "record": "8-2",
+    "streak": 2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "LSU",
+    "record": "6-4",
+    "streak": -2,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4637824133031056,
+   "fpi": 0.5039410020631673,
+   "total": 45.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "form",
+     "LSU have lost 2 straight"
+    ],
+    [
+     "form",
+     "last three games: TENN +13 a game, LSU +1"
+    ],
+    [
+     "line",
+     "FPI makes TENN the favourite (50%)"
     ]
    ],
    "against": []
@@ -599,7 +603,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.421214339047136,
+   "fpi": 0.42107211247582343,
    "total": 55.5,
    "moved": 2.0,
    "toward": "TTU",
@@ -687,7 +691,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.4011296420015844,
+   "fpi": 0.40124680616467545,
    "total": 48.5,
    "moved": 1.0,
    "toward": "UK",
@@ -722,7 +726,7 @@
     "qb_inj": []
    },
    "price": 0.33569451200559874,
-   "fpi": 0.3043679223494974,
+   "fpi": 0.3043255047833043,
    "total": 46.5,
    "moved": 1.5,
    "toward": "UTAH",
@@ -770,7 +774,7 @@
     "qb_inj": []
    },
    "price": 0.4278627076600358,
-   "fpi": 0.3540218135381378,
+   "fpi": 0.3540668966081486,
    "total": 61.5,
    "moved": 1.0,
    "toward": "ASU",
@@ -817,7 +821,7 @@
     "qb_inj": []
    },
    "price": 0.10564977366685535,
-   "fpi": 0.08329295063607045,
+   "fpi": 0.08441316210055305,
    "total": 45.5,
    "moved": 5.0,
    "toward": "BUF",
@@ -864,8 +868,8 @@
     "qb_inj": []
    },
    "price": 0.1918191713881694,
-   "fpi": 0.2471263337754419,
-   "total": 49.5,
+   "fpi": 0.2470067184713236,
+   "total": 48.5,
    "moved": 5.0,
    "toward": "CHI",
    "for": [],
@@ -907,8 +911,8 @@
     "qb_inj": []
    },
    "price": 0.2598073675968221,
-   "fpi": 0.2253745751878593,
-   "total": 54.5,
+   "fpi": 0.22421642097255046,
+   "total": 55.5,
    "moved": 2.0,
    "toward": "DAL",
    "for": [],
@@ -940,8 +944,8 @@
       "name": "Baker Mayfield",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-17",
-      "note": "The Buccaneers appear to be preparing for the possibility of Mayfield (foot) being sidelined for Sunday's game against the Lions, after the team signed Cooper Rush to the practice squad and signed Easton Stick to the 53-man roster Monday, Rick Stroud of the Tampa Bay Times reports."
+      "date": "2026-11-18",
+      "note": "Coach Todd Bowles said Wednesday that Mayfield (foot), who didn't practice Wednesday, is \"a lot better\" than he was a week ago, Scott Smith of the Buccaneers' official site reports."
      }
     ]
    },
@@ -954,8 +958,8 @@
     "qb_inj": []
    },
    "price": 0.29795092300728476,
-   "fpi": 0.3699846734596197,
-   "total": 44.5,
+   "fpi": 0.36858397656609454,
+   "total": 43.5,
    "moved": 2.5,
    "toward": "DET",
    "for": [
@@ -967,7 +971,7 @@
    "against": [
     [
      "injury",
-     "TB QB listed: Baker Mayfield Questionable (2026-11-17)"
+     "TB QB listed: Baker Mayfield Questionable (2026-11-18)"
     ],
     [
      "form",
@@ -1000,8 +1004,8 @@
       "name": "Gardner Minshew II",
       "pos": "QB",
       "status": "Injured Reserve",
-      "date": "2026-11-15",
-      "note": "Minshew suffered a torn UCL in his right throwing elbow last Sunday at Seattle and is slated to undergo season-ending surgery, Adam Schefter of ESPN reports."
+      "date": "2026-11-18",
+      "note": "Minshew (elbow) underwent UCL reconstructive surgery Monday, Jeremy Fowler of ESPN.com reports."
      }
     ]
    },
@@ -1013,20 +1017,20 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.10564977366685535,
-   "fpi": 0.16285219507787185,
-   "total": 41.5,
-   "moved": 5.0,
+   "price": 0.12014896882204484,
+   "fpi": 0.16242369684227032,
+   "total": 40.5,
+   "moved": 4.0,
    "toward": "KC",
    "for": [],
    "against": [
     [
      "quarterback",
-     "ARI are on Carson Beck, not season leader Gardner Minshew II (new last week); listed: Gardner Minshew II Injured Reserve (2026-11-15)"
+     "ARI are on Carson Beck, not season leader Gardner Minshew II (new last week); listed: Gardner Minshew II Injured Reserve (2026-11-18)"
     ],
     [
      "line",
-     "line has moved 5 toward KC"
+     "line has moved 4 toward KC"
     ]
    ]
   },
@@ -1057,8 +1061,8 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.4174252059398952,
-   "total": 38.5,
+   "fpi": 0.41739563302065397,
+   "total": 37.5,
    "moved": 10.0,
    "toward": "PIT",
    "for": [
@@ -1068,7 +1072,7 @@
     ],
     [
      "style",
-     "total of 38.5: few possessions, less room for the better team"
+     "total of 37.5: few possessions, less room for the better team"
     ]
    ],
    "against": [
@@ -1103,8 +1107,8 @@
       "name": "Lamar Jackson",
       "pos": "QB",
       "status": "Injured Reserve",
-      "date": "2026-11-13",
-      "note": "Jackson (thumb) is \"doing well\" and is expected to be out for \"6-to-10 weeks,\" per head coach Jesse Minter."
+      "date": "2026-11-18",
+      "note": "The Ravens believe \"there's a chance\" that Jackson (thumb) could return for their Week 16 matchup with the Browns, assuming all goes well in his recovery from right thumb surgery, Dan Graziano of ESPN.com reports."
      }
     ]
    },
@@ -1117,15 +1121,15 @@
     "qb_inj": []
    },
    "price": 0.4248920370873779,
-   "fpi": 0.3200169094498716,
-   "total": 44.5,
+   "fpi": 0.32080299035808824,
+   "total": 43.5,
    "moved": 7.0,
    "toward": "CAR",
    "for": [],
    "against": [
     [
      "quarterback",
-     "BAL are on Jacoby Brissett, not season leader Lamar Jackson (new last week); listed: Lamar Jackson Injured Reserve (2026-11-13)"
+     "BAL are on Jacoby Brissett, not season leader Lamar Jackson (new last week); listed: Lamar Jackson Injured Reserve (2026-11-18)"
     ],
     [
      "form",
@@ -1158,8 +1162,8 @@
       "name": "Geno Smith",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-17",
-      "note": "Smith underwent tests Monday that didn't reveal a major injury to his left ankle, and he'll continue to be evaluated during the week before the Jets decide on his status for Sunday's game against the Chargers, Ian Rapoport of NFL Network reports."
+      "date": "2026-11-18",
+      "note": "Jets head coach Aaron Glenn said that Smith (ankle) will be a limited participant in Wednesday's practice, Brian Costello of the New York Post reports."
      }
     ]
    },
@@ -1171,10 +1175,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3954463718532454,
-   "fpi": 0.31397253200415165,
+   "price": 0.4101058393642264,
+   "fpi": 0.3143488690746066,
    "total": 41.5,
-   "moved": 6.0,
+   "moved": 6.5,
    "toward": "NYJ",
    "for": [
     [
@@ -1187,13 +1191,13 @@
     ],
     [
      "line",
-     "line has moved 6 toward NYJ"
+     "line has moved 6.5 toward NYJ"
     ]
    ],
    "against": [
     [
      "injury",
-     "NYJ QB listed: Geno Smith Questionable (2026-11-17)"
+     "NYJ QB listed: Geno Smith Questionable (2026-11-18)"
     ],
     [
      "form",
@@ -1224,7 +1228,7 @@
     "qb_inj": []
    },
    "price": 0.22435249875681773,
-   "fpi": 0.18854855993402597,
+   "fpi": 0.18846672628915684,
    "total": 40.5,
    "moved": 1.5,
    "toward": "DEN",
@@ -1271,7 +1275,7 @@
     "qb_inj": []
    },
    "price": 0.32471814186337733,
-   "fpi": 0.2750868034972003,
+   "fpi": 0.27463191110945684,
    "total": 46.5,
    "moved": 4.5,
    "toward": "JAC",
@@ -1313,8 +1317,8 @@
       "name": "Kyler Murray",
       "pos": "QB",
       "status": "Out",
-      "date": "2026-11-16",
-      "note": "out"
+      "date": "2026-11-18",
+      "note": "Murray (hamstring) will miss Wednesday's practice, Kevin Seifert of ESPN reports."
      }
     ]
    },
@@ -1327,7 +1331,7 @@
     "qb_inj": []
    },
    "price": 0.4101058393642264,
-   "fpi": 0.3502309702896258,
+   "fpi": 0.35298546887731796,
    "total": 45.5,
    "moved": 0.5,
    "toward": "MIN",
@@ -1335,7 +1339,7 @@
    "against": [
     [
      "quarterback",
-     "MIN are on Kirk Cousins, not season leader Kyler Murray (new last week); listed: Kyler Murray Out (2026-11-16)"
+     "MIN are on Kirk Cousins, not season leader Kyler Murray (new last week); listed: Kyler Murray Out (2026-11-18)"
     ]
    ]
   },
@@ -1362,8 +1366,8 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.3196377108410079,
-   "total": 52.5,
+   "fpi": 0.3197189518318544,
+   "total": 54.5,
    "moved": 5.0,
    "toward": "CIN",
    "for": [],
