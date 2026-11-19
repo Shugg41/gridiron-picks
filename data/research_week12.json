@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Wed Nov 18, 4:53PM ET",
+ "made": "Wed Nov 18, 8:14PM ET",
  "source": "the 30 games on the week 12 board",
  "games": [
   {
@@ -27,7 +27,7 @@
    },
    "price": 0.1718271102752622,
    "fpi": 0.28952506189219607,
-   "total": 44.5,
+   "total": 43.5,
    "moved": 7.0,
    "toward": "HOU",
    "for": [
@@ -254,11 +254,11 @@
     },
     "qb_inj": []
    },
-   "price": 0.4278627076600358,
+   "price": 0.43978467981733405,
    "fpi": 0.2749199665406772,
-   "total": 42.5,
-   "moved": null,
-   "toward": null,
+   "total": 41.5,
+   "moved": 0.5,
+   "toward": "MINN",
    "for": [
     [
      "quarterback",
@@ -267,6 +267,10 @@
     [
      "form",
      "NW have lost 3 straight"
+    ],
+    [
+     "style",
+     "total of 41.5: few possessions, less room for the better team"
     ]
    ],
    "against": [
@@ -945,7 +949,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-18",
-      "note": "Coach Todd Bowles said Wednesday that Mayfield (foot), who didn't practice Wednesday, is \"a lot better\" than he was a week ago, Scott Smith of the Buccaneers' official site reports."
+      "note": "Mayfield (foot) isn't practicing Wednesday, Greg Auman of Fox Sports reports."
      }
     ]
    },
@@ -1163,7 +1167,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-18",
-      "note": "Jets head coach Aaron Glenn said that Smith (ankle) will be a limited participant in Wednesday's practice, Brian Costello of the New York Post reports."
+      "note": "Smith (ankle), who was a limited participant in Wednesday's walkthrough practice, said afterward that he intends to play in Sunday's game against the Chargers, Rich Cimini of ESPN.com reports."
      }
     ]
    },
@@ -1332,7 +1336,7 @@
    },
    "price": 0.4101058393642264,
    "fpi": 0.35298546887731796,
-   "total": 45.5,
+   "total": 46.5,
    "moved": 0.5,
    "toward": "MIN",
    "for": [],

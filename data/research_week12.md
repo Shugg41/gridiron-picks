@@ -1,6 +1,6 @@
 # Week 12 research
 
-Built Wed Nov 18, 4:53PM ET from ESPN data (the 30 games on the week 12 board). 30 games read, 13 underdogs priced 22%-47% whose reasons outweigh the reasons against.
+Built Wed Nov 18, 8:14PM ET from ESPN data (the 30 games on the week 12 board). 30 games read, 13 underdogs priced 22%-47% whose reasons outweigh the reasons against.
 
 Reasons are observations, not a rating. Check anything about who is playing against a dated source before acting on it.
 
@@ -27,6 +27,14 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - IND: 9-1, won 3 straight, last: beat USC 27-13
 - **for** (quarterback): IND are on Grant Wilson, not season leader Josh Hoover (new last week)
 - **for** (situation): IND come off beating #18 USC
+
+### MINN over NW — 44% · NW @ MINN · Sat 12:00pm
+- MINN: 5-5, lost 3 straight, last: lost to PSU 14-42
+- NW: 6-4, lost 3 straight, last: lost to OSU 19-28
+- **for** (quarterback): NW are on Nicco Marchiol, not season leader Aidan Chiles (at least two games running)
+- **for** (form): NW have lost 3 straight
+- **for** (style): total of 41.5: few possessions, less room for the better team
+- *against* (form): MINN have lost 3 straight
 
 ### ISU over UCF — 44% · ISU @ UCF · Fri 6:00pm
 - ISU: 5-5, last: beat CIN 41-13
@@ -63,13 +71,6 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - *against* (situation): ARMY are off a bye
 - *against* (line): line has moved 1.5 toward ARMY
 
-### MINN over NW — 43% · NW @ MINN · Sat 12:00pm
-- MINN: 5-5, lost 3 straight, last: lost to PSU 14-42
-- NW: 6-4, lost 3 straight, last: lost to OSU 19-28
-- **for** (quarterback): NW are on Nicco Marchiol, not season leader Aidan Chiles (at least two games running)
-- **for** (form): NW have lost 3 straight
-- *against* (form): MINN have lost 3 straight
-
 ### ILL over IOWA — 30% · IOWA @ ILL · Sat 2:30pm
 - ILL: 6-4, last: lost to UCLA 14-22
 - IOWA: 8-2, won 3 straight, last: beat PUR 28-7
@@ -98,12 +99,12 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 
 | game | when | favourite | dog % | total | move | for | against |
 |---|---|---|---|---|---|---|---|
-| IND @ HOU | Thu 8:15pm | HOU | 17% | 44.5 | 7 to HOU | 1 | 1 |
+| IND @ HOU | Thu 8:15pm | HOU | 17% | 43.5 | 7 to HOU | 1 | 1 |
 | ISU @ UCF | Fri 6:00pm | UCF | 44% | 48.5 | 1 to UCF | 2 | 0 |
 | UNM @ WYO | Fri 9:00pm | UNM | 32% | 37.5 | 3 to WYO | 3 | 1 |
 | BYU @ KU | Sat 12:00pm | BYU | 37% | 47.5 | 1.5 to KU | 1 | 0 |
 | OSU @ NEB | Sat 12:00pm | OSU | 43% | 41.5 | 2.5 to NEB | 5 | 0 |
-| NW @ MINN | Sat 12:00pm | NW | 43% | 42.5 |  | 2 | 1 |
+| NW @ MINN | Sat 12:00pm | NW | 44% | 41.5 | 0.5 to MINN | 3 | 1 |
 | ECU @ ARMY | Sat 12:00pm | ARMY | 36% | 45.5 | 1.5 to ARMY | 3 | 2 |
 | MEM @ NAVY | Sat 12:00pm | MEM | 42% | 67.5 | 0.5 to MEM | 2 | 0 |
 | UNC @ UVA | Sat 12:30pm | UVA | 46% | 43.5 |  | 2 | 0 |
@@ -126,5 +127,5 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 | NYJ @ LAC | Sun 4:05pm | LAC | 41% | 41.5 | 6.5 to NYJ | 3 | 2 |
 | LV @ DEN | Sun 4:25pm | DEN | 22% | 40.5 | 1.5 to DEN | 0 | 3 |
 | JAC @ NYG | Sun 4:25pm | JAC | 32% | 46.5 | 4.5 to JAC | 1 | 2 |
-| MIN @ SF | Sun 8:20pm | SF | 41% | 45.5 | 0.5 to MIN | 0 | 1 |
+| MIN @ SF | Sun 8:20pm | SF | 41% | 46.5 | 0.5 to MIN | 0 | 1 |
 | CIN @ WAS | Mon 8:15pm | CIN | 31% | 54.5 | 5 to CIN | 0 | 2 |
