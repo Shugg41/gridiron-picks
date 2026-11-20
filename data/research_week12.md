@@ -1,6 +1,6 @@
 # Week 12 research
 
-Built Thu Nov 19, 9:20PM ET from ESPN data (the 30 games on the week 12 board). 30 games read, 12 underdogs priced 22%-47% whose reasons outweigh the reasons against.
+Built Fri Nov 20, 3:50PM ET from ESPN data (the 30 games on the week 12 board). 30 games read, 11 underdogs priced 22%-47% whose reasons outweigh the reasons against.
 
 Reasons are observations, not a rating. Check anything about who is playing against a dated source before acting on it.
 
@@ -14,6 +14,20 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (style): total of 41.5: few possessions, less room for the better team
 - **for** (style): OSU give it away 1.3 times a game, NEB 0.7
 - **for** (line): line has moved 2 toward NEB
+
+### UNC over UVA — 46% · UNC @ UVA · Sat 12:30pm
+- UNC: 5-5, last: lost to LOU 14-16
+- UVA: 5-5, last: beat CAL 36-7
+- **for** (form): last three games: UNC +4 a game, UVA -6
+- **for** (style): total of 41.5: few possessions, less room for the better team
+- **for** (line): FPI makes UNC the favourite (56%)
+
+### TENN over LSU — 46% · LSU @ TENN · Sat 3:30pm
+- TENN: 8-2, won 2 straight, last: beat TA&M 22-7
+- LSU: 6-4, lost 2 straight, last: lost to TEX 21-22
+- **for** (form): LSU have lost 2 straight
+- **for** (form): last three games: TENN +13 a game, LSU +1
+- **for** (line): FPI makes TENN the favourite (50%)
 
 ### WASH over IND — 32% · IND @ WASH · Sat 3:30pm
 - WASH: 6-4, last: beat MSU 21-14
@@ -29,37 +43,17 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (style): total of 41.5: few possessions, less room for the better team
 - *against* (form): MINN have lost 3 straight
 
-### ISU over UCF — 46% · ISU @ UCF · Fri 6:00pm
-- ISU: 5-5, last: beat CIN 41-13
-- UCF: 5-5, last: lost to ASU 13-26
-- **for** (quarterback): UCF are on Alonza Barnett III, not season leader Keyone Jenkins (at least two games running)
-- **for** (form): last three games: ISU +6 a game, UCF -15
-
-### NAVY over MEM — 43% · MEM @ NAVY · Sat 12:00pm
+### NAVY over MEM — 44% · MEM @ NAVY · Sat 12:00pm
 - NAVY: 3-6, last: beat TEM 42-35
 - MEM: 8-2, won 3 straight, last: beat USF 52-41
 - **for** (situation): NAVY are off a bye
 - **for** (style): NAVY run the option, which shortens the game
-
-### UNC over UVA — 46% · UNC @ UVA · Sat 12:30pm
-- UNC: 5-5, last: lost to LOU 14-16
-- UVA: 5-5, last: beat CAL 36-7
-- **for** (form): last three games: UNC +4 a game, UVA -6
-- **for** (line): FPI makes UNC the favourite (56%)
 
 ### UK over MIZZ — 39% · UK @ MIZZ · Sat 7:30pm
 - UK: 7-3, lost 2 straight, last: lost to FLA 14-21
 - MIZZ: 6-4, lost 2 straight, last: lost to UGA 21-48
 - **for** (form): MIZZ have lost 2 straight
 - **for** (line): line has moved 2 toward UK
-
-### WYO over UNM — 32% · UNM @ WYO · Fri 9:00pm
-- WYO: 7-3, won 5 straight, last: beat UTEP 27-15
-- UNM: 8-2, last: lost to UNLV 17-21
-- **for** (form): WYO have won 5 straight
-- **for** (style): total of 37.5: few possessions, less room for the better team
-- **for** (line): line has moved 3 toward WYO
-- *against* (quarterback): WYO are on Landon Sims, not season leader Tyler Hughes (new last week)
 
 ### ECU over ARMY — 36% · ECU @ ARMY · Sat 12:00pm
 - ECU: 6-4, won 3 straight, last: beat CLT 17-16
@@ -94,32 +88,32 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 | game | when | favourite | dog % | total | move | for | against |
 |---|---|---|---|---|---|---|---|
 | IND @ HOU | Thu 8:15pm | HOU | 17% | 44.5 | 7 to HOU | 1 | 1 |
-| ISU @ UCF | Fri 6:00pm | UCF | 46% | 48.5 |  | 2 | 0 |
-| UNM @ WYO | Fri 9:00pm | UNM | 32% | 37.5 | 3 to WYO | 3 | 1 |
+| ISU @ UCF | Fri 6:00pm | ISU | 46% | 49.5 | 3 to ISU | 1 | 2 |
+| UNM @ WYO | Fri 9:00pm | UNM | 28% | 37.5 | 1 to WYO | 2 | 1 |
 | BYU @ KU | Sat 12:00pm | BYU | 37% | 46.5 | 1.5 to KU | 1 | 0 |
 | OSU @ NEB | Sat 12:00pm | OSU | 42% | 41.5 | 2 to NEB | 5 | 0 |
 | NW @ MINN | Sat 12:00pm | NW | 44% | 41.5 | 0.5 to MINN | 3 | 1 |
 | ECU @ ARMY | Sat 12:00pm | ARMY | 36% | 46.5 | 1.5 to ARMY | 3 | 2 |
-| MEM @ NAVY | Sat 12:00pm | MEM | 43% | 67.5 |  | 2 | 0 |
-| UNC @ UVA | Sat 12:30pm | UVA | 46% | 42.5 |  | 2 | 0 |
+| MEM @ NAVY | Sat 12:00pm | MEM | 44% | 67.5 | 0.5 to NAVY | 2 | 0 |
+| UNC @ UVA | Sat 12:30pm | UVA | 46% | 41.5 |  | 3 | 0 |
 | IOWA @ ILL | Sat 2:30pm | IOWA | 30% | 40.5 | 3 to IOWA | 2 | 1 |
 | UCLA @ MICH | Sat 3:30pm | UCLA | 42% | 37.5 | 2 to MICH | 2 | 1 |
 | IND @ WASH | Sat 3:30pm | IND | 32% | 44.5 |  | 2 | 0 |
-| LSU @ TENN | Sat 3:30pm | TENN | 46% | 45.5 | 3 to TENN | 0 | 1 |
+| LSU @ TENN | Sat 3:30pm | LSU | 46% | 45.5 |  | 3 | 0 |
 | TTU @ BAY | Sat 3:30pm | TTU | 39% | 56.5 | 3 to TTU | 1 | 1 |
-| ARIZ @ KSU | Sat 7:00pm | ARIZ | 34% | 52.5 | 3.5 to KSU | 1 | 2 |
+| ARIZ @ KSU | Sat 7:00pm | ARIZ | 32% | 51.5 | 3 to KSU | 1 | 2 |
 | UK @ MIZZ | Sat 7:30pm | MIZZ | 39% | 48.5 | 2 to UK | 2 | 0 |
-| UTAH @ TCU | Sat 9:00pm | UTAH | 34% | 46.5 | 1.5 to UTAH | 1 | 2 |
+| UTAH @ TCU | Sat 9:00pm | UTAH | 32% | 46.5 | 2 to UTAH | 1 | 2 |
 | OKST @ ASU | Sat 10:15pm | OKST | 44% | 59.5 | 1.5 to ASU | 1 | 1 |
 | MIA @ BUF | Sun 1:00pm | BUF | 11% | 44.5 | 5 to BUF | 0 | 4 |
 | NO @ CHI | Sun 1:00pm | CHI | 19% | 48.5 | 5 to CHI | 0 | 3 |
-| TEN @ DAL | Sun 1:00pm | DAL | 26% | 55.5 | 2 to DAL | 0 | 2 |
-| TB @ DET | Sun 1:00pm | DET | 32% | 45.5 | 1.5 to DET | 1 | 3 |
+| TEN @ DAL | Sun 1:00pm | DAL | 26% | 54.5 | 2 to DAL | 0 | 2 |
+| TB @ DET | Sun 1:00pm | DET | 34% | 45.5 | 1 to DET | 1 | 2 |
 | ARI @ KC | Sun 1:00pm | KC | 11% | 40.5 | 5 to KC | 0 | 2 |
-| PIT @ PHI | Sun 1:00pm | PIT | 37% | 38.5 | 10 to PIT | 2 | 2 |
+| PIT @ PHI | Sun 1:00pm | PIT | 40% | 37.5 | 9 to PIT | 2 | 2 |
 | BAL @ CAR | Sun 1:00pm | CAR | 41% | 43.5 | 7.5 to CAR | 0 | 3 |
 | NYJ @ LAC | Sun 4:05pm | LAC | 41% | 41.5 | 6.5 to NYJ | 3 | 2 |
-| LV @ DEN | Sun 4:25pm | DEN | 21% | 40.5 | 2 to DEN | 0 | 3 |
+| LV @ DEN | Sun 4:25pm | DEN | 22% | 40.5 | 1.5 to DEN | 0 | 3 |
 | JAC @ NYG | Sun 4:25pm | JAC | 32% | 46.5 | 4.5 to JAC | 1 | 2 |
-| MIN @ SF | Sun 8:20pm | SF | 40% | 46.5 |  | 0 | 1 |
+| MIN @ SF | Sun 8:20pm | SF | 41% | 46.5 | 0.5 to MIN | 0 | 1 |
 | CIN @ WAS | Mon 8:15pm | CIN | 32% | 53.5 | 4.5 to CIN | 0 | 2 |
