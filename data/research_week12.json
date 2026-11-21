@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Fri Nov 20, 3:50PM ET",
+ "made": "Fri Nov 20, 9:14PM ET",
  "source": "the 30 games on the week 12 board",
  "games": [
   {
@@ -54,11 +54,7 @@
     "record": "5-5",
     "streak": -1,
     "rest": 6,
-    "qb": {
-     "now": "Alonza Barnett III",
-     "leader": "Keyone Jenkins",
-     "settled": true
-    },
+    "qb": null,
     "qb_inj": []
    },
    "fav": {
@@ -71,7 +67,7 @@
    },
    "price": 0.4637824133031056,
    "fpi": 0.5014265178415153,
-   "total": 49.5,
+   "total": 50.5,
    "moved": 3.0,
    "toward": "ISU",
    "for": [
@@ -81,10 +77,6 @@
     ]
    ],
    "against": [
-    [
-     "quarterback",
-     "UCF are on Alonza Barnett III, not season leader Keyone Jenkins (at least two games running)"
-    ],
     [
      "line",
      "line has moved 3 toward ISU"
@@ -117,11 +109,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.2823895263115243,
+   "price": 0.26226971821765654,
    "fpi": 0.18430211997946444,
    "total": 37.5,
-   "moved": 1.0,
-   "toward": "WYO",
+   "moved": null,
+   "toward": null,
    "for": [
     [
      "form",
@@ -161,15 +153,15 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.36944134018176367,
+   "price": 0.39253143427377973,
    "fpi": 0.32661746460241414,
    "total": 46.5,
-   "moved": 1.5,
+   "moved": 2.5,
    "toward": "KU",
    "for": [
     [
      "line",
-     "line has moved 1.5 toward KU"
+     "line has moved 2.5 toward KU"
     ]
    ],
    "against": []
@@ -531,7 +523,7 @@
    },
    "price": 0.32471814186337733,
    "fpi": 0.2379697597618911,
-   "total": 44.5,
+   "total": 43.5,
    "moved": null,
    "toward": null,
    "for": [
@@ -657,7 +649,7 @@
    },
    "price": 0.32471814186337733,
    "fpi": 0.29386750339070317,
-   "total": 51.5,
+   "total": 52.5,
    "moved": 3.0,
    "toward": "KSU",
    "for": [
@@ -963,7 +955,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-20",
-      "note": "Mayfield (foot) is trending in the right direction to start Sunday's game against the Lions after looking good in Friday's practice, Scott Smith of the Buccaneers' official site reports."
+      "note": "Mayfield (foot) is practicing again Friday, Greg Auman of Fox Sports reports."
      }
     ]
    },
@@ -1019,7 +1011,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-20",
-      "note": "Beck (back) will not practice Friday, Theo Mackie of The Arizona Republic reports."
+      "note": "Beck (back) is listed as questionable for Sunday's game at Kansas City, Theo Mackie of The Arizona Republic reports."
      },
      {
       "name": "Gardner Minshew II",
@@ -1174,15 +1166,7 @@
     "streak": -5,
     "rest": 7,
     "qb": null,
-    "qb_inj": [
-     {
-      "name": "Geno Smith",
-      "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-20",
-      "note": "Smith (ankle) will practice Friday, and head coach Aaron Glenn said \"things look promising for him playing Sunday,\" Brian Costello of the New York Post reports."
-     }
-    ]
+    "qb_inj": []
    },
    "fav": {
     "abbr": "LAC",
@@ -1213,10 +1197,6 @@
    ],
    "against": [
     [
-     "injury",
-     "NYJ QB listed: Geno Smith Questionable (2026-11-20)"
-    ],
-    [
      "form",
      "NYJ have lost 5 straight"
     ]
@@ -1244,10 +1224,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.22435249875681773,
+   "price": 0.21317457087163838,
    "fpi": 0.1862451973125342,
    "total": 40.5,
-   "moved": 1.5,
+   "moved": 2.0,
    "toward": "DEN",
    "for": [],
    "against": [
@@ -1261,7 +1241,7 @@
     ],
     [
      "line",
-     "line has moved 1.5 toward DEN"
+     "line has moved 2 toward DEN"
     ]
    ]
   },
