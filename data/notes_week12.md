@@ -47,3 +47,14 @@ favourite changes. ECU at Army: line has moved 1.5 toward Army, which
 now counts against the ECU candidate (36%). Bengals-Commanders total up
 to 54.5, so the tiebreaker is 54. No dated news found on UCF's or Ohio
 State's quarterback beyond Tuesday's.
+
+## Saturday morning (Nov 21)
+
+Thu/Fri: HOU W 26-3, ISU L 17-48 (UCF won big; Iowa State had become the
+market favourite on Friday), UNM W 24-17. 2-1.
+
+- Jets: Geno Smith no longer on ESPN's injury list; he said he intends
+  to play (Nov 18-19 reports). Touches the reason the Jets were left
+  off. He has LAC.
+- Texas Tech line now 4 toward TTU, Utah 3 toward Utah (he has both).
+- Michigan-UCLA total down to 36.5.
