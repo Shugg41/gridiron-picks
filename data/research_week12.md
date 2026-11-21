@@ -1,6 +1,6 @@
 # Week 12 research
 
-Built Fri Nov 20, 9:14PM ET from ESPN data (the 30 games on the week 12 board). 30 games read, 12 underdogs priced 22%-47% whose reasons outweigh the reasons against.
+Built Sat Nov 21, 8:58AM ET from ESPN data (the 30 games on the week 12 board). 30 games read, 13 underdogs priced 22%-47% whose reasons outweigh the reasons against.
 
 Reasons are observations, not a rating. Check anything about who is playing against a dated source before acting on it.
 
@@ -14,6 +14,13 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (style): total of 41.5: few possessions, less room for the better team
 - **for** (style): OSU give it away 1.3 times a game, NEB 0.7
 - **for** (line): line has moved 2 toward NEB
+
+### WYO over UNM — 26% · UNM @ WYO · Fri 9:00pm
+- WYO: 7-3, won 5 straight, last: beat UTEP 27-15
+- UNM: 8-2, last: lost to UNLV 17-21
+- **for** (quarterback): UNM are on Toa Fa'avae, not season leader Luke Moga (at least two games running)
+- **for** (form): WYO have won 5 straight
+- **for** (style): total of 37.5: few possessions, less room for the better team
 
 ### UNC over UVA — 46% · UNC @ UVA · Sat 12:30pm
 - UNC: 5-5, last: lost to LOU 14-16
@@ -82,14 +89,14 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 ### MICH over UCLA — 42% · UCLA @ MICH · Sat 3:30pm
 - MICH: 5-5, lost 2 straight, last: lost to ORE 7-31
 - UCLA: 10-0, won 10 straight, last: beat ILL 22-14
-- **for** (style): total of 37.5: few possessions, less room for the better team
+- **for** (style): total of 36.5: few possessions, less room for the better team
 - **for** (line): line has moved 2 toward MICH
 - *against* (form): UCLA have won 10 straight
 
-### KU over BYU — 39% · BYU @ KU · Sat 12:00pm
+### KU over BYU — 37% · BYU @ KU · Sat 12:00pm
 - KU: 4-6, last: beat WVU 37-14
 - BYU: 8-2, last: beat BAY 28-7
-- **for** (line): line has moved 2.5 toward KU
+- **for** (line): line has moved 1.5 toward KU
 
 ## Every game
 
@@ -97,30 +104,30 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 |---|---|---|---|---|---|---|---|
 | IND @ HOU | Thu 8:15pm | HOU | 17% | 44.5 | 7 to HOU | 1 | 1 |
 | ISU @ UCF | Fri 6:00pm | ISU | 46% | 50.5 | 3 to ISU | 1 | 1 |
-| UNM @ WYO | Fri 9:00pm | UNM | 26% | 37.5 |  | 2 | 1 |
-| BYU @ KU | Sat 12:00pm | BYU | 39% | 46.5 | 2.5 to KU | 1 | 0 |
+| UNM @ WYO | Fri 9:00pm | UNM | 26% | 37.5 |  | 3 | 0 |
+| BYU @ KU | Sat 12:00pm | BYU | 37% | 46.5 | 1.5 to KU | 1 | 0 |
 | OSU @ NEB | Sat 12:00pm | OSU | 42% | 41.5 | 2 to NEB | 5 | 0 |
 | NW @ MINN | Sat 12:00pm | NW | 44% | 41.5 | 0.5 to MINN | 3 | 1 |
-| ECU @ ARMY | Sat 12:00pm | ARMY | 36% | 46.5 | 1.5 to ARMY | 3 | 2 |
+| ECU @ ARMY | Sat 12:00pm | ARMY | 36% | 45.5 | 1.5 to ARMY | 3 | 2 |
 | MEM @ NAVY | Sat 12:00pm | MEM | 44% | 67.5 | 0.5 to NAVY | 2 | 0 |
 | UNC @ UVA | Sat 12:30pm | UVA | 46% | 41.5 |  | 3 | 0 |
 | IOWA @ ILL | Sat 2:30pm | IOWA | 30% | 40.5 | 3 to IOWA | 2 | 1 |
-| UCLA @ MICH | Sat 3:30pm | UCLA | 42% | 37.5 | 2 to MICH | 2 | 1 |
-| IND @ WASH | Sat 3:30pm | IND | 32% | 43.5 |  | 2 | 0 |
+| UCLA @ MICH | Sat 3:30pm | UCLA | 42% | 36.5 | 2 to MICH | 2 | 1 |
+| IND @ WASH | Sat 3:30pm | IND | 32% | 44.5 |  | 2 | 0 |
 | LSU @ TENN | Sat 3:30pm | LSU | 46% | 45.5 |  | 3 | 0 |
-| TTU @ BAY | Sat 3:30pm | TTU | 39% | 56.5 | 3 to TTU | 1 | 1 |
+| TTU @ BAY | Sat 3:30pm | TTU | 37% | 57.5 | 4 to TTU | 1 | 1 |
 | ARIZ @ KSU | Sat 7:00pm | ARIZ | 32% | 52.5 | 3 to KSU | 1 | 2 |
 | UK @ MIZZ | Sat 7:30pm | MIZZ | 39% | 48.5 | 2 to UK | 2 | 0 |
-| UTAH @ TCU | Sat 9:00pm | UTAH | 32% | 46.5 | 2 to UTAH | 1 | 2 |
+| UTAH @ TCU | Sat 9:00pm | UTAH | 30% | 46.5 | 3 to UTAH | 1 | 2 |
 | OKST @ ASU | Sat 10:15pm | OKST | 44% | 59.5 | 1.5 to ASU | 1 | 1 |
 | MIA @ BUF | Sun 1:00pm | BUF | 11% | 44.5 | 5 to BUF | 0 | 4 |
 | NO @ CHI | Sun 1:00pm | CHI | 19% | 48.5 | 5 to CHI | 0 | 3 |
-| TEN @ DAL | Sun 1:00pm | DAL | 26% | 54.5 | 2 to DAL | 0 | 2 |
+| TEN @ DAL | Sun 1:00pm | DAL | 28% | 54.5 | 1 to DAL | 0 | 1 |
 | TB @ DET | Sun 1:00pm | DET | 34% | 45.5 | 1 to DET | 1 | 2 |
 | ARI @ KC | Sun 1:00pm | KC | 11% | 40.5 | 5 to KC | 0 | 2 |
 | PIT @ PHI | Sun 1:00pm | PIT | 40% | 37.5 | 9 to PIT | 2 | 2 |
 | BAL @ CAR | Sun 1:00pm | CAR | 41% | 43.5 | 7.5 to CAR | 0 | 3 |
-| NYJ @ LAC | Sun 4:05pm | LAC | 41% | 41.5 | 6.5 to NYJ | 3 | 1 |
+| NYJ @ LAC | Sun 4:05pm | LAC | 41% | 42.5 | 6.5 to NYJ | 3 | 1 |
 | LV @ DEN | Sun 4:25pm | DEN | 21% | 40.5 | 2 to DEN | 0 | 3 |
 | JAC @ NYG | Sun 4:25pm | JAC | 32% | 46.5 | 4.5 to JAC | 1 | 2 |
 | MIN @ SF | Sun 8:20pm | SF | 41% | 46.5 | 0.5 to MIN | 0 | 1 |

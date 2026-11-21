@@ -1,6 +1,6 @@
 {
  "week": 12,
- "made": "Fri Nov 20, 9:14PM ET",
+ "made": "Sat Nov 21, 8:58AM ET",
  "source": "the 30 games on the week 12 board",
  "games": [
   {
@@ -66,14 +66,14 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.5014265178415153,
+   "fpi": 0.6140455149815697,
    "total": 50.5,
    "moved": 3.0,
    "toward": "ISU",
    "for": [
     [
      "line",
-     "FPI makes UCF the favourite (50%)"
+     "FPI makes UCF the favourite (61%)"
     ]
    ],
    "against": [
@@ -94,11 +94,7 @@
     "record": "7-3",
     "streak": 5,
     "rest": 5,
-    "qb": {
-     "now": "Landon Sims",
-     "leader": "Tyler Hughes",
-     "settled": false
-    },
+    "qb": null,
     "qb_inj": []
    },
    "fav": {
@@ -106,15 +102,23 @@
     "record": "8-2",
     "streak": -1,
     "rest": 6,
-    "qb": null,
+    "qb": {
+     "now": "Toa Fa'avae",
+     "leader": "Luke Moga",
+     "settled": true
+    },
     "qb_inj": []
    },
    "price": 0.26226971821765654,
-   "fpi": 0.18430211997946444,
+   "fpi": 0.19896237751192375,
    "total": 37.5,
    "moved": null,
    "toward": null,
    "for": [
+    [
+     "quarterback",
+     "UNM are on Toa Fa'avae, not season leader Luke Moga (at least two games running)"
+    ],
     [
      "form",
      "WYO have won 5 straight"
@@ -124,12 +128,7 @@
      "total of 37.5: few possessions, less room for the better team"
     ]
    ],
-   "against": [
-    [
-     "quarterback",
-     "WYO are on Landon Sims, not season leader Tyler Hughes (new last week)"
-    ]
-   ]
+   "against": []
   },
   {
    "league": "CFB",
@@ -153,15 +152,15 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.39253143427377973,
-   "fpi": 0.32661746460241414,
+   "price": 0.36944134018176367,
+   "fpi": 0.33078101376694835,
    "total": 46.5,
-   "moved": 2.5,
+   "moved": 1.5,
    "toward": "KU",
    "for": [
     [
      "line",
-     "line has moved 2.5 toward KU"
+     "line has moved 1.5 toward KU"
     ]
    ],
    "against": []
@@ -193,7 +192,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.326967256981462,
+   "fpi": 0.3236939598712292,
    "total": 41.5,
    "moved": 2.0,
    "toward": "NEB",
@@ -248,7 +247,7 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.27496040728443516,
+   "fpi": 0.274616754421951,
    "total": 41.5,
    "moved": 0.5,
    "toward": "MINN",
@@ -296,8 +295,8 @@
     "qb_inj": []
    },
    "price": 0.35806478442778267,
-   "fpi": 0.39257802632674244,
-   "total": 46.5,
+   "fpi": 0.38908793913295703,
+   "total": 45.5,
    "moved": 1.5,
    "toward": "ARMY",
    "for": [
@@ -348,7 +347,7 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.37393297662869374,
+   "fpi": 0.3776123839200901,
    "total": 67.5,
    "moved": 0.5,
    "toward": "NAVY",
@@ -387,7 +386,7 @@
     "qb_inj": []
    },
    "price": 0.46378241330310566,
-   "fpi": 0.5581589131180154,
+   "fpi": 0.5616968423432813,
    "total": 41.5,
    "moved": null,
    "toward": null,
@@ -430,7 +429,7 @@
     "qb_inj": []
    },
    "price": 0.3032235733700106,
-   "fpi": 0.38804264152495066,
+   "fpi": 0.3887626490075381,
    "total": 40.5,
    "moved": 3.0,
    "toward": "IOWA",
@@ -474,14 +473,14 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.44804347406461265,
-   "total": 37.5,
+   "fpi": 0.44504836211538934,
+   "total": 36.5,
    "moved": 2.0,
    "toward": "MICH",
    "for": [
     [
      "style",
-     "total of 37.5: few possessions, less room for the better team"
+     "total of 36.5: few possessions, less room for the better team"
     ],
     [
      "line",
@@ -522,8 +521,8 @@
     "qb_inj": []
    },
    "price": 0.32471814186337733,
-   "fpi": 0.2379697597618911,
-   "total": 43.5,
+   "fpi": 0.23537086665552703,
+   "total": 44.5,
    "moved": null,
    "toward": null,
    "for": [
@@ -561,7 +560,7 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.5040135334184289,
+   "fpi": 0.5037717617317353,
    "total": 45.5,
    "moved": null,
    "toward": null,
@@ -603,10 +602,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.39253143427377973,
-   "fpi": 0.4211669290467583,
-   "total": 56.5,
-   "moved": 3.0,
+   "price": 0.36944134018176367,
+   "fpi": 0.4207639902617274,
+   "total": 57.5,
+   "moved": 4.0,
    "toward": "TTU",
    "for": [
     [
@@ -617,7 +616,7 @@
    "against": [
     [
      "line",
-     "line has moved 3 toward TTU"
+     "line has moved 4 toward TTU"
     ]
    ]
   },
@@ -648,7 +647,7 @@
     "qb_inj": []
    },
    "price": 0.32471814186337733,
-   "fpi": 0.29386750339070317,
+   "fpi": 0.2991073160734119,
    "total": 52.5,
    "moved": 3.0,
    "toward": "KSU",
@@ -692,7 +691,7 @@
     "qb_inj": []
    },
    "price": 0.3925314342737797,
-   "fpi": 0.40136397920847944,
+   "fpi": 0.400871912152589,
    "total": 48.5,
    "moved": 2.0,
    "toward": "UK",
@@ -730,10 +729,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.32471814186337733,
-   "fpi": 0.3042406775485126,
+   "price": 0.3032235733700106,
+   "fpi": 0.31258176885229094,
    "total": 46.5,
-   "moved": 2.0,
+   "moved": 3.0,
    "toward": "UTAH",
    "for": [
     [
@@ -748,7 +747,7 @@
     ],
     [
      "line",
-     "line has moved 2 toward UTAH"
+     "line has moved 3 toward UTAH"
     ]
    ]
   },
@@ -779,7 +778,7 @@
     "qb_inj": []
    },
    "price": 0.43978467981733405,
-   "fpi": 0.3540668966081486,
+   "fpi": 0.35623327931622495,
    "total": 59.5,
    "moved": 1.5,
    "toward": "ASU",
@@ -920,20 +919,16 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.2598073675968221,
+   "price": 0.28495575798266715,
    "fpi": 0.22594353267735823,
    "total": 54.5,
-   "moved": 2.0,
+   "moved": 1.0,
    "toward": "DAL",
    "for": [],
    "against": [
     [
      "form",
      "TEN have lost 3 straight"
-    ],
-    [
-     "line",
-     "line has moved 2 toward DAL"
     ]
    ]
   },
@@ -955,7 +950,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-20",
-      "note": "Mayfield (foot) is practicing again Friday, Greg Auman of Fox Sports reports."
+      "note": "Mayfield (foot) is trending in the right direction to start Sunday's game against the Lions after looking good in Friday's practice, Scott Smith of the Buccaneers' official site reports."
      }
     ]
    },
@@ -1011,7 +1006,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-20",
-      "note": "Beck (back) is listed as questionable for Sunday's game at Kansas City, Theo Mackie of The Arizona Republic reports."
+      "note": "Beck (back) will not practice Friday, Theo Mackie of The Arizona Republic reports."
      },
      {
       "name": "Gardner Minshew II",
@@ -1178,7 +1173,7 @@
    },
    "price": 0.4101058393642264,
    "fpi": 0.3700132771485616,
-   "total": 41.5,
+   "total": 42.5,
    "moved": 6.5,
    "toward": "NYJ",
    "for": [
