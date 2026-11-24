@@ -551,3 +551,11 @@ assert [(g.away, g.home, g.away_code, g.home_code) for g in vb] == [
     ("Colts", "Texans", "IND", "HOU"),
     ("Ohio State", "Nebraska", "OSU", "NEB")], [(g.away, g.home) for g in vb]
 print("a stadium line under Preview is skipped, not read as the home team OK")
+
+# ── kickoffs printed with the zone (week 13) ───────────────────────────
+EST_BOARD = VENUE_BOARD.replace("Thu 8:15pm", "Thu 8:15pm EST").replace(
+    "Sat 12:00pm", "Sat 12:00pm EST")
+eb = splash.parse_board(EST_BOARD).games
+assert [(g.away_code, g.home_code) for g in eb] == [("IND", "HOU"), ("OSU", "NEB")], eb
+assert eb[0].kickoff_iso == vb[0].kickoff_iso, (eb[0].kickoff_iso, vb[0].kickoff_iso)
+print("a kickoff with EST after it still parses, at the same instant OK")

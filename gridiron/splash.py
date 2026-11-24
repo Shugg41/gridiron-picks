@@ -37,7 +37,11 @@ _DAY = re.compile(
     r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+"
     r"([A-Z][a-z]{2})\s+(\d{1,2})$")
 _KICK = re.compile(r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+"
-                   r"(?:([A-Z][a-z]{2})\s+(\d{1,2})\s+)?(\d{1,2}):(\d{2})\s*(am|pm)$",
+                   r"(?:([A-Z][a-z]{2})\s+(\d{1,2})\s+)?(\d{1,2}):(\d{2})\s*(am|pm)"
+                   # Week 13's board started printing the zone: "Wed 8:00pm
+                   # EST". Times are Eastern either way, so it is accepted
+                   # and ignored rather than letting every game drop out.
+                   r"(?:\s+(?:E[SD]?T))?$",
                    re.I)
 _STATUS = re.compile(r"^(FINAL|LIVE\b.*|Q[1-4]\b.*|HALF.*|OT.*)$", re.I)
 _RECORD = re.compile(r"^\d{1,2}-\d{1,2}(?:-\d{1,2})?$")
