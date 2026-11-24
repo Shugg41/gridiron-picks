@@ -1,6 +1,6 @@
 # Week 13 research
 
-Built Tue Nov 24, 8:04AM ET from ESPN data (the 42 games on the week 13 board). 42 games read, 17 underdogs priced 22%-47% whose reasons outweigh the reasons against.
+Built Tue Nov 24, 6:56PM ET from ESPN data (the 42 games on the week 13 board). 42 games read, 17 underdogs priced 22%-47% whose reasons outweigh the reasons against.
 
 Reasons are observations, not a rating. Check anything about who is playing against a dated source before acting on it.
 
@@ -15,7 +15,7 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (style): total of 41.5: few possessions, less room for the better team
 - **for** (style): AFA run the option, which shortens the game
 
-### OKLA over MIZZ — 46% · OKLA @ MIZZ · Sat 4:15pm
+### OKLA over MIZZ — 44% · OKLA @ MIZZ · Sat 4:15pm
 - OKLA: 7-4, won 3 straight, last: beat TA&M 28-7
 - MIZZ: 7-4, last: beat UK 28-14
 - **for** (form): OKLA have won 3 straight
@@ -37,13 +37,13 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (style): total of 38.5: few possessions, less room for the better team
 - **for** (line): line has moved 3.5 toward MICH
 
-### CLEM over SCAR — 37% · SCAR @ CLEM · Sat 3:00pm
+### CLEM over SCAR — 36% · SCAR @ CLEM · Sat 3:00pm
 - CLEM: 7-4, last: beat DUKE 20-10
 - SCAR: 6-5, lost 2 straight, last: lost to UGA 6-34
 - **for** (form): SCAR have lost 2 straight
 - **for** (form): last three games: CLEM +0 a game, SCAR -16
 - **for** (style): total of 41.5: few possessions, less room for the better team
-- **for** (line): FPI gives CLEM 47%, the market 37%
+- **for** (line): FPI gives CLEM 47%, the market 36%
 - *against* (quarterback): CLEM are on Trent Pearman, not season leader Tait Reynolds (new last week)
 
 ### UVA over VT — 43% · UVA @ VT · Sat 3:00pm
@@ -62,7 +62,7 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (style): total of 35.5: few possessions, less room for the better team
 - *against* (injury): NE QB listed: Drake Maye Out (2026-11-23)
 - ESPN, 2026-11-23: Herbert entered the concussion protocol after Sunday's 27-24 loss to the Jets, Noah Furtado of The Athletic reports.
-- ESPN, 2026-11-23: For now, Maye -- who suffered a fractured right fibula during a Week 10 loss to the Lions -- remains on the Patriots' 53-man roster rather than injured reserve, with coach Mike Vrabel citing the "balance" the team is hoping to strike with regard to managing its remaining designated to return from IR slots, Mike Reiss of ESPN reports.
+- ESPN, 2026-11-23: For now, Maye -- who suffered a fractured right fibula during a Week 10 loss to the Lions -- remains on the Patriots' 53-man roster rather than injured reserve, with coach Mike Vrabel citing the "balance" the team is hoping to strike with regard to managing its remaining designated to return from IR slots, Mike Reiss of ESPN.com reports.
 
 ### NCST over UNC — 37% · NCST @ UNC · Sat 12:00pm
 - NCST: 5-6, last: beat FSU 28-10
@@ -77,7 +77,7 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 - **for** (line): line has moved 4.5 toward UCLA
 - **for** (line): FPI makes UCLA the favourite (53%)
 
-### BAY over HOU — 37% · BAY @ HOU · Sat 9:30pm
+### BAY over HOU — 39% · BAY @ HOU · Sat 9:30pm
 - BAY: 6-5, lost 2 straight, last: lost to TTU 10-20
 - HOU: 8-3, last: beat WVU 34-31
 - **for** (quarterback): HOU are on Keisean Henderson, not season leader Conner Weigman (new last week)
@@ -136,40 +136,40 @@ Reasons are observations, not a rating. Check anything about who is playing agai
 | PHI @ DAL | Thu 4:30pm | DAL | 26% | 47.5 | 7 to DAL | 0 | 2 |
 | KC @ BUF | Thu 8:20pm | BUF | 41% | 47.5 | 0.5 to BUF | 2 | 1 |
 | NEB @ IOWA | Fri 12:00pm | IOWA | 39% | 40.5 | 2 to NEB | 2 | 1 |
-| TLSA @ UTSA | Fri 12:00pm | UTSA | 46% | 58.5 | 1 to TLSA | 3 | 0 |
-| TOL @ OHIO | Fri 12:00pm | TOL | 43% | 48.5 | 1.5 to OHIO | 1 | 1 |
+| TLSA @ UTSA | Fri 12:00pm | UTSA | 46% | 57.5 | 1 to TLSA | 3 | 0 |
+| TOL @ OHIO | Fri 12:00pm | TOL | 43% | 45.5 | 1.5 to OHIO | 1 | 1 |
 | DEN @ PIT | Fri 3:00pm | DEN | 41% | 37.5 | 1.5 to DEN | 1 | 2 |
 | APP @ USA | Fri 3:00pm | USA | 42% | 56.5 | 1 to USA | 1 | 0 |
-| FLA @ FSU | Fri 3:30pm | FLA | 36% | 52.5 | 1.5 to FLA | 0 | 1 |
+| FLA @ FSU | Fri 3:30pm | FLA | 36% | 53.5 | 1.5 to FLA | 0 | 1 |
 | AFA @ UNM | Fri 4:30pm | UNM | 35% | 41.5 | 0.5 to AFA | 5 | 0 |
 | TEX @ TXAM | Fri 7:30pm | TEX | 24% | 40.5 | 9 to TEX | 1 | 3 |
 | MINN @ WIS | Fri 7:30pm | WIS | 32% | 37.5 | 1.5 to WIS | 1 | 1 |
 | MICH @ OSU | Sat 12:00pm | OSU | 26% | 38.5 | 3.5 to MICH | 3 | 0 |
 | LOU @ UK | Sat 12:00pm | LOU | 43% | 54.5 | 4.5 to LOU | 0 | 3 |
-| NCST @ UNC | Sat 12:00pm | UNC | 37% | 53.5 | 7 to UNC | 2 | 1 |
-| CONN @ WYO | Sat 12:00pm | CONN | 43% | 46.5 | 0.5 to CONN | 0 | 1 |
+| NCST @ UNC | Sat 12:00pm | UNC | 37% | 54.5 | 7 to UNC | 2 | 1 |
+| CONN @ WYO | Sat 12:00pm | CONN | 43% | 45.5 | 0.5 to CONN | 0 | 1 |
 | LT @ GASO | Sat 12:00pm | GASO | 44% | 54.5 | 1 to GASO | 1 | 1 |
-| ILL @ NW | Sat 12:30pm | NW | 43% | 49.5 | 6.5 to NW | 2 | 1 |
-| SCAR @ CLEM | Sat 3:00pm | SCAR | 37% | 41.5 | 8.5 to SCAR | 4 | 1 |
+| ILL @ NW | Sat 12:30pm | NW | 43% | 50.5 | 6.5 to NW | 2 | 1 |
+| SCAR @ CLEM | Sat 3:00pm | SCAR | 36% | 41.5 | 9 to SCAR | 4 | 1 |
 | UVA @ VT | Sat 3:00pm | VT | 43% | 51.5 | 1.5 to VT | 3 | 1 |
 | USC @ UCLA | Sat 3:30pm | USC | 34% | 45.5 | 4.5 to UCLA | 2 | 0 |
 | DUKE @ WAKE | Sat 3:30pm | WAKE | 19% | 55.5 | 4 to WAKE | 1 | 2 |
-| OKLA @ MIZZ | Sat 4:15pm | MIZZ | 46% | 41.5 |  | 4 | 0 |
+| OKLA @ MIZZ | Sat 4:15pm | MIZZ | 44% | 41.5 | 1 to MIZZ | 4 | 0 |
 | TENN @ VAN | Sat 7:00pm | TENN | 21% | 43.5 | 10.5 to TENN | 0 | 0 |
-| AUB @ ALA | Sat 7:30pm | ALA | 16% | 49.5 | 6.5 to ALA | 2 | 2 |
+| AUB @ ALA | Sat 7:30pm | ALA | 19% | 49.5 | 4.5 to ALA | 2 | 2 |
 | WASH @ ORE | Sat 7:30pm | ORE | 20% | 50.5 | 1.5 to WASH | 1 | 1 |
-| ASU @ ARIZ | Sat 9:00pm | ARIZ | 30% | 54.5 | 4 to ARIZ | 0 | 2 |
+| ASU @ ARIZ | Sat 9:00pm | ARIZ | 30% | 53.5 | 4 to ARIZ | 0 | 2 |
 | NEV @ UNLV | Sat 9:00pm | UNLV | 37% | 44.5 | 1 to UNLV | 0 | 0 |
-| BAY @ HOU | Sat 9:30pm | HOU | 37% | 55.5 | 1 to HOU | 1 | 0 |
-| ORST @ FRES | Sat 10:00pm | FRES | 43% | 56.5 | 1.5 to FRES | 0 | 2 |
+| BAY @ HOU | Sat 9:30pm | HOU | 39% | 55.5 |  | 1 | 0 |
+| ORST @ FRES | Sat 10:00pm | FRES | 43% | 57.5 | 1.5 to FRES | 0 | 2 |
 | NO @ CIN | Sun 1:00pm | CIN | 22% | 50.5 | 3.5 to CIN | 1 | 1 |
 | NYG @ IND | Sun 1:00pm | NYG | 31% | 41.5 | 9 to NYG | 1 | 0 |
 | NYJ @ MIA | Sun 1:00pm | NYJ | 40% | 40.5 | 5 to NYJ | 0 | 3 |
-| ATL @ MIN | Sun 1:00pm | MIN | 30% | 42.5 | 2.5 to MIN | 2 | 2 |
-| TEN @ JAC | Sun 1:00pm | JAC | 14% | 47.5 | 9 to JAC | 0 | 1 |
-| BAL @ HOU | Sun 1:00pm | HOU | 31% | 46.5 | 5 to HOU | 0 | 3 |
+| ATL @ MIN | Sun 1:00pm | MIN | 30% | 41.5 | 2.5 to MIN | 2 | 2 |
+| TEN @ JAC | Sun 1:00pm | JAC | 14% | 48.5 | 9 to JAC | 0 | 1 |
+| BAL @ HOU | Sun 1:00pm | HOU | 30% | 47.5 | 5.5 to HOU | 0 | 3 |
 | NE @ LAC | Sun 4:05pm | LAC | 45% | 35.5 | 1 to NE | 3 | 1 |
-| WAS @ ARI | Sun 4:25pm | WAS | 28% | 42.5 | 3 to WAS | 2 | 3 |
-| SEA @ SF | Sun 4:25pm | SF | 41% | 46.5 | 1.5 to SF | 1 | 2 |
-| LV @ CLE | Sun 8:20pm | CLE | 37% | 41.5 | 2 to CLE | 0 | 3 |
+| WAS @ ARI | Sun 4:25pm | WAS | 30% | 41.5 | 2.5 to WAS | 2 | 3 |
+| SEA @ SF | Sun 4:25pm | SF | 40% | 45.5 | 2 to SF | 1 | 2 |
+| LV @ CLE | Sun 8:20pm | CLE | 37% | 40.5 | 2 to CLE | 0 | 3 |
 | CAR @ TB | Mon 8:15pm | TB | 41% | 43.5 | 0.5 to CAR | 1 | 0 |

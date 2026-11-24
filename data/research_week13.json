@@ -1,6 +1,6 @@
 {
  "week": 13,
- "made": "Tue Nov 24, 8:04AM ET",
+ "made": "Tue Nov 24, 6:56PM ET",
  "source": "the 42 games on the week 13 board",
  "games": [
   {
@@ -289,7 +289,7 @@
    },
    "price": 0.46378241330310566,
    "fpi": 0.5004352096741154,
-   "total": 58.5,
+   "total": 57.5,
    "moved": 1.0,
    "toward": "TLSA",
    "for": [
@@ -332,7 +332,7 @@
    },
    "price": 0.4278627076600358,
    "fpi": 0.39455960360937886,
-   "total": 48.5,
+   "total": 45.5,
    "moved": 1.5,
    "toward": "OHIO",
    "for": [
@@ -411,7 +411,7 @@
    },
    "price": 0.35806478442778267,
    "fpi": 0.3989052236369394,
-   "total": 52.5,
+   "total": 53.5,
    "moved": 1.5,
    "toward": "FLA",
    "for": [],
@@ -687,7 +687,7 @@
    },
    "price": 0.36944134018176367,
    "fpi": 0.29767789180931603,
-   "total": 53.5,
+   "total": 54.5,
    "moved": 7.0,
    "toward": "UNC",
    "for": [
@@ -735,7 +735,7 @@
    },
    "price": 0.4278627076600358,
    "fpi": 0.40408486300080154,
-   "total": 46.5,
+   "total": 45.5,
    "moved": 0.5,
    "toward": "CONN",
    "for": [],
@@ -814,7 +814,7 @@
    },
    "price": 0.42786270766003587,
    "fpi": 0.32301916501299555,
-   "total": 49.5,
+   "total": 50.5,
    "moved": 6.5,
    "toward": "NW",
    "for": [
@@ -860,10 +860,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.36944134018176367,
+   "price": 0.35806478442778267,
    "fpi": 0.4669619127154911,
    "total": 41.5,
-   "moved": 8.5,
+   "moved": 9.0,
    "toward": "SCAR",
    "for": [
     [
@@ -880,7 +880,7 @@
     ],
     [
      "line",
-     "FPI gives CLEM 47%, the market 37%"
+     "FPI gives CLEM 47%, the market 36%"
     ]
    ],
    "against": [
@@ -1043,11 +1043,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.46378241330310566,
+   "price": 0.43978467981733405,
    "fpi": 0.4882510353347661,
    "total": 41.5,
-   "moved": null,
-   "toward": null,
+   "moved": 1.0,
+   "toward": "MIZZ",
    "for": [
     [
      "form",
@@ -1124,10 +1124,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.15865525393145707,
+   "price": 0.18975814982832484,
    "fpi": 0.15105025497018576,
    "total": 49.5,
-   "moved": 6.5,
+   "moved": 4.5,
    "toward": "ALA",
    "for": [
     [
@@ -1146,7 +1146,7 @@
     ],
     [
      "line",
-     "line has moved 6.5 toward ALA"
+     "line has moved 4.5 toward ALA"
     ]
    ]
   },
@@ -1218,7 +1218,7 @@
    },
    "price": 0.3032235733700106,
    "fpi": 0.2535197409375769,
-   "total": 54.5,
+   "total": 53.5,
    "moved": 4.0,
    "toward": "ARIZ",
    "for": [],
@@ -1289,11 +1289,11 @@
     },
     "qb_inj": []
    },
-   "price": 0.36944134018176367,
+   "price": 0.3925314342737797,
    "fpi": 0.41083641300944906,
    "total": 55.5,
-   "moved": 1.0,
-   "toward": "HOU",
+   "moved": null,
+   "toward": null,
    "for": [
     [
      "quarterback",
@@ -1330,7 +1330,7 @@
    },
    "price": 0.42786270766003587,
    "fpi": 0.4857861563687824,
-   "total": 56.5,
+   "total": 57.5,
    "moved": 1.5,
    "toward": "FRES",
    "for": [],
@@ -1511,7 +1511,7 @@
    },
    "price": 0.29795092300728476,
    "fpi": 0.21961774613865015,
-   "total": 42.5,
+   "total": 41.5,
    "moved": 2.5,
    "toward": "MIN",
    "for": [
@@ -1559,7 +1559,7 @@
    },
    "price": 0.13599641509479998,
    "fpi": 0.14925795895244587,
-   "total": 47.5,
+   "total": 48.5,
    "moved": 9.0,
    "toward": "JAC",
    "for": [],
@@ -1604,10 +1604,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.31120973253416895,
+   "price": 0.29795092300728476,
    "fpi": 0.21286633623842,
-   "total": 46.5,
-   "moved": 5.0,
+   "total": 47.5,
+   "moved": 5.5,
    "toward": "HOU",
    "for": [],
    "against": [
@@ -1621,7 +1621,7 @@
     ],
     [
      "line",
-     "line has moved 5 toward HOU"
+     "line has moved 5.5 toward HOU"
     ]
    ]
   },
@@ -1643,7 +1643,7 @@
       "pos": "QB",
       "status": "Out",
       "date": "2026-11-23",
-      "note": "For now, Maye -- who suffered a fractured right fibula during a Week 10 loss to the Lions -- remains on the Patriots' 53-man roster rather than injured reserve, with coach Mike Vrabel citing the \"balance\" the team is hoping to strike with regard to managing its remaining designated to return from IR slots, Mike Reiss of ESPN reports."
+      "note": "For now, Maye -- who suffered a fractured right fibula during a Week 10 loss to the Lions -- remains on the Patriots' 53-man roster rather than injured reserve, with coach Mike Vrabel citing the \"balance\" the team is hoping to strike with regard to managing its remaining designated to return from IR slots, Mike Reiss of ESPN.com reports."
      }
     ]
    },
@@ -1715,10 +1715,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.28495575798266715,
+   "price": 0.29795092300728476,
    "fpi": 0.43313072836863764,
-   "total": 42.5,
-   "moved": 3.0,
+   "total": 41.5,
+   "moved": 2.5,
    "toward": "WAS",
    "for": [
     [
@@ -1727,7 +1727,7 @@
     ],
     [
      "line",
-     "FPI gives ARI 43%, the market 28%"
+     "FPI gives ARI 43%, the market 30%"
     ]
    ],
    "against": [
@@ -1741,7 +1741,7 @@
     ],
     [
      "line",
-     "line has moved 3 toward WAS"
+     "line has moved 2.5 toward WAS"
     ]
    ]
   },
@@ -1766,8 +1766,8 @@
       "name": "Sam Darnold",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-23",
-      "note": "Darnold (quadriceps/ribs) was suited up for Monday's unofficial practice, Bob Condotta of The Seattle Times reports."
+      "date": "2026-11-24",
+      "note": "Head coach Mike Macdonald said Monday that Darnold (quadriceps/rib) made a \"good bit of progress\" over the Seahawks' Week 11 bye and will start Sunday at San Francisco if he fares well during Wednesday's practice, Brady Henderson of ESPN.com reports."
      }
     ]
    },
@@ -1779,10 +1779,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4101058393642264,
+   "price": 0.3954463718532454,
    "fpi": 0.3326339791700057,
-   "total": 46.5,
-   "moved": 1.5,
+   "total": 45.5,
+   "moved": 2.0,
    "toward": "SF",
    "for": [
     [
@@ -1793,11 +1793,11 @@
    "against": [
     [
      "quarterback",
-     "SEA are on Drew Lock, not season leader Sam Darnold (at least two games running); listed: Sam Darnold Questionable (2026-11-23)"
+     "SEA are on Drew Lock, not season leader Sam Darnold (at least two games running); listed: Sam Darnold Questionable (2026-11-24)"
     ],
     [
      "line",
-     "line has moved 1.5 toward SF"
+     "line has moved 2 toward SF"
     ]
    ]
   },
@@ -1825,7 +1825,7 @@
    },
    "price": 0.3665860103968184,
    "fpi": 0.35214142844975593,
-   "total": 41.5,
+   "total": 40.5,
    "moved": 2.0,
    "toward": "CLE",
    "for": [],
