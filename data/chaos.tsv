@@ -18,8 +18,8 @@ season	week	away	home	team	price	kind	reason	flagged	taken	result
 2026	12	MEM	NAVY	NAVY	0.4160	style	Navy off a bye and run the option, which shortens the game against an 8-2 Memphis	2026-11-17	Y	W
 2026	12	OSU	NEB	NEB	0.4279	form	Last three: NEB +4 a game, OSU -5; OSU on freshman Fahey; line 2.5 toward NEB; total 41.5	2026-11-17	N	W
 2026	12	UCLA	MICH	MICH	0.4160	style	Total 37.5 and line moved 2 toward Michigan; UCLA 10-0 but on backup Dieffenbach	2026-11-20	N	W
-2026	13	AFA	UNM	AFA	0.3468	style	Option team, won 4 straight by 24 a game; UNM QB appears changed	2026-11-26		
-2026	13	MICH	OSU	MICH	0.2623	quarterback	OSU on freshman Fahey, Sayin out since Oct 17; line moved 3.5 to MICH, total 37.5	2026-11-26		
-2026	13	NCST	UNC	NCST	0.3581	quarterback	UNC to freshman Burgess, lost 2 straight incl. 41-24 to UVA	2026-11-26		
-2026	13	SEA	SF	SEA	0.4249	injury	Purdy missed Wed practice with ankle (ESPN 11/25); SEA off a bye	2026-11-26		
-2026	13	UVA	VT	UVA	0.4279	form	VT lost 3 straight, -16 a game; VT 1.4 giveaways a game vs UVA 0.5	2026-11-26		
+2026	13	AFA	UNM	AFA	0.3468	style	Option team, won 4 straight by 24 a game; UNM QB appears changed	2026-11-26	Y	
+2026	13	MICH	OSU	MICH	0.2623	quarterback	OSU on freshman Fahey, Sayin out since Oct 17; line moved 3.5 to MICH, total 37.5	2026-11-26	Y	
+2026	13	NCST	UNC	NCST	0.3581	quarterback	UNC to freshman Burgess, lost 2 straight incl. 41-24 to UVA	2026-11-26	N	
+2026	13	SEA	SF	SEA	0.4249	injury	Purdy missed Wed practice with ankle (ESPN 11/25); SEA off a bye	2026-11-26	N	
+2026	13	UVA	VT	UVA	0.4279	form	VT lost 3 straight, -16 a game; VT 1.4 giveaways a game vs UVA 0.5	2026-11-26	N	
