@@ -1,7 +1,7 @@
 {
  "week": 13,
- "made": "Thu Nov 26, 10:55AM ET",
- "source": "the 42 games on the week 13 board",
+ "made": "Thu Nov 26, 10:40PM ET",
+ "source": "the 39 games on the week 13 board",
  "games": [
   {
    "league": "NFL",
@@ -40,6 +40,50 @@
   },
   {
    "league": "NFL",
+   "away": "KC",
+   "home": "BUF",
+   "kickoff": "2026-11-27T01:20",
+   "when": "Thu 8:20pm",
+   "dog": {
+    "abbr": "KC",
+    "record": "8-2",
+    "streak": 3,
+    "rest": 4,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "BUF",
+    "record": "9-1",
+    "streak": 6,
+    "rest": 4,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4101058393642264,
+   "fpi": 0.43068863990669404,
+   "total": 46.5,
+   "moved": 0.5,
+   "toward": "BUF",
+   "for": [
+    [
+     "form",
+     "KC have won 3 straight"
+    ],
+    [
+     "style",
+     "BUF give it away 1.6 times a game, KC 0.7"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "BUF have won 6 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
    "away": "CHI",
    "home": "DET",
    "kickoff": "2026-11-26T18:00",
@@ -58,7 +102,15 @@
     "streak": 5,
     "rest": 4,
     "qb": null,
-    "qb_inj": []
+    "qb_inj": [
+     {
+      "name": "Caleb Williams",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-26",
+      "note": "Williams said after Thursday's 39-35 win in Detroit that he's \"fine\" and likely just has \"a bruise on his abdomen,\" Jason Lieser of the Chicago Sun-Times reports."
+     }
+    ]
    },
    "price": 0.4547630300184792,
    "fpi": 0.5628730817842805,
@@ -66,6 +118,10 @@
    "moved": 4.0,
    "toward": "CHI",
    "for": [
+    [
+     "injury",
+     "CHI QB listed: Caleb Williams Questionable (2026-11-26)"
+    ],
     [
      "form",
      "DET have won 6 straight"
@@ -101,11 +157,7 @@
     "record": "3-7",
     "streak": 1,
     "rest": 4,
-    "qb": {
-     "now": "Joe Milton",
-     "leader": "Jalen Hurts",
-     "settled": true
-    },
+    "qb": null,
     "qb_inj": []
    },
    "fav": {
@@ -116,66 +168,13 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.2598073675968221,
+   "price": 0.235855796216213,
    "fpi": 0.21885660109118343,
    "total": 49.5,
-   "moved": 7.0,
+   "moved": 8.0,
    "toward": "DAL",
    "for": [],
-   "against": [
-    [
-     "quarterback",
-     "PHI are on Joe Milton, not season leader Jalen Hurts (at least two games running)"
-    ],
-    [
-     "line",
-     "line has moved 7 toward DAL"
-    ]
-   ]
-  },
-  {
-   "league": "NFL",
-   "away": "KC",
-   "home": "BUF",
-   "kickoff": "2026-11-27T01:20",
-   "when": "Thu 8:20pm",
-   "dog": {
-    "abbr": "KC",
-    "record": "8-2",
-    "streak": 3,
-    "rest": 4,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "BUF",
-    "record": "9-1",
-    "streak": 6,
-    "rest": 4,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.4101058393642264,
-   "fpi": 0.43068863990669404,
-   "total": 45.5,
-   "moved": 0.5,
-   "toward": "BUF",
-   "for": [
-    [
-     "form",
-     "KC have won 3 straight"
-    ],
-    [
-     "style",
-     "BUF give it away 1.6 times a game, KC 0.7"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "BUF have won 6 straight"
-    ]
-   ]
+   "against": []
   },
   {
    "league": "NFL",
@@ -247,10 +246,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3925314342737797,
+   "price": 0.41600623568032036,
    "fpi": 0.420740290560897,
    "total": 40.5,
-   "moved": 2.0,
+   "moved": 3.0,
    "toward": "NEB",
    "for": [
     [
@@ -259,7 +258,7 @@
     ],
     [
      "line",
-     "line has moved 2 toward NEB"
+     "line has moved 3 toward NEB"
     ]
    ],
    "against": [
@@ -276,14 +275,6 @@
    "kickoff": "2026-11-27T17:00",
    "when": "Fri 12:00pm",
    "dog": {
-    "abbr": "TLSA",
-    "record": "7-4",
-    "streak": 3,
-    "rest": 5,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
     "abbr": "UTSA",
     "record": "9-2",
     "streak": 2,
@@ -291,26 +282,26 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.46378241330310566,
-   "fpi": 0.5003384964397252,
+   "fav": {
+    "abbr": "TLSA",
+    "record": "7-4",
+    "streak": 3,
+    "rest": 5,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4637824133031056,
+   "fpi": 0.49966150356027483,
    "total": 57.5,
-   "moved": 1.0,
+   "moved": 4.0,
    "toward": "TLSA",
-   "for": [
-    [
-     "form",
-     "TLSA have won 3 straight"
-    ],
-    [
-     "form",
-     "last three games: TLSA +32 a game, UTSA -3"
-    ],
+   "for": [],
+   "against": [
     [
      "line",
-     "FPI makes TLSA the favourite (50%)"
+     "line has moved 4 toward TLSA"
     ]
-   ],
-   "against": []
+   ]
   },
   {
    "league": "CFB",
@@ -336,7 +327,7 @@
    },
    "price": 0.4278627076600358,
    "fpi": 0.3980397545498411,
-   "total": 45.5,
+   "total": 44.5,
    "moved": 1.5,
    "toward": "OHIO",
    "for": [
@@ -479,58 +470,6 @@
   },
   {
    "league": "CFB",
-   "away": "TEX",
-   "home": "TXAM",
-   "kickoff": "2026-11-28T00:30",
-   "when": "Fri 7:30pm",
-   "dog": {
-    "abbr": "TXAM",
-    "record": "4-7",
-    "streak": -4,
-    "rest": 6,
-    "qb": {
-     "now": "Brady Hart",
-     "leader": "Marcel Reed",
-     "settled": false
-    },
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "TEX",
-    "record": "9-2",
-    "streak": 5,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.2429108790940443,
-   "fpi": 0.22234333998544475,
-   "total": 40.5,
-   "moved": 9.0,
-   "toward": "TEX",
-   "for": [
-    [
-     "style",
-     "total of 40.5: few possessions, less room for the better team"
-    ]
-   ],
-   "against": [
-    [
-     "quarterback",
-     "TXAM are on Brady Hart, not season leader Marcel Reed (new last week)"
-    ],
-    [
-     "form",
-     "TXAM have lost 4 straight"
-    ],
-    [
-     "form",
-     "TEX have won 5 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
    "away": "MINN",
    "home": "WIS",
    "kickoff": "2026-11-28T00:30",
@@ -593,7 +532,7 @@
    },
    "price": 0.4278627076600358,
    "fpi": 0.40288803232980075,
-   "total": 54.5,
+   "total": 53.5,
    "moved": 4.5,
    "toward": "LOU",
    "for": [],
@@ -638,10 +577,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.26226971821765654,
+   "price": 0.2722372544815055,
    "fpi": 0.14107207619309248,
    "total": 37.5,
-   "moved": 3.5,
+   "moved": 4.0,
    "toward": "MICH",
    "for": [
     [
@@ -654,7 +593,7 @@
     ],
     [
      "line",
-     "line has moved 3.5 toward MICH"
+     "line has moved 4 toward MICH"
     ]
    ],
    "against": []
@@ -685,10 +624,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.35806478442778267,
+   "price": 0.36944134018176367,
    "fpi": 0.2975309223135367,
-   "total": 54.5,
-   "moved": 7.5,
+   "total": 53.5,
+   "moved": 7.0,
    "toward": "UNC",
    "for": [
     [
@@ -700,7 +639,12 @@
      "UNC have lost 2 straight"
     ]
    ],
-   "against": []
+   "against": [
+    [
+     "line",
+     "line has moved 7 toward UNC"
+    ]
+   ]
   },
   {
    "league": "CFB",
@@ -728,10 +672,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4278627076600358,
+   "price": 0.41600623568032036,
    "fpi": 0.4024189345695953,
    "total": 45.5,
-   "moved": 0.5,
+   "moved": 1.0,
    "toward": "CONN",
    "for": [],
    "against": [
@@ -765,7 +709,7 @@
    },
    "price": 0.43978467981733405,
    "fpi": 0.4851096139268699,
-   "total": 54.5,
+   "total": 53.5,
    "moved": 1.0,
    "toward": "GASO",
    "for": [
@@ -778,54 +722,6 @@
     [
      "form",
      "GASO have won 5 straight"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "ILL",
-   "home": "NW",
-   "kickoff": "2026-11-28T17:30",
-   "when": "Sat 12:30pm",
-   "dog": {
-    "abbr": "ILL",
-    "record": "6-5",
-    "streak": -2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "NW",
-    "record": "6-5",
-    "streak": -4,
-    "rest": 7,
-    "qb": {
-     "now": "Nicco Marchiol",
-     "leader": "Aidan Chiles",
-     "settled": true
-    },
-    "qb_inj": []
-   },
-   "price": 0.43978467981733405,
-   "fpi": 0.3229538931420304,
-   "total": 50.5,
-   "moved": 6.0,
-   "toward": "NW",
-   "for": [
-    [
-     "quarterback",
-     "NW are on Nicco Marchiol, not season leader Aidan Chiles (at least two games running)"
-    ],
-    [
-     "form",
-     "NW have lost 4 straight"
-    ]
-   ],
-   "against": [
-    [
-     "line",
-     "line has moved 6 toward NW"
     ]
    ]
   },
@@ -855,10 +751,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.35806478442778267,
+   "price": 0.3468128925152081,
    "fpi": 0.46835964454464973,
-   "total": 41.5,
-   "moved": 9.0,
+   "total": 42.5,
+   "moved": 9.5,
    "toward": "SCAR",
    "for": [
     [
@@ -870,12 +766,8 @@
      "last three games: CLEM +0 a game, SCAR -16"
     ],
     [
-     "style",
-     "total of 41.5: few possessions, less room for the better team"
-    ],
-    [
      "line",
-     "FPI gives CLEM 47%, the market 36%"
+     "FPI gives CLEM 47%, the market 35%"
     ]
    ],
    "against": [
@@ -1001,7 +893,7 @@
    },
    "price": 0.3468128925152081,
    "fpi": 0.525201203623764,
-   "total": 45.5,
+   "total": 46.5,
    "moved": 5.0,
    "toward": "UCLA",
    "for": [
@@ -1012,53 +904,6 @@
     [
      "line",
      "FPI makes UCLA the favourite (53%)"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "OKLA",
-   "home": "MIZZ",
-   "kickoff": "2026-11-28T21:15",
-   "when": "Sat 4:15pm",
-   "dog": {
-    "abbr": "OKLA",
-    "record": "7-4",
-    "streak": 3,
-    "rest": 7,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "MIZZ",
-    "record": "7-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.43978467981733405,
-   "fpi": 0.48822686752224886,
-   "total": 41.5,
-   "moved": 1.0,
-   "toward": "MIZZ",
-   "for": [
-    [
-     "form",
-     "OKLA have won 3 straight"
-    ],
-    [
-     "form",
-     "last three games: OKLA +15 a game, MIZZ -9"
-    ],
-    [
-     "situation",
-     "MIZZ come off beating #16 UK"
-    ],
-    [
-     "style",
-     "total of 41.5: few possessions, less room for the better team"
     ]
    ],
    "against": []
@@ -1211,10 +1056,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3032235733700106,
+   "price": 0.32471814186337733,
    "fpi": 0.2534227412484784,
    "total": 53.5,
-   "moved": 4.0,
+   "moved": 3.0,
    "toward": "ARIZ",
    "for": [],
    "against": [
@@ -1224,7 +1069,7 @@
     ],
     [
      "line",
-     "line has moved 4 toward ARIZ"
+     "line has moved 3 toward ARIZ"
     ]
    ]
   },
@@ -1449,10 +1294,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3665860103968184,
+   "price": 0.33846111951068963,
    "fpi": 0.35673604976095075,
-   "total": 40.5,
-   "moved": 6.0,
+   "total": 39.5,
+   "moved": 7.0,
    "toward": "NYJ",
    "for": [],
    "against": [
@@ -1466,7 +1311,7 @@
     ],
     [
      "line",
-     "line has moved 6 toward NYJ"
+     "line has moved 7 toward NYJ"
     ]
    ]
   },
@@ -1499,8 +1344,8 @@
       "name": "Kyler Murray",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-25",
-      "note": "Murray (hamstring) was a limited participant in Wednesday's walkthrough practice."
+      "date": "2026-11-26",
+      "note": "Murray (hamstring) was listed as limited on Thursday's injury report."
      }
     ]
    },
@@ -1512,7 +1357,7 @@
    "for": [
     [
      "quarterback",
-     "MIN are on Kirk Cousins, not season leader Kyler Murray (at least two games running); listed: Kyler Murray Questionable (2026-11-25)"
+     "MIN are on Kirk Cousins, not season leader Kyler Murray (at least two games running); listed: Kyler Murray Questionable (2026-11-26)"
     ],
     [
      "situation",
@@ -1629,8 +1474,8 @@
       "name": "Justin Herbert",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-25",
-      "note": "Chargers coach Jim Harbaugh said that Herbert (concussion) won't practice Wednesday, Noah Furtado of The Athletic reports."
+      "date": "2026-11-26",
+      "note": "Herbert (concussion) was officially deemed a non-participant in Thursday's practice."
      }
     ]
    },
@@ -1650,10 +1495,10 @@
      }
     ]
    },
-   "price": 0.4547630300184792,
+   "price": 0.4248920370873778,
    "fpi": 0.6072064654117757,
    "total": 35.5,
-   "moved": 4.0,
+   "moved": 5.0,
    "toward": "NE",
    "for": [
     [
@@ -1676,7 +1521,7 @@
    "against": [
     [
      "injury",
-     "LAC QB listed: Justin Herbert Questionable (2026-11-25)"
+     "LAC QB listed: Justin Herbert Questionable (2026-11-26)"
     ],
     [
      "situation",
@@ -1684,7 +1529,7 @@
     ],
     [
      "line",
-     "line has moved 4 toward NE"
+     "line has moved 5 toward NE"
     ]
    ]
   },
@@ -1766,7 +1611,7 @@
       "pos": "QB",
       "status": "Questionable",
       "date": "2026-11-26",
-      "note": "questionable"
+      "note": "Lock (elbow) was a limited participant in Thursday's practice, Bob Condotta of The Seattle Times reports."
      }
     ]
    },
@@ -1781,20 +1626,20 @@
       "name": "Brock Purdy",
       "pos": "QB",
       "status": "Questionable",
-      "date": "2026-11-25",
-      "note": "Purdy didn't practice Wednesday due to an ankle injury, Vic Tafur of The Athletic reports."
+      "date": "2026-11-26",
+      "note": "Purdy (ankle) was listed as a non-participant on Thursday's injury report, Eric Branch of the San Francisco Chronicle reports."
      }
     ]
    },
-   "price": 0.4248920370873779,
+   "price": 0.4101058393642264,
    "fpi": 0.33178121371901903,
-   "total": 44.5,
-   "moved": 1.0,
+   "total": 43.5,
+   "moved": 1.5,
    "toward": "SF",
    "for": [
     [
      "injury",
-     "SF QB listed: Brock Purdy Questionable (2026-11-25)"
+     "SF QB listed: Brock Purdy Questionable (2026-11-26)"
     ],
     [
      "situation",
@@ -1805,6 +1650,10 @@
     [
      "quarterback",
      "SEA are on Drew Lock, not season leader Sam Darnold (at least two games running); listed: Drew Lock Questionable (2026-11-26)"
+    ],
+    [
+     "line",
+     "line has moved 1.5 toward SF"
     ]
    ]
   },
