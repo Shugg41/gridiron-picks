@@ -1,0 +1,664 @@
+{
+ "week": 14,
+ "made": "Sat Nov 28, 1:55PM ET",
+ "source": "the whole slate; this week's board is not loaded yet",
+ "games": [
+  {
+   "league": "NFL",
+   "away": "KC",
+   "home": "LAR",
+   "kickoff": "2026-12-04T01:15",
+   "when": "Thu 8:15pm",
+   "dog": {
+    "abbr": "KC",
+    "record": "8-3",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "LAR",
+    "record": "7-4",
+    "streak": 5,
+    "rest": 8,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4547630300184792,
+   "fpi": 0.44244515791056116,
+   "total": 44.5,
+   "moved": 2.0,
+   "toward": "KC",
+   "for": [
+    [
+     "style",
+     "LAR give it away 1.5 times a game, KC 0.6"
+    ],
+    [
+     "line",
+     "line has moved 2 toward KC"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "LAR have won 5 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "TTU",
+   "home": "UTAH",
+   "kickoff": "2026-12-05T01:00",
+   "when": "Fri 8:00pm",
+   "dog": {
+    "abbr": "TTU",
+    "record": "11-1",
+    "streak": 5,
+    "rest": 8,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "UTAH",
+    "record": "12-0",
+    "streak": 12,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.43978467981733405,
+   "fpi": 0.39462959183309243,
+   "total": 59.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "form",
+     "TTU have won 5 straight"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "UTAH have won 12 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "SDSU",
+   "home": "BOIS",
+   "kickoff": "2026-12-05T01:00",
+   "when": "Fri 8:00pm",
+   "dog": {
+    "abbr": "SDSU",
+    "record": "6-5",
+    "streak": 3,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "BOIS",
+    "record": "9-2",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.17376426176168702,
+   "fpi": 0.13064797598032007,
+   "total": 58.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "form",
+     "SDSU have won 3 straight"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "WAKE",
+   "home": "MIA",
+   "kickoff": "2026-12-05T17:00",
+   "when": "Sat 12:00pm",
+   "dog": {
+    "abbr": "WAKE",
+    "record": "10-1",
+    "streak": 8,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "MIA",
+    "record": "10-1",
+    "streak": 2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.43978467981733405,
+   "fpi": 0.3432400706567412,
+   "total": 57.5,
+   "moved": 0.5,
+   "toward": "WAKE",
+   "for": [
+    [
+     "form",
+     "WAKE have won 8 straight"
+    ],
+    [
+     "form",
+     "last three games: WAKE +47 a game, MIA +4"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "TOL",
+   "home": "BUFF",
+   "kickoff": "2026-12-05T17:00",
+   "when": "Sat 12:00pm",
+   "dog": {
+    "abbr": "BUFF",
+    "record": "9-3",
+    "streak": 7,
+    "rest": 8,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "TOL",
+    "record": "10-2",
+    "streak": 6,
+    "rest": 8,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.33569451200559874,
+   "fpi": 0.38774081724299136,
+   "total": 49.5,
+   "moved": 1.0,
+   "toward": "TOL",
+   "for": [
+    [
+     "form",
+     "BUFF have won 7 straight"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "TOL have won 6 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "DET",
+   "home": "ATL",
+   "kickoff": "2026-12-06T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "ATL",
+    "record": "3-7",
+    "streak": -3,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "DET",
+    "record": "8-3",
+    "streak": -1,
+    "rest": 10,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3954463718532454,
+   "fpi": 0.2839536053714044,
+   "total": 49.5,
+   "moved": null,
+   "toward": null,
+   "for": [],
+   "against": [
+    [
+     "form",
+     "ATL have lost 3 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "JAX",
+   "home": "CHI",
+   "kickoff": "2026-12-06T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "JAX",
+    "record": "7-3",
+    "streak": -1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "CHI",
+    "record": "9-2",
+    "streak": 6,
+    "rest": 10,
+    "qb": null,
+    "qb_inj": [
+     {
+      "name": "Caleb Williams",
+      "pos": "QB",
+      "status": "Questionable",
+      "date": "2026-11-26",
+      "note": "Williams said after Thursday's 39-35 win in Detroit that he's \"fine\" and likely just has \"a bruise on his abdomen,\" Jason Lieser of the Chicago Sun-Times reports."
+     }
+    ]
+   },
+   "price": 0.4101058393642264,
+   "fpi": 0.48289907900829154,
+   "total": 49.5,
+   "moved": 0.5,
+   "toward": "CHI",
+   "for": [
+    [
+     "injury",
+     "CHI QB listed: Caleb Williams Questionable (2026-11-26)"
+    ],
+    [
+     "style",
+     "CHI give it away 1.8 times a game, JAX 0.9"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "CHI have won 6 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "CIN",
+   "home": "CLE",
+   "kickoff": "2026-12-06T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "CLE",
+    "record": "6-4",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "CIN",
+    "record": "7-3",
+    "streak": -1,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.32471814186337733,
+   "fpi": 0.28686190179078297,
+   "total": 46.5,
+   "moved": 1.5,
+   "toward": "CIN",
+   "for": [],
+   "against": [
+    [
+     "line",
+     "line has moved 1.5 toward CIN"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "WSH",
+   "home": "TEN",
+   "kickoff": "2026-12-06T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "TEN",
+    "record": "1-9",
+    "streak": -4,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "WSH",
+    "record": "4-6",
+    "streak": 2,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3665860103968184,
+   "fpi": 0.42174778011105957,
+   "total": 47.5,
+   "moved": 3.0,
+   "toward": "WSH",
+   "for": [],
+   "against": [
+    [
+     "form",
+     "TEN have lost 4 straight"
+    ],
+    [
+     "line",
+     "line has moved 3 toward WSH"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "GB",
+   "home": "NO",
+   "kickoff": "2026-12-06T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "NO",
+    "record": "3-7",
+    "streak": -2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "GB",
+    "record": "6-5",
+    "streak": -2,
+    "rest": 10,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3665860103968184,
+   "fpi": 0.42691163968596946,
+   "total": 46.5,
+   "moved": null,
+   "toward": null,
+   "for": [
+    [
+     "form",
+     "GB have lost 2 straight"
+    ]
+   ],
+   "against": []
+  },
+  {
+   "league": "NFL",
+   "away": "LAC",
+   "home": "TB",
+   "kickoff": "2026-12-06T18:00",
+   "when": "Sun 1:00pm",
+   "dog": {
+    "abbr": "LAC",
+    "record": "1-9",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": [
+     {
+      "name": "Justin Herbert",
+      "pos": "QB",
+      "status": "Out",
+      "date": "2026-11-27",
+      "note": "Herbert (concussion) has been ruled out for Sunday's game against the Patriots."
+     }
+    ]
+   },
+   "fav": {
+    "abbr": "TB",
+    "record": "3-7",
+    "streak": -2,
+    "rest": 5,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3384611195106897,
+   "fpi": 0.2574303357210894,
+   "total": 40.5,
+   "moved": 7.0,
+   "toward": "TB",
+   "for": [
+    [
+     "form",
+     "TB have lost 2 straight"
+    ]
+   ],
+   "against": [
+    [
+     "injury",
+     "LAC QB listed: Justin Herbert Out (2026-11-27)"
+    ],
+    [
+     "line",
+     "line has moved 7 toward TB"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "PHI",
+   "home": "ARI",
+   "kickoff": "2026-12-06T21:05",
+   "when": "Sun 4:05pm",
+   "dog": {
+    "abbr": "ARI",
+    "record": "3-8",
+    "streak": -3,
+    "rest": 6,
+    "qb": {
+     "now": "Josh Johnson",
+     "leader": "Gardner Minshew II",
+     "settled": false
+    },
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "PHI",
+    "record": "4-7",
+    "streak": 2,
+    "rest": 9,
+    "qb": {
+     "now": "Joe Milton",
+     "leader": "Jalen Hurts",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "price": 0.4101058393642264,
+   "fpi": 0.5067696046973813,
+   "total": 37.5,
+   "moved": 5.5,
+   "toward": "ARI",
+   "for": [
+    [
+     "quarterback",
+     "PHI are on Joe Milton, not season leader Jalen Hurts (at least two games running)"
+    ],
+    [
+     "style",
+     "total of 37.5: few possessions, less room for the better team"
+    ],
+    [
+     "line",
+     "line has moved 5.5 toward ARI"
+    ],
+    [
+     "line",
+     "FPI makes ARI the favourite (51%)"
+    ]
+   ],
+   "against": [
+    [
+     "quarterback",
+     "ARI are on Josh Johnson, not season leader Gardner Minshew II (new last week)"
+    ],
+    [
+     "form",
+     "ARI have lost 3 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "CAR",
+   "home": "MIN",
+   "kickoff": "2026-12-06T21:25",
+   "when": "Sun 4:25pm",
+   "dog": {
+    "abbr": "CAR",
+    "record": "5-5",
+    "streak": 2,
+    "rest": 5,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "MIN",
+    "record": "7-3",
+    "streak": -1,
+    "rest": 7,
+    "qb": {
+     "now": "Kirk Cousins",
+     "leader": "Kyler Murray",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "price": 0.3384611195106897,
+   "fpi": 0.32066740170607455,
+   "total": 43.5,
+   "moved": 2.0,
+   "toward": "MIN",
+   "for": [
+    [
+     "quarterback",
+     "MIN are on Kirk Cousins, not season leader Kyler Murray (at least two games running)"
+    ],
+    [
+     "form",
+     "last three games: CAR +0 a game, MIN -7"
+    ]
+   ],
+   "against": [
+    [
+     "situation",
+     "CAR on 5 days' rest, MIN on 7"
+    ],
+    [
+     "line",
+     "line has moved 2 toward MIN"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "BUF",
+   "home": "NE",
+   "kickoff": "2026-12-06T21:25",
+   "when": "Sun 4:25pm",
+   "dog": {
+    "abbr": "NE",
+    "record": "5-5",
+    "streak": -2,
+    "rest": 7,
+    "qb": null,
+    "qb_inj": [
+     {
+      "name": "Drake Maye",
+      "pos": "QB",
+      "status": "Out",
+      "date": "2026-11-23",
+      "note": "For now, Maye -- who suffered a fractured right fibula during a Week 10 loss to the Lions -- remains on the Patriots' 53-man roster rather than injured reserve, with coach Mike Vrabel citing the \"balance\" the team is hoping to strike with regard to managing its remaining designated to return from IR slots, Mike Reiss of ESPN.com reports."
+     }
+    ]
+   },
+   "fav": {
+    "abbr": "BUF",
+    "record": "10-1",
+    "streak": 7,
+    "rest": 9,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.1718271102752622,
+   "fpi": 0.2329035264771548,
+   "total": 44.5,
+   "moved": 14.0,
+   "toward": "BUF",
+   "for": [],
+   "against": [
+    [
+     "injury",
+     "NE QB listed: Drake Maye Out (2026-11-23)"
+    ],
+    [
+     "form",
+     "BUF have won 7 straight"
+    ]
+   ]
+  },
+  {
+   "league": "NFL",
+   "away": "DAL",
+   "home": "SEA",
+   "kickoff": "2026-12-08T01:15",
+   "when": "Mon 8:15pm",
+   "dog": {
+    "abbr": "DAL",
+    "record": "5-7",
+    "streak": -1,
+    "rest": 11,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "SEA",
+    "record": "6-4",
+    "streak": 2,
+    "rest": 8,
+    "qb": {
+     "now": "Drew Lock",
+     "leader": "Sam Darnold",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "price": 0.32471814186337733,
+   "fpi": 0.3875899305222903,
+   "total": 51.5,
+   "moved": 1.5,
+   "toward": "SEA",
+   "for": [
+    [
+     "quarterback",
+     "SEA are on Drew Lock, not season leader Sam Darnold (at least two games running)"
+    ],
+    [
+     "style",
+     "SEA give it away 1.6 times a game, DAL 1.0"
+    ]
+   ],
+   "against": [
+    [
+     "line",
+     "line has moved 1.5 toward SEA"
+    ]
+   ]
+  }
+ ]
+}
