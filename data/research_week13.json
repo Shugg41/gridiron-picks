@@ -1,6 +1,6 @@
 {
  "week": 13,
- "made": "Thu Nov 26, 10:40PM ET",
+ "made": "Fri Nov 27, 10:20PM ET",
  "source": "the 39 games on the week 13 board",
  "games": [
   {
@@ -26,7 +26,7 @@
     "qb_inj": []
    },
    "price": 0.4248920370873779,
-   "fpi": 0.3183390341239438,
+   "fpi": 0.3176635218472764,
    "total": 43.5,
    "moved": 1.0,
    "toward": "GB",
@@ -35,50 +35,6 @@
     [
      "form",
      "LA have won 4 straight"
-    ]
-   ]
-  },
-  {
-   "league": "NFL",
-   "away": "KC",
-   "home": "BUF",
-   "kickoff": "2026-11-27T01:20",
-   "when": "Thu 8:20pm",
-   "dog": {
-    "abbr": "KC",
-    "record": "8-2",
-    "streak": 3,
-    "rest": 4,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "BUF",
-    "record": "9-1",
-    "streak": 6,
-    "rest": 4,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.4101058393642264,
-   "fpi": 0.43068863990669404,
-   "total": 46.5,
-   "moved": 0.5,
-   "toward": "BUF",
-   "for": [
-    [
-     "form",
-     "KC have won 3 straight"
-    ],
-    [
-     "style",
-     "BUF give it away 1.6 times a game, KC 0.7"
-    ]
-   ],
-   "against": [
-    [
-     "form",
-     "BUF have won 6 straight"
     ]
    ]
   },
@@ -113,7 +69,7 @@
     ]
    },
    "price": 0.4547630300184792,
-   "fpi": 0.5628730817842805,
+   "fpi": 0.5616192031912158,
    "total": 56.5,
    "moved": 4.0,
    "toward": "CHI",
@@ -128,7 +84,7 @@
     ],
     [
      "style",
-     "CHI give it away 1.9 times a game, DET 0.7"
+     "CHI give it away 2.0 times a game, DET 0.8"
     ],
     [
      "line",
@@ -169,12 +125,56 @@
     "qb_inj": []
    },
    "price": 0.235855796216213,
-   "fpi": 0.21885660109118343,
+   "fpi": 0.25179123422948135,
    "total": 49.5,
    "moved": 8.0,
    "toward": "DAL",
    "for": [],
    "against": []
+  },
+  {
+   "league": "NFL",
+   "away": "KC",
+   "home": "BUF",
+   "kickoff": "2026-11-27T01:20",
+   "when": "Thu 8:20pm",
+   "dog": {
+    "abbr": "KC",
+    "record": "8-2",
+    "streak": 3,
+    "rest": 4,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "BUF",
+    "record": "9-1",
+    "streak": 6,
+    "rest": 4,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.4101058393642264,
+   "fpi": 0.42970659024048474,
+   "total": 46.5,
+   "moved": 0.5,
+   "toward": "BUF",
+   "for": [
+    [
+     "form",
+     "KC have won 3 straight"
+    ],
+    [
+     "style",
+     "BUF give it away 1.8 times a game, KC 0.7"
+    ]
+   ],
+   "against": [
+    [
+     "form",
+     "BUF have won 6 straight"
+    ]
+   ]
   },
   {
    "league": "NFL",
@@ -187,7 +187,11 @@
     "record": "6-4",
     "streak": -2,
     "rest": 5,
-    "qb": null,
+    "qb": {
+     "now": "Aaron Rodgers",
+     "leader": "Mason Rudolph",
+     "settled": true
+    },
     "qb_inj": []
    },
    "fav": {
@@ -199,7 +203,7 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.5408200935748513,
+   "fpi": 0.5345016538737257,
    "total": 36.5,
    "moved": 3.0,
    "toward": "DEN",
@@ -210,10 +214,14 @@
     ],
     [
      "line",
-     "FPI makes PIT the favourite (54%)"
+     "FPI makes PIT the favourite (53%)"
     ]
    ],
    "against": [
+    [
+     "quarterback",
+     "PIT are on Aaron Rodgers, not season leader Mason Rudolph (at least two games running)"
+    ],
     [
      "form",
      "DEN have won 6 straight"
@@ -226,10 +234,50 @@
   },
   {
    "league": "CFB",
+   "away": "MINN",
+   "home": "WIS",
+   "kickoff": "2026-11-28T00:30",
+   "when": "Fri 7:30pm",
+   "dog": {
+    "abbr": "MINN",
+    "record": "6-5",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "WIS",
+    "record": "7-4",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3032235733700106,
+   "fpi": 0.24149079118775774,
+   "total": 36.5,
+   "moved": 2.5,
+   "toward": "WIS",
+   "for": [
+    [
+     "style",
+     "total of 36.5: few possessions, less room for the better team"
+    ]
+   ],
+   "against": [
+    [
+     "line",
+     "line has moved 2.5 toward WIS"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
    "away": "NEB",
    "home": "IOWA",
-   "kickoff": "2026-11-27T17:00",
-   "when": "Fri 12:00pm",
+   "kickoff": "2026-11-27T17:08",
+   "when": "Fri 12:08pm",
    "dog": {
     "abbr": "NEB",
     "record": "7-4",
@@ -247,7 +295,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.420740290560897,
+   "fpi": 0.4207639902617273,
    "total": 40.5,
    "moved": 3.0,
    "toward": "NEB",
@@ -265,6 +313,41 @@
     [
      "form",
      "IOWA have won 4 straight"
+    ]
+   ]
+  },
+  {
+   "league": "CFB",
+   "away": "FLA",
+   "home": "FSU",
+   "kickoff": "2026-11-27T20:30",
+   "when": "Fri 3:30pm",
+   "dog": {
+    "abbr": "FSU",
+    "record": "5-6",
+    "streak": -1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "FLA",
+    "record": "7-4",
+    "streak": 2,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3468128925152081,
+   "fpi": 0.3995136888692252,
+   "total": 54.5,
+   "moved": 2.0,
+   "toward": "FLA",
+   "for": [],
+   "against": [
+    [
+     "line",
+     "line has moved 2 toward FLA"
     ]
    ]
   },
@@ -292,7 +375,7 @@
    },
    "price": 0.4637824133031056,
    "fpi": 0.49966150356027483,
-   "total": 57.5,
+   "total": 55.5,
    "moved": 4.0,
    "toward": "TLSA",
    "for": [],
@@ -325,17 +408,12 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.4278627076600358,
-   "fpi": 0.3980397545498411,
+   "price": 0.41600623568032036,
+   "fpi": 0.3980631390320934,
    "total": 44.5,
-   "moved": 1.5,
+   "moved": 1.0,
    "toward": "OHIO",
-   "for": [
-    [
-     "line",
-     "line has moved 1.5 toward OHIO"
-    ]
-   ],
+   "for": [],
    "against": [
     [
      "form",
@@ -362,60 +440,16 @@
     "record": "6-5",
     "streak": 2,
     "rest": 5,
-    "qb": {
-     "now": "Bishop Davenport",
-     "leader": "Jared Hollins",
-     "settled": true
-    },
+    "qb": null,
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.3945596036093789,
+   "fpi": 0.3945829326392437,
    "total": 56.5,
    "moved": 1.0,
    "toward": "USA",
-   "for": [
-    [
-     "quarterback",
-     "USA are on Bishop Davenport, not season leader Jared Hollins (at least two games running)"
-    ]
-   ],
-   "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "FLA",
-   "home": "FSU",
-   "kickoff": "2026-11-27T20:30",
-   "when": "Fri 3:30pm",
-   "dog": {
-    "abbr": "FSU",
-    "record": "5-6",
-    "streak": -1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "FLA",
-    "record": "7-4",
-    "streak": 2,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.3468128925152081,
-   "fpi": 0.3992796348076046,
-   "total": 53.5,
-   "moved": 2.0,
-   "toward": "FLA",
    "for": [],
-   "against": [
-    [
-     "line",
-     "line has moved 2 toward FLA"
-    ]
-   ]
+   "against": []
   },
   {
    "league": "CFB",
@@ -436,23 +470,15 @@
     "record": "9-2",
     "streak": 1,
     "rest": 6,
-    "qb": {
-     "now": "Luke Moga",
-     "leader": "Toa Fa'avae",
-     "settled": false
-    },
+    "qb": null,
     "qb_inj": []
    },
-   "price": 0.3468128925152081,
-   "fpi": 0.3084735297582887,
+   "price": 0.33569451200559874,
+   "fpi": 0.3084521947291661,
    "total": 42.5,
-   "moved": 0.5,
-   "toward": "AFA",
+   "moved": null,
+   "toward": null,
    "for": [
-    [
-     "quarterback",
-     "UNM are on Luke Moga, not season leader Toa Fa'avae (new last week)"
-    ],
     [
      "form",
      "AFA have won 4 straight"
@@ -467,46 +493,6 @@
     ]
    ],
    "against": []
-  },
-  {
-   "league": "CFB",
-   "away": "MINN",
-   "home": "WIS",
-   "kickoff": "2026-11-28T00:30",
-   "when": "Fri 7:30pm",
-   "dog": {
-    "abbr": "MINN",
-    "record": "6-5",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "WIS",
-    "record": "7-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.3032235733700106,
-   "fpi": 0.24149079118775774,
-   "total": 37.5,
-   "moved": 2.5,
-   "toward": "WIS",
-   "for": [
-    [
-     "style",
-     "total of 37.5: few possessions, less room for the better team"
-    ]
-   ],
-   "against": [
-    [
-     "line",
-     "line has moved 2.5 toward WIS"
-    ]
-   ]
   },
   {
    "league": "CFB",
@@ -531,7 +517,7 @@
     "qb_inj": []
    },
    "price": 0.4278627076600358,
-   "fpi": 0.40288803232980075,
+   "fpi": 0.402911490893688,
    "total": 53.5,
    "moved": 4.5,
    "toward": "LOU",
@@ -577,10 +563,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.2722372544815055,
-   "fpi": 0.14107207619309248,
+   "price": 0.26226971821765654,
+   "fpi": 0.14132986688972293,
    "total": 37.5,
-   "moved": 4.0,
+   "moved": 3.5,
    "toward": "MICH",
    "for": [
     [
@@ -593,7 +579,7 @@
     ],
     [
      "line",
-     "line has moved 4 toward MICH"
+     "line has moved 3.5 toward MICH"
     ]
    ],
    "against": []
@@ -625,7 +611,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.2975309223135367,
+   "fpi": 0.2985183522437893,
    "total": 53.5,
    "moved": 7.0,
    "toward": "UNC",
@@ -673,8 +659,8 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.4024189345695953,
-   "total": 45.5,
+   "fpi": 0.40279420157077034,
+   "total": 44.5,
    "moved": 1.0,
    "toward": "CONN",
    "for": [],
@@ -707,11 +693,11 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.43978467981733405,
-   "fpi": 0.4851096139268699,
+   "price": 0.46378241330310566,
+   "fpi": 0.4849163238734886,
    "total": 53.5,
-   "moved": 1.0,
-   "toward": "GASO",
+   "moved": null,
+   "toward": null,
    "for": [
     [
      "form",
@@ -752,7 +738,7 @@
     "qb_inj": []
    },
    "price": 0.3468128925152081,
-   "fpi": 0.46835964454464973,
+   "fpi": 0.46881760788419,
    "total": 42.5,
    "moved": 9.5,
    "toward": "SCAR",
@@ -800,7 +786,7 @@
     "qb_inj": []
    },
    "price": 0.42786270766003587,
-   "fpi": 0.49949225541656617,
+   "fpi": 0.4994197205240326,
    "total": 50.5,
    "moved": 1.5,
    "toward": "VT",
@@ -848,7 +834,7 @@
     "qb_inj": []
    },
    "price": 0.18975814982832484,
-   "fpi": 0.253927352551216,
+   "fpi": 0.2542964401545438,
    "total": 55.5,
    "moved": 4.0,
    "toward": "WAKE",
@@ -891,15 +877,15 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.3468128925152081,
-   "fpi": 0.525201203623764,
+   "price": 0.39253143427377973,
+   "fpi": 0.5251770735148407,
    "total": 46.5,
-   "moved": 5.0,
+   "moved": 7.0,
    "toward": "UCLA",
    "for": [
     [
      "line",
-     "line has moved 5 toward UCLA"
+     "line has moved 7 toward UCLA"
     ],
     [
      "line",
@@ -931,8 +917,8 @@
     "qb_inj": []
    },
    "price": 0.2066266877468202,
-   "fpi": 0.1831262752620133,
-   "total": 42.5,
+   "fpi": 0.18306198093588716,
+   "total": 43.5,
    "moved": 10.5,
    "toward": "TENN",
    "for": [],
@@ -964,10 +950,10 @@
     },
     "qb_inj": []
    },
-   "price": 0.17376426176168702,
-   "fpi": 0.15113545092780178,
-   "total": 49.5,
-   "moved": 5.5,
+   "price": 0.18975814982832484,
+   "fpi": 0.15156191019869392,
+   "total": 50.5,
+   "moved": 4.5,
    "toward": "ALA",
    "for": [
     [
@@ -986,7 +972,7 @@
     ],
     [
      "line",
-     "line has moved 5.5 toward ALA"
+     "line has moved 4.5 toward ALA"
     ]
    ]
   },
@@ -1013,7 +999,7 @@
     "qb_inj": []
    },
    "price": 0.20662668774682014,
-   "fpi": 0.1657816844269978,
+   "fpi": 0.16602324606352958,
    "total": 51.5,
    "moved": 2.0,
    "toward": "WASH",
@@ -1056,10 +1042,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.32471814186337733,
-   "fpi": 0.2534227412484784,
+   "price": 0.28238952631152436,
+   "fpi": 0.2541604277980887,
    "total": 53.5,
-   "moved": 3.0,
+   "moved": 5.0,
    "toward": "ARIZ",
    "for": [],
    "against": [
@@ -1069,7 +1055,7 @@
     ],
     [
      "line",
-     "line has moved 3 toward ARIZ"
+     "line has moved 5 toward ARIZ"
     ]
    ]
   },
@@ -1096,7 +1082,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.34558317829263263,
+   "fpi": 0.34562786673062607,
    "total": 44.5,
    "moved": 1.0,
    "toward": "UNLV",
@@ -1129,11 +1115,11 @@
     },
     "qb_inj": []
    },
-   "price": 0.3925314342737797,
-   "fpi": 0.410624278997198,
+   "price": 0.41600623568032036,
+   "fpi": 0.4095168941352294,
    "total": 55.5,
-   "moved": null,
-   "toward": null,
+   "moved": 1.0,
+   "toward": "BAY",
    "for": [
     [
      "quarterback",
@@ -1169,7 +1155,7 @@
     "qb_inj": []
    },
    "price": 0.42786270766003587,
-   "fpi": 0.4860277886859816,
+   "fpi": 0.48682521124805955,
    "total": 58.5,
    "moved": 1.5,
    "toward": "FRES",
@@ -1207,10 +1193,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.22435249875681773,
-   "fpi": 0.23195483330313882,
-   "total": 49.5,
-   "moved": 3.5,
+   "price": 0.235855796216213,
+   "fpi": 0.23188550131895713,
+   "total": 48.5,
+   "moved": 3.0,
    "toward": "CIN",
    "for": [
     [
@@ -1221,7 +1207,7 @@
    "against": [
     [
      "line",
-     "line has moved 3.5 toward CIN"
+     "line has moved 3 toward CIN"
     ]
    ]
   },
@@ -1247,15 +1233,15 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.32471814186337733,
-   "fpi": 0.5478484430222519,
+   "price": 0.33846111951068963,
+   "fpi": 0.5425934899493305,
    "total": 41.5,
-   "moved": 8.5,
+   "moved": 8.0,
    "toward": "NYG",
    "for": [
     [
      "line",
-     "FPI makes IND the favourite (55%)"
+     "FPI makes IND the favourite (54%)"
     ]
    ],
    "against": []
@@ -1295,7 +1281,7 @@
     "qb_inj": []
    },
    "price": 0.33846111951068963,
-   "fpi": 0.35673604976095075,
+   "fpi": 0.35922529979029794,
    "total": 39.5,
    "moved": 7.0,
    "toward": "NYJ",
@@ -1339,25 +1325,17 @@
      "leader": "Kyler Murray",
      "settled": true
     },
-    "qb_inj": [
-     {
-      "name": "Kyler Murray",
-      "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-26",
-      "note": "Murray (hamstring) was listed as limited on Thursday's injury report."
-     }
-    ]
+    "qb_inj": []
    },
    "price": 0.29795092300728476,
-   "fpi": 0.2177623310209431,
+   "fpi": 0.22229369417428213,
    "total": 41.5,
    "moved": 2.5,
    "toward": "MIN",
    "for": [
     [
      "quarterback",
-     "MIN are on Kirk Cousins, not season leader Kyler Murray (at least two games running); listed: Kyler Murray Questionable (2026-11-26)"
+     "MIN are on Kirk Cousins, not season leader Kyler Murray (at least two games running)"
     ],
     [
      "situation",
@@ -1397,10 +1375,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.13599641509479998,
-   "fpi": 0.14961034009101448,
-   "total": 49.5,
-   "moved": 9.0,
+   "price": 0.14443448356198263,
+   "fpi": 0.1494340801891706,
+   "total": 48.5,
+   "moved": 8.5,
    "toward": "JAC",
    "for": [],
    "against": [
@@ -1437,7 +1415,7 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.21436591171584363,
+   "fpi": 0.213152545482987,
    "total": 47.5,
    "moved": 5.0,
    "toward": "HOU",
@@ -1473,9 +1451,9 @@
      {
       "name": "Justin Herbert",
       "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-26",
-      "note": "Herbert (concussion) was officially deemed a non-participant in Thursday's practice."
+      "status": "Out",
+      "date": "2026-11-27",
+      "note": "Herbert (concussion) has been ruled out for Sunday's game against the Patriots."
      }
     ]
    },
@@ -1495,10 +1473,10 @@
      }
     ]
    },
-   "price": 0.4248920370873778,
-   "fpi": 0.6072064654117757,
-   "total": 35.5,
-   "moved": 5.0,
+   "price": 0.4101058393642264,
+   "fpi": 0.6054870533158343,
+   "total": 34.5,
+   "moved": 5.5,
    "toward": "NE",
    "for": [
     [
@@ -1511,7 +1489,7 @@
     ],
     [
      "style",
-     "total of 35.5: few possessions, less room for the better team"
+     "total of 34.5: few possessions, less room for the better team"
     ],
     [
      "line",
@@ -1521,7 +1499,7 @@
    "against": [
     [
      "injury",
-     "LAC QB listed: Justin Herbert Questionable (2026-11-26)"
+     "LAC QB listed: Justin Herbert Out (2026-11-27)"
     ],
     [
      "situation",
@@ -1529,7 +1507,7 @@
     ],
     [
      "line",
-     "line has moved 5 toward NE"
+     "line has moved 5.5 toward NE"
     ]
    ]
   },
@@ -1560,7 +1538,7 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.43304133806213146,
+   "fpi": 0.4268522119828727,
    "total": 41.5,
    "moved": 2.0,
    "toward": "WAS",
@@ -1596,26 +1574,6 @@
    "kickoff": "2026-11-29T21:25",
    "when": "Sun 4:25pm",
    "dog": {
-    "abbr": "SEA",
-    "record": "6-4",
-    "streak": 2,
-    "rest": 14,
-    "qb": {
-     "now": "Drew Lock",
-     "leader": "Sam Darnold",
-     "settled": true
-    },
-    "qb_inj": [
-     {
-      "name": "Drew Lock",
-      "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-26",
-      "note": "Lock (elbow) was a limited participant in Thursday's practice, Bob Condotta of The Seattle Times reports."
-     }
-    ]
-   },
-   "fav": {
     "abbr": "SF",
     "record": "9-1",
     "streak": 3,
@@ -1625,35 +1583,59 @@
      {
       "name": "Brock Purdy",
       "pos": "QB",
-      "status": "Questionable",
-      "date": "2026-11-26",
-      "note": "Purdy (ankle) was listed as a non-participant on Thursday's injury report, Eric Branch of the San Francisco Chronicle reports."
+      "status": "Out",
+      "date": "2026-11-27",
+      "note": "Head coach Kyle Shanahan said Friday that Purdy (ankle) has been ruled out for Sunday's game versus the Seahawks, Jennifer Lee Chan of NBC Sports Bay Area reports."
      }
     ]
    },
-   "price": 0.4101058393642264,
-   "fpi": 0.33178121371901903,
-   "total": 43.5,
-   "moved": 1.5,
-   "toward": "SF",
+   "fav": {
+    "abbr": "SEA",
+    "record": "6-4",
+    "streak": 2,
+    "rest": 14,
+    "qb": {
+     "now": "Drew Lock",
+     "leader": "Sam Darnold",
+     "settled": true
+    },
+    "qb_inj": []
+   },
+   "price": 0.4547630300184792,
+   "fpi": 0.666842929394654,
+   "total": 42.5,
+   "moved": 3.0,
+   "toward": "SEA",
    "for": [
     [
-     "injury",
-     "SF QB listed: Brock Purdy Questionable (2026-11-26)"
+     "quarterback",
+     "SEA are on Drew Lock, not season leader Sam Darnold (at least two games running)"
     ],
     [
-     "situation",
-     "SEA are off a bye"
+     "form",
+     "SF have won 3 straight"
+    ],
+    [
+     "form",
+     "last three games: SF +17 a game, SEA +2"
+    ],
+    [
+     "line",
+     "FPI makes SF the favourite (67%)"
     ]
    ],
    "against": [
     [
-     "quarterback",
-     "SEA are on Drew Lock, not season leader Sam Darnold (at least two games running); listed: Drew Lock Questionable (2026-11-26)"
+     "injury",
+     "SF QB listed: Brock Purdy Out (2026-11-27)"
+    ],
+    [
+     "situation",
+     "SEA are off a bye"
     ],
     [
      "line",
-     "line has moved 1.5 toward SF"
+     "line has moved 3 toward SEA"
     ]
    ]
   },
@@ -1680,8 +1662,8 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.35295732251083545,
-   "total": 40.5,
+   "fpi": 0.35687732224593893,
+   "total": 39.5,
    "moved": 2.0,
    "toward": "CLE",
    "for": [],
@@ -1723,7 +1705,7 @@
     "qb_inj": []
    },
    "price": 0.4101058393642264,
-   "fpi": 0.3381286621927596,
+   "fpi": 0.3381286621927595,
    "total": 43.5,
    "moved": 0.5,
    "toward": "CAR",
