@@ -1,6 +1,6 @@
 {
  "week": 13,
- "made": "Fri Nov 27, 10:20PM ET",
+ "made": "Sat Nov 28, 8:59AM ET",
  "source": "the 39 games on the week 13 board",
  "games": [
   {
@@ -26,7 +26,7 @@
     "qb_inj": []
    },
    "price": 0.4248920370873779,
-   "fpi": 0.3176635218472764,
+   "fpi": 0.3177715631059901,
    "total": 43.5,
    "moved": 1.0,
    "toward": "GB",
@@ -69,7 +69,7 @@
     ]
    },
    "price": 0.4547630300184792,
-   "fpi": 0.5616192031912158,
+   "fpi": 0.5620073751773386,
    "total": 56.5,
    "moved": 4.0,
    "toward": "CHI",
@@ -125,7 +125,7 @@
     "qb_inj": []
    },
    "price": 0.235855796216213,
-   "fpi": 0.25179123422948135,
+   "fpi": 0.24885222415139197,
    "total": 49.5,
    "moved": 8.0,
    "toward": "DAL",
@@ -155,7 +155,7 @@
     "qb_inj": []
    },
    "price": 0.4101058393642264,
-   "fpi": 0.42970659024048474,
+   "fpi": 0.4286952362756785,
    "total": 46.5,
    "moved": 0.5,
    "toward": "BUF",
@@ -203,7 +203,7 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.5345016538737257,
+   "fpi": 0.5632312174122368,
    "total": 36.5,
    "moved": 3.0,
    "toward": "DEN",
@@ -214,7 +214,7 @@
     ],
     [
      "line",
-     "FPI makes PIT the favourite (53%)"
+     "FPI makes PIT the favourite (56%)"
     ]
    ],
    "against": [
@@ -229,46 +229,6 @@
     [
      "line",
      "line has moved 3 toward DEN"
-    ]
-   ]
-  },
-  {
-   "league": "CFB",
-   "away": "MINN",
-   "home": "WIS",
-   "kickoff": "2026-11-28T00:30",
-   "when": "Fri 7:30pm",
-   "dog": {
-    "abbr": "MINN",
-    "record": "6-5",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "fav": {
-    "abbr": "WIS",
-    "record": "7-4",
-    "streak": 1,
-    "rest": 6,
-    "qb": null,
-    "qb_inj": []
-   },
-   "price": 0.3032235733700106,
-   "fpi": 0.24149079118775774,
-   "total": 36.5,
-   "moved": 2.5,
-   "toward": "WIS",
-   "for": [
-    [
-     "style",
-     "total of 36.5: few possessions, less room for the better team"
-    ]
-   ],
-   "against": [
-    [
-     "line",
-     "line has moved 2.5 toward WIS"
     ]
    ]
   },
@@ -295,7 +255,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.4207639902617273,
+   "fpi": 0.3530980623865656,
    "total": 40.5,
    "moved": 3.0,
    "toward": "NEB",
@@ -339,7 +299,7 @@
     "qb_inj": []
    },
    "price": 0.3468128925152081,
-   "fpi": 0.3995136888692252,
+   "fpi": 0.36394284970570506,
    "total": 54.5,
    "moved": 2.0,
    "toward": "FLA",
@@ -374,11 +334,16 @@
     "qb_inj": []
    },
    "price": 0.4637824133031056,
-   "fpi": 0.49966150356027483,
+   "fpi": 0.5307484940374945,
    "total": 55.5,
    "moved": 4.0,
    "toward": "TLSA",
-   "for": [],
+   "for": [
+    [
+     "line",
+     "FPI makes UTSA the favourite (53%)"
+    ]
+   ],
    "against": [
     [
      "line",
@@ -409,7 +374,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.3980631390320934,
+   "fpi": 0.39949028183638613,
    "total": 44.5,
    "moved": 1.0,
    "toward": "OHIO",
@@ -444,7 +409,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.3945829326392437,
+   "fpi": 0.3868821506641418,
    "total": 56.5,
    "moved": 1.0,
    "toward": "USA",
@@ -474,7 +439,7 @@
     "qb_inj": []
    },
    "price": 0.33569451200559874,
-   "fpi": 0.3084521947291661,
+   "fpi": 0.2643671187352026,
    "total": 42.5,
    "moved": null,
    "toward": null,
@@ -493,6 +458,46 @@
     ]
    ],
    "against": []
+  },
+  {
+   "league": "CFB",
+   "away": "MINN",
+   "home": "WIS",
+   "kickoff": "2026-11-28T00:30",
+   "when": "Fri 7:30pm",
+   "dog": {
+    "abbr": "MINN",
+    "record": "6-5",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "fav": {
+    "abbr": "WIS",
+    "record": "7-4",
+    "streak": 1,
+    "rest": 6,
+    "qb": null,
+    "qb_inj": []
+   },
+   "price": 0.3032235733700106,
+   "fpi": 0.20808296912363367,
+   "total": 36.5,
+   "moved": 2.5,
+   "toward": "WIS",
+   "for": [
+    [
+     "style",
+     "total of 36.5: few possessions, less room for the better team"
+    ]
+   ],
+   "against": [
+    [
+     "line",
+     "line has moved 2.5 toward WIS"
+    ]
+   ]
   },
   {
    "league": "CFB",
@@ -517,7 +522,7 @@
     "qb_inj": []
    },
    "price": 0.4278627076600358,
-   "fpi": 0.402911490893688,
+   "fpi": 0.4059170441228269,
    "total": 53.5,
    "moved": 4.5,
    "toward": "LOU",
@@ -564,8 +569,8 @@
     "qb_inj": []
    },
    "price": 0.26226971821765654,
-   "fpi": 0.14132986688972293,
-   "total": 37.5,
+   "fpi": 0.14329402722813933,
+   "total": 36.5,
    "moved": 3.5,
    "toward": "MICH",
    "for": [
@@ -575,7 +580,7 @@
     ],
     [
      "style",
-     "total of 37.5: few possessions, less room for the better team"
+     "total of 36.5: few possessions, less room for the better team"
     ],
     [
      "line",
@@ -611,7 +616,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.2985183522437893,
+   "fpi": 0.297090212721673,
    "total": 53.5,
    "moved": 7.0,
    "toward": "UNC",
@@ -659,7 +664,7 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.40279420157077034,
+   "fpi": 0.4021375433003855,
    "total": 44.5,
    "moved": 1.0,
    "toward": "CONN",
@@ -694,8 +699,8 @@
     "qb_inj": []
    },
    "price": 0.46378241330310566,
-   "fpi": 0.4849163238734886,
-   "total": 53.5,
+   "fpi": 0.4854478799119223,
+   "total": 52.5,
    "moved": null,
    "toward": null,
    "for": [
@@ -738,7 +743,7 @@
     "qb_inj": []
    },
    "price": 0.3468128925152081,
-   "fpi": 0.46881760788419,
+   "fpi": 0.4667932481473777,
    "total": 42.5,
    "moved": 9.5,
    "toward": "SCAR",
@@ -785,10 +790,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.42786270766003587,
-   "fpi": 0.4994197205240326,
+   "price": 0.43978467981733405,
+   "fpi": 0.49806574197641684,
    "total": 50.5,
-   "moved": 1.5,
+   "moved": 1.0,
    "toward": "VT",
    "for": [
     [
@@ -804,12 +809,7 @@
      "VT give it away 1.4 times a game, UVA 0.5"
     ]
    ],
-   "against": [
-    [
-     "line",
-     "line has moved 1.5 toward VT"
-    ]
-   ]
+   "against": []
   },
   {
    "league": "CFB",
@@ -834,7 +834,7 @@
     "qb_inj": []
    },
    "price": 0.18975814982832484,
-   "fpi": 0.2542964401545438,
+   "fpi": 0.25344213962578355,
    "total": 55.5,
    "moved": 4.0,
    "toward": "WAKE",
@@ -878,8 +878,8 @@
     "qb_inj": []
    },
    "price": 0.39253143427377973,
-   "fpi": 0.5251770735148407,
-   "total": 46.5,
+   "fpi": 0.5247185839985115,
+   "total": 45.5,
    "moved": 7.0,
    "toward": "UCLA",
    "for": [
@@ -889,7 +889,7 @@
     ],
     [
      "line",
-     "FPI makes UCLA the favourite (53%)"
+     "FPI makes UCLA the favourite (52%)"
     ]
    ],
    "against": []
@@ -917,7 +917,7 @@
     "qb_inj": []
    },
    "price": 0.2066266877468202,
-   "fpi": 0.18306198093588716,
+   "fpi": 0.18331924274271544,
    "total": 43.5,
    "moved": 10.5,
    "toward": "TENN",
@@ -951,8 +951,8 @@
     "qb_inj": []
    },
    "price": 0.18975814982832484,
-   "fpi": 0.15156191019869392,
-   "total": 50.5,
+   "fpi": 0.15456950701045957,
+   "total": 51.5,
    "moved": 4.5,
    "toward": "ALA",
    "for": [
@@ -999,7 +999,7 @@
     "qb_inj": []
    },
    "price": 0.20662668774682014,
-   "fpi": 0.16602324606352958,
+   "fpi": 0.1659326338099062,
    "total": 51.5,
    "moved": 2.0,
    "toward": "WASH",
@@ -1042,10 +1042,10 @@
     "qb": null,
     "qb_inj": []
    },
-   "price": 0.28238952631152436,
-   "fpi": 0.2541604277980887,
+   "price": 0.3032235733700106,
+   "fpi": 0.2548603261586897,
    "total": 53.5,
-   "moved": 5.0,
+   "moved": 4.0,
    "toward": "ARIZ",
    "for": [],
    "against": [
@@ -1055,7 +1055,7 @@
     ],
     [
      "line",
-     "line has moved 5 toward ARIZ"
+     "line has moved 4 toward ARIZ"
     ]
    ]
   },
@@ -1082,7 +1082,7 @@
     "qb_inj": []
    },
    "price": 0.36944134018176367,
-   "fpi": 0.34562786673062607,
+   "fpi": 0.34775303571066307,
    "total": 44.5,
    "moved": 1.0,
    "toward": "UNLV",
@@ -1116,8 +1116,8 @@
     "qb_inj": []
    },
    "price": 0.41600623568032036,
-   "fpi": 0.4095168941352294,
-   "total": 55.5,
+   "fpi": 0.41020008945771524,
+   "total": 56.5,
    "moved": 1.0,
    "toward": "BAY",
    "for": [
@@ -1155,8 +1155,8 @@
     "qb_inj": []
    },
    "price": 0.42786270766003587,
-   "fpi": 0.48682521124805955,
-   "total": 58.5,
+   "fpi": 0.48607611576786136,
+   "total": 59.5,
    "moved": 1.5,
    "toward": "FRES",
    "for": [],
@@ -1194,7 +1194,7 @@
     "qb_inj": []
    },
    "price": 0.235855796216213,
-   "fpi": 0.23188550131895713,
+   "fpi": 0.23213977501716987,
    "total": 48.5,
    "moved": 3.0,
    "toward": "CIN",
@@ -1234,7 +1234,7 @@
     "qb_inj": []
    },
    "price": 0.33846111951068963,
-   "fpi": 0.5425934899493305,
+   "fpi": 0.5441557817107651,
    "total": 41.5,
    "moved": 8.0,
    "toward": "NYG",
@@ -1281,7 +1281,7 @@
     "qb_inj": []
    },
    "price": 0.33846111951068963,
-   "fpi": 0.35922529979029794,
+   "fpi": 0.3574426083168738,
    "total": 39.5,
    "moved": 7.0,
    "toward": "NYJ",
@@ -1328,7 +1328,7 @@
     "qb_inj": []
    },
    "price": 0.29795092300728476,
-   "fpi": 0.22229369417428213,
+   "fpi": 0.2225194079100632,
    "total": 41.5,
    "moved": 2.5,
    "toward": "MIN",
@@ -1415,7 +1415,7 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.213152545482987,
+   "fpi": 0.21352715757498575,
    "total": 47.5,
    "moved": 5.0,
    "toward": "HOU",
@@ -1474,7 +1474,7 @@
     ]
    },
    "price": 0.4101058393642264,
-   "fpi": 0.6054870533158343,
+   "fpi": 0.5858544995748923,
    "total": 34.5,
    "moved": 5.5,
    "toward": "NE",
@@ -1493,7 +1493,7 @@
     ],
     [
      "line",
-     "FPI makes LAC the favourite (61%)"
+     "FPI makes LAC the favourite (59%)"
     ]
    ],
    "against": [
@@ -1538,7 +1538,7 @@
     "qb_inj": []
    },
    "price": 0.31120973253416895,
-   "fpi": 0.4268522119828727,
+   "fpi": 0.4181942653128373,
    "total": 41.5,
    "moved": 2.0,
    "toward": "WAS",
@@ -1549,7 +1549,7 @@
     ],
     [
      "line",
-     "FPI gives ARI 43%, the market 31%"
+     "FPI gives ARI 42%, the market 31%"
     ]
    ],
    "against": [
@@ -1602,7 +1602,7 @@
     "qb_inj": []
    },
    "price": 0.4547630300184792,
-   "fpi": 0.666842929394654,
+   "fpi": 0.4930793030483859,
    "total": 42.5,
    "moved": 3.0,
    "toward": "SEA",
@@ -1618,10 +1618,6 @@
     [
      "form",
      "last three games: SF +17 a game, SEA +2"
-    ],
-    [
-     "line",
-     "FPI makes SF the favourite (67%)"
     ]
    ],
    "against": [
@@ -1662,11 +1658,16 @@
     "qb_inj": []
    },
    "price": 0.3665860103968184,
-   "fpi": 0.35687732224593893,
-   "total": 39.5,
+   "fpi": 0.356171156478168,
+   "total": 38.5,
    "moved": 2.0,
    "toward": "CLE",
-   "for": [],
+   "for": [
+    [
+     "style",
+     "total of 38.5: few possessions, less room for the better team"
+    ]
+   ],
    "against": [
     [
      "form",
@@ -1705,7 +1706,7 @@
     "qb_inj": []
    },
    "price": 0.4101058393642264,
-   "fpi": 0.3381286621927595,
+   "fpi": 0.3361089403723938,
    "total": 43.5,
    "moved": 0.5,
    "toward": "CAR",
